@@ -11,7 +11,10 @@
 |
 */
 
-uses(Tests\TestCase::class)->in('Feature');
+use App\Helpers\Configuration;
+use Illuminate\Support\Facades\Config;
+
+uses(Tests\TestCase::class)->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -34,12 +37,28 @@ expect()->extend('toBeOne', function () {
 |--------------------------------------------------------------------------
 |
 | While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
+| project that you dont want to repeat in every file. Here you can also expose helpers as
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
 
-function something()
+function setConfigPath()
 {
-    // ..
+    $mockPath = storage_path() . '/';
+    Config::set('app.windows_path', $mockPath);
+    Config::set('app.linux_path', $mockPath);
+}
+
+function setTestConfigFile()
+{
+    setConfigPath();
+    $configFile = Configuration::getConfigPath() . 'credentials';
+    file_put_contents($configFile, "[default]\napi_token = myapikey123\nformat = json\n[/default]");
+}
+
+function deleteTestConfigFile()
+{
+    setConfigPath();
+    $configFile = Configuration::getConfigPath() . 'credentials';
+    unlink($configFile);
 }

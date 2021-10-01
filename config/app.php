@@ -57,4 +57,12 @@ return [
         App\Providers\AppServiceProvider::class,
     ],
 
+
+    'windows_path' => "C:\\users\\<username>\\.spinupwp\\",
+
+    'macos_path' => '',
+
+    'linux_path' => '/home/<username>/.spinupwp/',
+
+
 ];
