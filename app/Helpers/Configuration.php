@@ -60,7 +60,7 @@ class Configuration
             case "WINNT":
                 $username = getenv('username');
                 $path = config('app.windows_path');
-                // no break
+                break;
             case "Darwin":
                 $username = trim(shell_exec("whoami"));
                 $path = config('app.macos_path');
