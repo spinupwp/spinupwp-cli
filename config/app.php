@@ -60,7 +60,7 @@ return [
 
     'windows_path' => "C:\\users\\<username>\\.spinupwp\\",
 
-    'macos_path' => '',
+    'macos_path' => '/Users/<username>/',
 
     'linux_path' => '/home/<username>/.spinupwp/',
 
