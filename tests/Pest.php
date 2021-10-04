@@ -47,6 +47,7 @@ function setConfigPath()
     $mockPath = storage_path() . '/';
     Config::set('app.windows_path', $mockPath);
     Config::set('app.linux_path', $mockPath);
+    Config::set('app.macos_path', $mockPath);
 }
 
 function setTestConfigFile()
