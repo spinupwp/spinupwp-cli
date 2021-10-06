@@ -18,23 +18,32 @@ class Configuration
         if (!static::isConfigured()) {
             return "";
         }
+
         $credentialsConfiguration = file_get_contents(static::getConfigPath() . 'credentials');
+
         preg_match_all("/\[{$team}\](.*)\[\/{$team}\]/s", $credentialsConfiguration, $matches);
+
         if (!isset($matches[1][0])) {
             return "";
         }
+
         preg_match("/api_token\s=\s(?<token>[a-zA-Z0-9\.\-_]+)/s", trim($matches[1][0]), $data);
+
         if (!isset($data['token']) || empty($data['token'])) {
             return "";
         }
+
         return $data['token'];
     }
 
     public static function saveCredentials(string $apiKey, string $defaultFormat, string $team = 'default'): void
     {
         $configuration = "";
+
         $newTeam = "[{$team}]\napi_token = {$apiKey}\nformat = {$defaultFormat}\n[/{$team}]";
+
         $configFile = static::getConfigPath() . 'credentials';
+
         if (static::isConfigured()) {
             $configuration = file_get_contents(static::getConfigPath() . 'credentials');
             preg_match_all("/\[{$team}\](.*)\[\/{$team}\]/s", $configuration, $matches);
@@ -45,6 +54,7 @@ class Configuration
             file_put_contents($configFile, "{$configuration}\n\n{$newTeam}");
             return;
         }
+
         file_put_contents($configFile, $newTeam);
     }
 
@@ -52,6 +62,7 @@ class Configuration
     {
         $username = '';
         $path = '';
+
         switch (PHP_OS) {
             case "Linux":
                 $username = trim(shell_exec("whoami"));
@@ -66,10 +77,13 @@ class Configuration
                 $path = config('app.macos_path');
                 break;
         }
+
         $path = str_replace('<username>', $username, $path);
+
         if (!file_exists($path)) {
             mkdir($path);
         }
+
         return $path;
     }
 }
