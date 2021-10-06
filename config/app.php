@@ -64,5 +64,9 @@ return [
 
     'linux_path' => '/home/<username>/.spinupwp/',
 
+    'output_formats' => [
+        'json',
+        'table',
+    ],
 
 ];
