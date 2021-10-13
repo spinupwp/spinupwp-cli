@@ -16,8 +16,8 @@ class Configure extends Command
         $team = $this->option('profile') ?? 'default';
 
         if (!empty(Configuration::get('api_token', $team))) {
-            $this->alert("The {$team} team is already configured");
-            $response = $this->ask('Do you want to reconfigure and overwrite existing credentials? (y/n)', 'y');
+            $this->alert("A profile named {$team} is already configured");
+            $response = $this->ask('Do you want to reconfigure and overwrite existing configuration? (y/n)', 'y');
             while (!in_array($response, ['y', 'n'])) {
                 $this->error("Please type 'y' or 'n'");
                 $response = $this->ask('Do you want to reconfigure and overwrite existing credentials? (y/n)', 'y');
