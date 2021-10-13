@@ -57,16 +57,11 @@ return [
         App\Providers\AppServiceProvider::class,
     ],
 
-
-    'windows_path' => "C:\\users\\<username>\\.spinupwp\\",
-
-    'macos_path' => '/Users/<username>/.spinupwp/',
-
-    'linux_path' => '/home/<username>/.spinupwp/',
-
     'output_formats' => [
         'json',
         'table',
     ],
+
+    'config_path' => $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
 
 ];

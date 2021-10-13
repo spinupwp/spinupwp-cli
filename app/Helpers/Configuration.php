@@ -6,7 +6,7 @@ class Configuration
 {
     public static function isConfigured(): bool
     {
-        $configPath = static::getConfigPath() . 'credentials';
+        $configPath = static::getConfigPath() . 'config';
         if (!file_exists($configPath)) {
             return false;
         }
@@ -19,7 +19,7 @@ class Configuration
             return "";
         }
 
-        $credentialsConfiguration = file_get_contents(static::getConfigPath() . 'credentials');
+        $credentialsConfiguration = file_get_contents(static::getConfigPath() . 'config');
 
         preg_match_all("/\[{$team}\](.*)\[\/{$team}\]/s", $credentialsConfiguration, $matches);
 
@@ -42,10 +42,10 @@ class Configuration
 
         $newTeam = "[{$team}]\napi_token = {$apiKey}\nformat = {$defaultFormat}\n[/{$team}]";
 
-        $configFile = static::getConfigPath() . 'credentials';
+        $configFile = static::getConfigPath() . 'config';
 
         if (static::isConfigured()) {
-            $configuration = file_get_contents(static::getConfigPath() . 'credentials');
+            $configuration = file_get_contents(static::getConfigPath() . 'config');
             preg_match_all("/\[{$team}\](.*)\[\/{$team}\]/s", $configuration, $matches);
             if (isset($matches[1][0])) {
                 file_put_contents($configFile, preg_replace("/\[{$team}\](.*)\[\/{$team}]/s", $newTeam, $configuration));
@@ -60,30 +60,10 @@ class Configuration
 
     public static function getConfigPath(): string
     {
-        $username = '';
-        $path = '';
-
-        switch (PHP_OS) {
-            case "Linux":
-                $username = trim(shell_exec("whoami"));
-                $path = config('app.linux_path');
-                break;
-            case "WINNT":
-                $username = getenv('username');
-                $path = config('app.windows_path');
-                break;
-            case "Darwin":
-                $username = trim(shell_exec("whoami"));
-                $path = config('app.macos_path');
-                break;
+        $userHome = config('app.config_path') . '/.spinupwp/';
+        if (!file_exists($userHome)) {
+            mkdir($userHome);
         }
-
-        $path = str_replace('<username>', $username, $path);
-
-        if (!file_exists($path)) {
-            mkdir($path);
-        }
-
-        return $path;
+        return $userHome;
     }
 }

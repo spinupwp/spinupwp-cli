@@ -3,14 +3,15 @@
 use App\Helpers\Configuration;
 
 beforeEach(function () {
-});
-
-afterEach(function () {
     deleteTestConfigFile();
 });
 
+afterEach(function () {
+    //
+});
+
 test('isConfigured method', function () {
-    setConfigPath();
+
     $isConfigured = Configuration::isConfigured();
     expect($isConfigured)->toBeFalse();
     setTestConfigFile();
@@ -24,7 +25,6 @@ test('getCredentials method', function () {
 });
 
 test('setCredentials method', function () {
-    setConfigPath();
     // first time
     Configuration::saveCredentials('mynewapitoken', 'json');
     expect(Configuration::getCredentials())->toEqual('mynewapitoken');

@@ -44,22 +44,23 @@ expect()->extend('toBeOne', function () {
 
 function setConfigPath()
 {
-    $mockPath = storage_path() . '/';
-    Config::set('app.windows_path', $mockPath);
-    Config::set('app.linux_path', $mockPath);
-    Config::set('app.macos_path', $mockPath);
+    $mockPath = storage_path();
+    Config::set('app.config_path', $mockPath);
 }
 
 function setTestConfigFile()
 {
     setConfigPath();
-    $configFile = Configuration::getConfigPath() . 'credentials';
+    $configFile = Configuration::getConfigPath() . 'config';
     file_put_contents($configFile, "[default]\napi_token = myapikey123\nformat = json\n[/default]");
 }
 
 function deleteTestConfigFile()
 {
     setConfigPath();
-    $configFile = Configuration::getConfigPath() . 'credentials';
+    $configFile = Configuration::getConfigPath() . 'config';
+    if (!file_exists($configFile)) {
+        return;
+    }
     unlink($configFile);
 }
