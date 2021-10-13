@@ -13,21 +13,21 @@ class Configuration
         return true;
     }
 
-    public static function getCredentials($team = 'default'): string
+    public static function get(string $key, $team = 'default'): string
     {
         if (!static::isConfigured()) {
             return "";
         }
 
-        $credentialsConfiguration = file_get_contents(static::getConfigPath() . 'config');
+        $configFile = file_get_contents(static::getConfigPath() . 'config');
 
-        preg_match_all("/\[{$team}\](.*)\[\/{$team}\]/s", $credentialsConfiguration, $matches);
+        preg_match_all("/\[{$team}\](.*)\[\/{$team}\]/s", $configFile, $matches);
 
         if (!isset($matches[1][0])) {
             return "";
         }
 
-        preg_match("/api_token\s=\s(?<token>[a-zA-Z0-9\.\-_]+)/s", trim($matches[1][0]), $data);
+        preg_match("/{$key}\s=\s(?<token>[a-zA-Z0-9\.\-_]+)/s", trim($matches[1][0]), $data);
 
         if (!isset($data['token']) || empty($data['token'])) {
             return "";
@@ -36,7 +36,7 @@ class Configuration
         return $data['token'];
     }
 
-    public static function saveCredentials(string $apiKey, string $defaultFormat, string $team = 'default'): void
+    public static function saveConfig(string $apiKey, string $defaultFormat, string $team = 'default'): void
     {
         $configuration = "";
 

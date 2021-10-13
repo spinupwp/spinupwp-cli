@@ -19,19 +19,19 @@ test('isConfigured method', function () {
     expect($isConfigured)->toBeTrue();
 });
 
-test('getCredentials method', function () {
+test('get method', function () {
     setTestConfigFile();
-    expect(Configuration::getCredentials())->toEqual('myapikey123');
+    expect(Configuration::get('api_token'))->toEqual('myapikey123');
 });
 
 test('setCredentials method', function () {
     // first time
-    Configuration::saveCredentials('mynewapitoken', 'json');
-    expect(Configuration::getCredentials())->toEqual('mynewapitoken');
+    Configuration::saveConfig('mynewapitoken', 'json');
+    expect(Configuration::get('api_token'))->toEqual('mynewapitoken');
     // multiple teams
-    Configuration::saveCredentials('myteamapitoken', 'json', "team1");
-    expect(Configuration::getCredentials("team1"))->toEqual('myteamapitoken');
+    Configuration::saveConfig('myteamapitoken', 'json', "team1");
+    expect(Configuration::get('api_token', 'team1'))->toEqual('myteamapitoken');
     //overwrite existing team apitoken
-    Configuration::saveCredentials('mynewteamapitoken', 'json', "team1");
-    expect(Configuration::getCredentials("team1"))->toEqual('mynewteamapitoken');
+    Configuration::saveConfig('mynewteamapitoken', 'json', "team1");
+    expect(Configuration::get('api_token', "team1"))->toEqual('mynewteamapitoken');
 });
