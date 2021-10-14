@@ -10,8 +10,16 @@ class BaseCommand extends Command
     protected $signature = 'BaseCommand';
     protected $description = 'BaseCommand';
 
+    protected Configuration $config;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->config = new Configuration();
+    }
+
     public function get(string $key, $team = 'default'): string
     {
-        return Configuration::get($key, $team);
+        return $this->config->get($key, $team);
     }
 }

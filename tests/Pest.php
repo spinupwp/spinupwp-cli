@@ -51,14 +51,13 @@ function setConfigPath()
 function setTestConfigFile()
 {
     setConfigPath();
-    $configFile = Configuration::getConfigPath() . 'config';
-    file_put_contents($configFile, "[default]\napi_token = myapikey123\nformat = json\n[/default]");
+    (new Configuration)->saveConfig('myapikey123', 'json');
 }
 
 function deleteTestConfigFile()
 {
     setConfigPath();
-    $configFile = Configuration::getConfigPath() . 'config';
+    $configFile = (new Configuration)->configFilePath();
     if (!file_exists($configFile)) {
         return;
     }

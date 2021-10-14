@@ -38,7 +38,7 @@ class Configure extends BaseCommand
             $defaultFormat = $this->ask('Which format would you prefer for data output? (json/table)', null);
         }
 
-        Configuration::saveConfig($apiKey, $defaultFormat, $team);
+        $this->config->saveConfig($apiKey, $defaultFormat, $team);
         $this->info("SpinupWP CLI configured successfully");
         return 0;
     }
