@@ -2,8 +2,6 @@
 
 namespace App\Commands;
 
-use App\Helpers\Configuration;
-
 class Configure extends BaseCommand
 {
     protected $signature = 'configure {--profile=}';
@@ -39,7 +37,7 @@ class Configure extends BaseCommand
         }
 
         $this->config->saveConfig($apiKey, $defaultFormat, $team);
-        $this->info("SpinupWP CLI configured successfully");
+        $this->info('SpinupWP CLI configured successfully');
         return 0;
     }
 }

@@ -6,7 +6,6 @@ use Exception;
 
 class Configuration
 {
-
     protected array $config;
 
     public function __construct()
@@ -26,7 +25,7 @@ class Configuration
     public function get(string $key, $team = 'default'): string
     {
         if (empty($this->config)) {
-            return "";
+            return '';
         }
 
         if (!$this->teamExists($team)) {
@@ -46,7 +45,7 @@ class Configuration
     {
         $teamConfig = [
             'api_token' => $apiKey,
-            'format' => $defaultFormat,
+            'format'    => $defaultFormat,
         ];
         $this->config[$team] = $teamConfig;
         file_put_contents($this->configFilePath(), json_encode($this->config));

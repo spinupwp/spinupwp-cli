@@ -33,10 +33,10 @@ test('setCredentials method', function () {
     expect($config->get('api_token'))->toEqual('mynewapitoken');
 
     // multiple teams
-    $config->saveConfig('myteamapitoken', 'json', "team1");
+    $config->saveConfig('myteamapitoken', 'json', 'team1');
     expect($config->get('api_token', 'team1'))->toEqual('myteamapitoken');
 
     // overwrite existing team apitoken
-    $config->saveConfig('mynewteamapitoken', 'json', "team1");
-    expect($config->get('api_token', "team1"))->toEqual('mynewteamapitoken');
+    $config->saveConfig('mynewteamapitoken', 'json', 'team1');
+    expect($config->get('api_token', 'team1'))->toEqual('mynewteamapitoken');
 });

@@ -8,6 +8,7 @@ use LaravelZero\Framework\Commands\Command;
 class BaseCommand extends Command
 {
     protected $signature = 'BaseCommand';
+
     protected $description = 'BaseCommand';
 
     protected Configuration $config;
