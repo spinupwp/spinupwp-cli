@@ -1,25 +1,31 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Commands;
 
-class Configuration
+use LaravelZero\Framework\Commands\Command;
+
+class BaseCommand extends Command
 {
-    public static function isConfigured(): bool
+    protected $signature = 'BaseCommand';
+
+    protected $description = 'BaseCommand';
+
+    public function isConfigured(): bool
     {
-        $configPath = static::getConfigPath() . 'config';
+        $configPath = $this->getConfigPath() . 'config';
         if (!file_exists($configPath)) {
             return false;
         }
         return true;
     }
 
-    public static function get(string $key, $team = 'default'): string
+    public function get(string $key, $team = 'default'): string
     {
-        if (!static::isConfigured()) {
+        if (!$this->isConfigured()) {
             return "";
         }
 
-        $configFile = file_get_contents(static::getConfigPath() . 'config');
+        $configFile = file_get_contents($this->getConfigPath() . 'config');
 
         preg_match_all("/\[{$team}\](.*)\[\/{$team}\]/s", $configFile, $matches);
 
@@ -36,16 +42,16 @@ class Configuration
         return $data['token'];
     }
 
-    public static function saveConfig(string $apiKey, string $defaultFormat, string $team = 'default'): void
+    public function saveConfig(string $apiKey, string $defaultFormat, string $team = 'default'): void
     {
         $configuration = "";
 
         $newTeam = "[{$team}]\napi_token = {$apiKey}\nformat = {$defaultFormat}\n[/{$team}]";
 
-        $configFile = static::getConfigPath() . 'config';
+        $configFile = $this->getConfigPath() . 'config';
 
-        if (static::isConfigured()) {
-            $configuration = file_get_contents(static::getConfigPath() . 'config');
+        if ($this->isConfigured()) {
+            $configuration = file_get_contents($this->getConfigPath() . 'config');
             preg_match_all("/\[{$team}\](.*)\[\/{$team}\]/s", $configuration, $matches);
             if (isset($matches[1][0])) {
                 file_put_contents($configFile, preg_replace("/\[{$team}\](.*)\[\/{$team}]/s", $newTeam, $configuration));
@@ -58,7 +64,7 @@ class Configuration
         file_put_contents($configFile, $newTeam);
     }
 
-    public static function getConfigPath(): string
+    public function getConfigPath(): string
     {
         $userHome = config('app.config_path') . '/.spinupwp/';
         if (!file_exists($userHome)) {

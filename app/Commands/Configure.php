@@ -2,10 +2,7 @@
 
 namespace App\Commands;
 
-use App\Helpers\Configuration;
-use LaravelZero\Framework\Commands\Command;
-
-class Configure extends Command
+class Configure extends BaseCommand
 {
     protected $signature = 'configure {--profile=}';
 
@@ -15,7 +12,7 @@ class Configure extends Command
     {
         $team = $this->option('profile') ?? 'default';
 
-        if (!empty(Configuration::get('api_token', $team))) {
+        if (!empty($this->get('api_token', $team))) {
             $this->alert("A profile named {$team} is already configured");
             $response = $this->ask('Do you want to reconfigure and overwrite existing configuration? (y/n)', 'y');
             while (!in_array($response, ['y', 'n'])) {
@@ -39,7 +36,7 @@ class Configure extends Command
             $defaultFormat = $this->ask('Which format would you prefer for data output? (json/table)', null);
         }
 
-        Configuration::saveConfig($apiKey, $defaultFormat, $team);
+        $this->saveConfig($apiKey, $defaultFormat, $team);
         $this->info("SpinupWP CLI configured successfully");
         return 0;
     }
