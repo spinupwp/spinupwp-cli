@@ -6,10 +6,6 @@ beforeEach(function () {
     deleteTestConfigFile();
 });
 
-afterEach(function () {
-    //
-});
-
 test('isConfigured method', function () {
     $config = new Configuration();
     $isConfigured = $config->isConfigured();
