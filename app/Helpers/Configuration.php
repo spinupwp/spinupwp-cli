@@ -29,7 +29,7 @@ class Configuration
         }
 
         if (!$this->teamExists($team)) {
-            throw new Exception("The profifle {$team} doesn't exist");
+            return '';
         }
 
         $teamnConfig = $this->config[$team];
