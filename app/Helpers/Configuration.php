@@ -15,8 +15,7 @@ class Configuration
 
     public function isConfigured(): bool
     {
-        $configPath = $this->getConfigPath() . 'config';
-        if (!file_exists($configPath)) {
+        if (!file_exists($this->configFilePath())) {
             return false;
         }
         return true;
