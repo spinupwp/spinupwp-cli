@@ -22,38 +22,38 @@ class Configuration
         return true;
     }
 
-    public function get(string $key, $team = 'default'): string
+    public function get(string $key, $profile = 'default'): string
     {
         if (empty($this->config)) {
             return '';
         }
 
-        if (!$this->teamExists($team)) {
+        if (!$this->teamExists($profile)) {
             return '';
         }
 
-        $teamnConfig = $this->config[$team];
+        $profilenConfig = $this->config[$profile];
 
-        if (!isset($teamnConfig[$key])) {
+        if (!isset($profilenConfig[$key])) {
             throw new Exception("The key {$key} doesn't exist in the configuration");
         }
 
-        return $teamnConfig[$key];
+        return $profilenConfig[$key];
     }
 
-    public function saveConfig(string $apiKey, string $defaultFormat, string $team = 'default'): void
+    public function saveConfig(string $apiKey, string $defaultFormat, string $profile = 'default'): void
     {
-        $teamConfig = [
+        $profileConfig = [
             'api_token' => $apiKey,
             'format'    => $defaultFormat,
         ];
-        $this->config[$team] = $teamConfig;
+        $this->config[$profile] = $profileConfig;
         file_put_contents($this->configFilePath(), json_encode($this->config));
     }
 
-    public function teamExists(string $team): bool
+    public function teamExists(string $profile): bool
     {
-        return isset($this->config[$team]);
+        return isset($this->config[$profile]);
     }
 
     protected function readConfig(): array
