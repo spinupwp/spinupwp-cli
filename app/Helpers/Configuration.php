@@ -67,7 +67,7 @@ class Configuration
 
     public function configFilePath(): string
     {
-        return $this->getConfigPath() . 'config';
+        return $this->getConfigPath() . 'config.json';
     }
 
     protected function getConfigPath(): string
