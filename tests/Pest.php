@@ -51,7 +51,9 @@ function setConfigPath()
 function setTestConfigFile()
 {
     setConfigPath();
-    (new Configuration)->saveConfig('myapikey123', 'json');
+    $config = new Configuration();
+    $config->set('api_token', 'myapikey123');
+    $config->set('format', 'json');
 }
 
 function deleteTestConfigFile($test = '')

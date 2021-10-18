@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Exception;
+use Illuminate\Support\Arr;
 
 class Configuration
 {
@@ -40,14 +41,12 @@ class Configuration
         return $profilenConfig[$key];
     }
 
-    public function saveConfig(string $apiKey, string $defaultFormat, string $profile = 'default'): void
+    public function set(string $key, string $value, $profile = 'default')
     {
-        $profileConfig = [
-            'api_token' => $apiKey,
-            'format'    => $defaultFormat,
-        ];
-        $this->config[$profile] = $profileConfig;
-        file_put_contents($this->configFilePath(), json_encode($this->config));
+        $config = $this->config;
+        Arr::set($config, "{$profile}.{$key}", $value);
+        file_put_contents($this->configFilePath(), json_encode($config, JSON_PRETTY_PRINT));
+        $this->config = $config;
     }
 
     public function teamExists(string $profile): bool
