@@ -12,7 +12,7 @@ class Configure extends BaseCommand
     {
         $profile = $this->option('profile') ?? 'default';
 
-        if (!empty($this->get('api_token', $profile))) {
+        if (!empty($this->config->get('api_token', $profile))) {
             $this->alert("A profile named {$profile} is already configured");
             $response = $this->ask('Do you want to overwrite the existing configuration? (y/n)', 'y');
             while (!in_array($response, ['y', 'n'])) {

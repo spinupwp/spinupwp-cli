@@ -3,15 +3,16 @@
 use App\Helpers\Configuration;
 
 beforeEach(function () {
+    setConfigPath();
+    deleteTestConfigFile();
 });
 
 afterEach(function () {
-    deleteTestConfigFile();
 });
 
 test('configure command for default profile', function () {
-    deleteTestConfigFile();
     $this->artisan('configure')
+        ->expectsQuestion('Do you want to overwrite the existing configuration? (y/n)', 'y')
         ->expectsQuestion('SpinupWP API token', 'my-spinupwp-api-token')
         ->expectsQuestion('Default output format (json/table)', 'json')
         ->expectsOutput('SpinupWP CLI configured successfully');
