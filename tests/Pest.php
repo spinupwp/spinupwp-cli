@@ -11,7 +11,10 @@
 |
 */
 
-uses(Tests\TestCase::class)->in('Feature');
+use App\Helpers\Configuration;
+use Illuminate\Support\Facades\Config;
+
+uses(Tests\TestCase::class)->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +42,26 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function setConfigPath()
 {
-    // ..
+    $mockPath = storage_path();
+    Config::set('app.config_path', $mockPath);
+}
+
+function setTestConfigFile()
+{
+    setConfigPath();
+    $config = new Configuration();
+    $config->set('api_token', 'myapikey123');
+    $config->set('format', 'json');
+}
+
+function deleteTestConfigFile($test = '')
+{
+    setConfigPath();
+    $configFile = (new Configuration)->configFilePath();
+    if (!file_exists($configFile)) {
+        return;
+    }
+    unlink($configFile);
 }

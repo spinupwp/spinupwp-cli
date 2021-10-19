@@ -57,4 +57,11 @@ return [
         App\Providers\AppServiceProvider::class,
     ],
 
+    'output_formats' => [
+        'json',
+        'table',
+    ],
+
+    'config_path' => $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
+
 ];
