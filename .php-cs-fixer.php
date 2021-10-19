@@ -30,7 +30,7 @@ $rules = [
     'indentation_type'            => true,
     'linebreak_after_opening_tag' => true,
     'lowercase_cast'              => true,
-    'constant_case'               => true,
+    'constant_case'               => ['case' => 'lower'],
     'lowercase_keywords'          => true,
     'magic_constant_casing'       => true,
     'method_argument_space'       => true,
@@ -72,7 +72,9 @@ $rules = [
     'object_operator_without_whitespace'          => true,
     'ordered_imports'                             => ['sort_algorithm' => 'alpha'],
     'phpdoc_indent'                               => true,
+    'general_phpdoc_tag_rename'                   => true,
     'phpdoc_inline_tag_normalizer'                => true,
+    'phpdoc_tag_type'                             => true,
     'phpdoc_no_access'                            => true,
     'phpdoc_no_package'                           => true,
     'phpdoc_no_useless_inheritdoc'                => true,
@@ -100,7 +102,7 @@ $rules = [
     'switch_case_semicolon_to_colon'              => true,
     'switch_case_space'                           => true,
     'ternary_operator_spaces'                     => true,
-    'trailing_comma_in_multiline'                 => true,
+    'trailing_comma_in_multiline'                 => ['elements' => ['arrays']],
     'trim_array_spaces'                           => true,
     'unary_operator_spaces'                       => true,
     'line_ending'                                 => true,
@@ -111,19 +113,19 @@ $rules = [
 ];
 
 $finder = Finder::create()
-                ->notPath('bootstrap')
-                ->notPath('storage')
-                ->notPath('vendor')
-                ->in(getcwd())
-                ->name('*.php')
-                ->notName('*.blade.php')
-                ->notName('index.php')
-                ->notName('server.php')
-                ->ignoreDotFiles(true)
-                ->ignoreVCS(true);
+    ->notPath('bootstrap')
+    ->notPath('storage')
+    ->notPath('vendor')
+    ->in(getcwd())
+    ->name('*.php')
+    ->notName('*.blade.php')
+    ->notName('index.php')
+    ->notName('server.php')
+    ->ignoreDotFiles(true)
+    ->ignoreVCS(true);
 
 return (new Config)
-             ->setFinder($finder)
-             ->setRules($rules)
-             ->setRiskyAllowed(true)
-             ->setUsingCache(true);
+    ->setFinder($finder)
+    ->setRules($rules)
+    ->setRiskyAllowed(true)
+    ->setUsingCache(true);

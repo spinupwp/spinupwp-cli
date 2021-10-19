@@ -29,5 +29,9 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["spinupwp"]
+    "bin": ["spinupwp"],
+    "scripts": {
+        "php-cs-fixer": "./vendor/bin/php-cs-fixer fix",
+        "test": "./vendor/bin/pest"
+    }
 }
