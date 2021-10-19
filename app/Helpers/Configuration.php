@@ -7,7 +7,10 @@ use Illuminate\Support\Arr;
 
 class Configuration
 {
-    protected array $config;
+    /**
+     * @var array
+     */
+    protected $config;
 
     public function __construct()
     {
@@ -16,13 +19,10 @@ class Configuration
 
     public function isConfigured(): bool
     {
-        if (!file_exists($this->configFilePath())) {
-            return false;
-        }
-        return true;
+        return file_exists($this->configFilePath());
     }
 
-    public function get(string $key, $profile = 'default'): string
+    public function get(string $key, string $profile = 'default'): string
     {
         if (empty($this->config)) {
             return '';
@@ -32,20 +32,23 @@ class Configuration
             return '';
         }
 
-        $profilenConfig = $this->config[$profile];
+        $profileConfig = $this->config[$profile];
 
-        if (!isset($profilenConfig[$key])) {
+        if (!isset($profileConfig[$key])) {
             throw new Exception("The key {$key} doesn't exist in the configuration");
         }
 
-        return $profilenConfig[$key];
+        return $profileConfig[$key];
     }
 
-    public function set(string $key, string $value, $profile = 'default')
+    public function set(string $key, string $value, string $profile = 'default'): void
     {
         $config = $this->config;
+
         Arr::set($config, "{$profile}.{$key}", $value);
+
         file_put_contents($this->configFilePath(), json_encode($config, JSON_PRETTY_PRINT));
+
         $this->config = $config;
     }
 
@@ -61,6 +64,11 @@ class Configuration
         }
 
         $configFile = file_get_contents($this->configFilePath());
+
+        if (!$configFile) {
+            return [];
+        }
+
         return json_decode($configFile, true);
     }
 
@@ -72,9 +80,11 @@ class Configuration
     protected function getConfigPath(): string
     {
         $userHome = config('app.config_path') . '/.spinupwp/';
+
         if (!file_exists($userHome)) {
             mkdir($userHome);
         }
+
         return $userHome;
     }
 }
