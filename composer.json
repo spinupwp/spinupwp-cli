@@ -6,7 +6,8 @@
     "require": {
         "php": "^7.3|^8.0",
         "deliciousbrains/spinupwp-php-sdk": "dev-main",
-        "laravel-zero/framework": "^8.8"
+        "laravel-zero/framework": "^8.8",
+        "phplucidframe/console-table": "^1.2"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.2",
