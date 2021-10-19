@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-class Configure extends BaseCommand
+class ConfigureCommand extends BaseCommand
 {
     protected $signature = 'configure {--profile=default}';
 
