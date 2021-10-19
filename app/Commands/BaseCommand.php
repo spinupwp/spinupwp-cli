@@ -37,9 +37,30 @@ abstract class BaseCommand extends Command
         }
     }
 
+    public function handle(): int
+    {
+        $payload = $this->action();
+        $this->info($this->format($payload));
+        return 0;
+    }
+
+    abstract protected function action();
+
     protected function apiToken(): string
     {
         return $this->config->get('api_token');
+    }
+
+    protected function format($resource)
+    {
+        $format = $this->config->get('format');
+        if (!is_string($this->option('format'))) {
+            $format = $this->option('format');
+        }
+        if ($format !== 'json') {
+            //
+        }
+        return $this->toJson($resource);
     }
 
     protected function toJson($resource): string
