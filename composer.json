@@ -5,6 +5,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "deliciousbrains/spinupwp-php-sdk": "dev-main",
         "laravel-zero/framework": "^8.8"
     },
     "require-dev": {
