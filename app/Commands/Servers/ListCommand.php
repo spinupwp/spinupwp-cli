@@ -12,6 +12,14 @@ class ListCommand extends BaseCommand
 
     protected function action()
     {
-        return $this->spinupwp->servers->list();
+        $servers = collect($this->spinupwp->servers->list()->toArray());
+        $servers->transform(function ($server) {
+            $server = $server->toArray();
+            unset($server['ssh_publickey']);
+            unset($server['git_publickey']);
+            return $server;
+        });
+
+        return $servers;
     }
 }
