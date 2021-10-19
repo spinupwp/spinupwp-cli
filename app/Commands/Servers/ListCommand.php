@@ -6,7 +6,7 @@ use App\Commands\BaseCommand;
 
 class ListCommand extends BaseCommand
 {
-    protected $signature = 'servers:list {--format=format}';
+    protected $signature = 'servers:list {--format=}';
 
     protected $description = 'Retrieve a list or servers';
 
