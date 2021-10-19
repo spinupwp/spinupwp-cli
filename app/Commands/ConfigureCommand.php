@@ -48,4 +48,9 @@ class ConfigureCommand extends BaseCommand
 
         return 0;
     }
+
+    protected function action()
+    {
+        return null;
+    }
 }
