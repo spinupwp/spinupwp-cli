@@ -3,7 +3,6 @@
 namespace App\Commands;
 
 use App\Helpers\Configuration;
-use DeliciousBrains\SpinupWp\Resources\ResourceCollection;
 use DeliciousBrains\SpinupWp\SpinupWp;
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Collection;
@@ -15,8 +14,6 @@ abstract class BaseCommand extends Command
     protected Configuration $config;
 
     protected SpinupWp $spinupwp;
-
-    protected array $table;
 
     public function __construct(Configuration $configuration)
     {
@@ -79,7 +76,6 @@ abstract class BaseCommand extends Command
     {
         $table        = new ConsoleTable();
         $tableHeaders = [];
-        $tableRows    = [];
 
         if ($resource instanceof Collection) {
             $firstElement = $resource->first();
