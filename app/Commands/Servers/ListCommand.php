@@ -4,7 +4,7 @@ namespace App\Commands\Servers;
 
 class ListCommand extends ServerCommand
 {
-    protected $signature = 'servers:list {--format=}';
+    protected $signature = 'servers:list {--format=} {--profile=}';
 
     protected $description = 'Retrieve a list or servers';
 
