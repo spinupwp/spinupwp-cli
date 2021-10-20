@@ -2,8 +2,6 @@
 
 namespace App\Commands\Servers;
 
-use App\Commands\BaseCommand;
-
 class ListCommand extends ServerCommand
 {
     protected $signature = 'servers:list {--format=}';
