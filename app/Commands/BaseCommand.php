@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Helpers\Configuration;
 use DeliciousBrains\SpinupWp\SpinupWp;
+use Exception;
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
@@ -31,13 +32,18 @@ abstract class BaseCommand extends Command
             return 1;
         }
 
-        $this->setUpSpinupWP();
+        try {
+            $this->setUpSpinupWP();
 
-        $payload = $this->action();
+            $payload = $this->action();
 
-        $this->info($this->format($payload));
+            $this->info($this->format($payload));
 
-        return 0;
+            return 0;
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
+            return 1;
+        }
     }
 
     private function setUpSpinupWP(): void
@@ -63,7 +69,11 @@ abstract class BaseCommand extends Command
 
     protected function apiToken(): string
     {
-        return $this->config->get('api_token', $this->profile());
+        $apiToken = $this->config->get('api_token', $this->profile());
+        if (!$apiToken) {
+            throw new Exception("The API token for the profile {$this->profile()} is not yet configured");
+        }
+        return $apiToken;
     }
 
     protected function profile(): string
