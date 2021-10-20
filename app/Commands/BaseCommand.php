@@ -8,7 +8,6 @@ use Exception;
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
-use LucidFrame\Console\ConsoleTable;
 
 abstract class BaseCommand extends Command
 {
@@ -37,7 +36,7 @@ abstract class BaseCommand extends Command
 
             $payload = $this->action();
 
-            $this->info($this->format($payload));
+            $this->format($payload);
 
             return 0;
         } catch (Exception $e) {
@@ -100,14 +99,13 @@ abstract class BaseCommand extends Command
         return $this->config->get('format', $this->profile());
     }
 
-    protected function toJson($resource): string
+    protected function toJson($resource): void
     {
-        return json_encode($resource->toArray(), JSON_PRETTY_PRINT);
+        $this->line(json_encode($resource->toArray(), JSON_PRETTY_PRINT));
     }
 
-    protected function toTable($resource)
+    protected function toTable($resource): void
     {
-        $table        = new ConsoleTable();
         $tableHeaders = [];
 
         if ($resource instanceof Collection) {
@@ -119,29 +117,31 @@ abstract class BaseCommand extends Command
 
             $tableHeaders = array_keys($firstElement);
 
-            foreach ($tableHeaders as $header) {
-                $table->addHeader($header);
-            }
+            $rows = [];
 
-            $resource->each(function ($item) use ($table) {
-                $table->addRow();
+            $resource->each(function ($item) use (&$rows) {
                 if (!is_array($item)) {
                     $item->toArray();
                 }
-                $row = array_values($item);
-                foreach ($row as $value) {
+
+                $row = array_map(function ($value) {
                     if (is_array($value)) {
                         $value = '';
                     }
                     if (is_bool($value)) {
                         $value = $value ? 'yes' : 'no';
                     }
-                    $table->addColumn($value);
-                }
+                    return $value;
+                }, array_values($item));
+
+                $rows[] = $row;
             });
         }
 
-        return $table->display();
+        $this->table(
+            $tableHeaders,
+            $rows,
+        );
     }
 
     abstract protected function action();
