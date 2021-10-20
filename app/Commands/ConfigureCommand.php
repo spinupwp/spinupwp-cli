@@ -8,6 +8,8 @@ class ConfigureCommand extends BaseCommand
 
     protected $description = 'Configure SpinupWP CLI';
 
+    protected bool $requiresToken = false;
+
     public function handle(): int
     {
         $profile = $this->option('profile');

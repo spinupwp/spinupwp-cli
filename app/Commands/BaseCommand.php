@@ -15,9 +15,12 @@ abstract class BaseCommand extends Command
 
     protected SpinupWp $spinupwp;
 
+    protected bool $requiresToken = true;
+
     public function __construct(Configuration $configuration)
     {
         parent::__construct();
+
         $this->config = $configuration;
 
         $client = null;
@@ -41,8 +44,15 @@ abstract class BaseCommand extends Command
 
     public function handle(): int
     {
+        if ($this->requiresToken && !$this->config->isConfigured()) {
+            $this->error("You must first run 'spinupwp configure' in order to set up your API token.");
+            return 1;
+        }
+
         $payload = $this->action();
+
         $this->info($this->format($payload));
+
         return 0;
     }
 
