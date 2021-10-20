@@ -56,14 +56,18 @@ abstract class BaseCommand extends Command
 
     protected function format($resource)
     {
-        $format = $this->config->get('format');
-        if (is_string($this->option('format'))) {
-            $format = $this->option('format');
-        }
-        if ($format !== 'json') {
+        if ($this->displayFormat() === 'table') {
             return $this->toTable($resource);
         }
         return $this->toJson($resource);
+    }
+
+    protected function displayFormat(): string
+    {
+        if (is_string($this->option('format'))) {
+            return $this->option('format');
+        }
+        return $this->config->get('format');
     }
 
     protected function toJson($resource): string
@@ -97,8 +101,11 @@ abstract class BaseCommand extends Command
                 }
                 $row = array_values($item);
                 foreach ($row as $value) {
-                    if (!is_string($value)) {
+                    if (is_array($value)) {
                         $value = '';
+                    }
+                    if (is_bool($value)) {
+                        $value = $value ? 'yes' : 'no';
                     }
                     $table->addColumn($value);
                 }

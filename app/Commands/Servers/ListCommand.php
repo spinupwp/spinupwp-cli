@@ -4,7 +4,7 @@ namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
 
-class ListCommand extends BaseCommand
+class ListCommand extends ServerCommand
 {
     protected $signature = 'servers:list {--format=}';
 
@@ -12,14 +12,8 @@ class ListCommand extends BaseCommand
 
     protected function action()
     {
-        $servers = collect($this->spinupwp->servers->list()->toArray());
-        $servers->transform(function ($server) {
-            $server = $server->toArray();
-            unset($server['ssh_publickey']);
-            unset($server['git_publickey']);
-            return $server;
-        });
-
-        return $servers;
+        return $this->filterData(
+            collect($this->spinupwp->servers->list())
+        );
     }
 }
