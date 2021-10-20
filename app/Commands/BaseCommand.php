@@ -22,7 +22,26 @@ abstract class BaseCommand extends Command
         parent::__construct();
 
         $this->config = $configuration;
+    }
 
+    public function handle(): int
+    {
+        if ($this->requiresToken && !$this->config->isConfigured()) {
+            $this->error("You must first run 'spinupwp configure' in order to set up your API token.");
+            return 1;
+        }
+
+        $this->setUpSpinupWP();
+
+        $payload = $this->action();
+
+        $this->info($this->format($payload));
+
+        return 0;
+    }
+
+    private function setUpSpinupWP(): void
+    {
         $client = null;
 
         if (config('app.env') !== 'production') {
@@ -42,23 +61,17 @@ abstract class BaseCommand extends Command
         }
     }
 
-    public function handle(): int
-    {
-        if ($this->requiresToken && !$this->config->isConfigured()) {
-            $this->error("You must first run 'spinupwp configure' in order to set up your API token.");
-            return 1;
-        }
-
-        $payload = $this->action();
-
-        $this->info($this->format($payload));
-
-        return 0;
-    }
-
     protected function apiToken(): string
     {
-        return $this->config->get('api_token');
+        return $this->config->get('api_token', $this->profile());
+    }
+
+    protected function profile(): string
+    {
+        if (is_string($this->option('profile'))) {
+            return $this->option('profile');
+        }
+        return 'default';
     }
 
     protected function format($resource)
@@ -74,7 +87,7 @@ abstract class BaseCommand extends Command
         if (is_string($this->option('format'))) {
             return $this->option('format');
         }
-        return $this->config->get('format');
+        return $this->config->get('format', $this->profile());
     }
 
     protected function toJson($resource): string
