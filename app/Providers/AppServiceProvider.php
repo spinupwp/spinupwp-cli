@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->bind(SpinupWp::class, fn ($app, $params) => new SpinupWp($params['apiKey'], $params['client']));
+        //
     }
 
     /**
@@ -24,6 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(SpinupWp::class, fn ($app, $params) => new SpinupWp($params['apiKey'], $params['client']));
     }
 }
