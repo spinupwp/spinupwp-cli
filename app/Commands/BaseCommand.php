@@ -62,7 +62,7 @@ abstract class BaseCommand extends Command
         }
 
         if ($this->config->isConfigured()) {
-            $this->spinupwp = new SpinupWp($this->apiToken(), $client);
+            $this->spinupwp = $this->app->makeWith(SpinupWp::class, ['apiKey' => $this->apiToken(), 'client' => $client]);
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use DeliciousBrains\SpinupWp\SpinupWp;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->app->bind(SpinupWp::class, fn ($app, $params) => new SpinupWp($params['apiKey'], $params['client']));
     }
 
     /**
