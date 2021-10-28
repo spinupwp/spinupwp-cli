@@ -33,9 +33,7 @@ abstract class BaseCommand extends Command
         }
 
         try {
-            if ($this->profile() !== 'default') {
-                $this->spinupwp->setApiKey($this->apiToken());
-            }
+            $this->spinupwp->setApiKey($this->apiToken());
 
             if (!empty($this->config->get('api_url', $this->profile()))) {
                 $this->spinupwp->setClient($this->config->customHttpClient($this->profile()));
