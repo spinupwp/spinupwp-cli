@@ -1,24 +1,16 @@
 <?php
 
-use DeliciousBrains\SpinupWp\SpinupWp;
+use App\Helpers\Configuration;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 
-beforeEach(function () {
-    setConfigPath();
-    deleteTestConfigFile();
-});
+$response = [
+    ['name' => 'hellfish-media'],
+    ['name' => 'staging.hellfish-media'],
+];
 
-test('list command with no api token configured', function () {
-    $this->artisan('servers:list --profile=johndoe')
-        ->assertExitCode(1);
-});
-
-test('list command', function () {
-    $response = [
-        ['name' => 'hellfish-media'],
-        ['name' => 'staging.hellfish-meida'],
-    ];
+beforeEach(function () use ($response) {
+    setTestConfigFile();
 
     $clientMock = Mockery::mock(Client::class);
     $clientMock->shouldReceive('request')->with('GET', 'servers?page=1', [])->andReturn(
@@ -27,11 +19,27 @@ test('list command', function () {
         ]))
     );
 
-    $this->mock(SpinupWp::class, function ($mock) use ($clientMock) {
-        $mock->shouldReceive('getClient')->once()->andReturn($clientMock);
-    });
+    Configuration::setCustomHttpClient('default', $clientMock);
+});
 
-    //    $su = $this->app->makeWith(SpinupWp::class, ['apiKey' => '123', 'client' => $clientMock]);
-    // \Log::debug('asdf', $su->servers->list()->toArray());
-    $this->artisan('servers:list')->expectsOutput(json_encode($response));
+afterEach(function () {
+    deleteTestConfigFile();
+});
+
+test('list command with no api token configured', function () use ($response) {
+    $this->artisan('servers:list --profile=johndoe')
+        ->assertExitCode(1);
+});
+
+test('servers json list command', function () use ($response) {
+    $this->artisan('servers:list')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
+});
+
+test('servers table list command', function () use ($response) {
+    $this->artisan('servers:list --format=table')->expectsTable([
+        'name',
+    ], [
+        ['hellfish-media'],
+        ['staging.hellfish-media'],
+    ]);
 });

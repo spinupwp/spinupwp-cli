@@ -36,7 +36,7 @@ abstract class BaseCommand extends Command
             $this->spinupwp->setApiKey($this->apiToken());
 
             if (!empty($this->config->get('api_url', $this->profile()))) {
-                $this->spinupwp->setClient($this->config->customHttpClient($this->profile()));
+                $this->spinupwp->setClient(Configuration::getCustomHttpClient($this->profile()));
             }
 
             $payload = $this->action();
