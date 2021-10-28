@@ -17,11 +17,12 @@ abstract class BaseCommand extends Command
 
     protected bool $requiresToken = true;
 
-    public function __construct(Configuration $configuration)
+    public function __construct(Configuration $configuration, SpinupWp $spinupWp)
     {
         parent::__construct();
 
-        $this->config = $configuration;
+        $this->config   = $configuration;
+        $this->spinupwp = $spinupWp;
     }
 
     public function handle(): int
@@ -32,7 +33,13 @@ abstract class BaseCommand extends Command
         }
 
         try {
-            $this->setUpSpinupWP();
+            if ($this->profile() !== 'default') {
+                $this->spinupwp->setApiKey($this->apiToken());
+            }
+
+            if (!empty($this->config->get('api_url', $this->profile()))) {
+                $this->spinupwp->setClient($this->config->customHttpClient($this->profile()));
+            }
 
             $payload = $this->action();
 
@@ -42,27 +49,6 @@ abstract class BaseCommand extends Command
         } catch (Exception $e) {
             $this->error($e->getMessage());
             return 1;
-        }
-    }
-
-    private function setUpSpinupWP(): void
-    {
-        $client = null;
-
-        if (config('app.env') !== 'production') {
-            $client = new HttpClient([
-                'base_uri'    => config('app.api_url'),
-                'http_errors' => false,
-                'headers'     => [
-                    'Authorization' => "Bearer {$this->apiToken()}",
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                ],
-            ]);
-        }
-
-        if ($this->config->isConfigured()) {
-            $this->spinupwp = $this->app->makeWith(SpinupWp::class, ['apiKey' => $this->apiToken(), 'client' => $client]);
         }
     }
 

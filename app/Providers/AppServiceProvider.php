@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Helpers\Configuration;
 use DeliciousBrains\SpinupWp\SpinupWp;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,6 +25,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(SpinupWp::class, fn ($app, $params) => new SpinupWp($params['apiKey'], $params['client']));
+        $this->app->singleton(SpinupWp::class, function ($app) {
+            return new SpinupWp($this->apiToken('default'));
+        });
+    }
+
+    protected function apiToken($profile): string
+    {
+        return (new Configuration)->get('api_token', $profile) ?? '';
     }
 }

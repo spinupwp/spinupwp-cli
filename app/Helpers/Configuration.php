@@ -3,10 +3,13 @@
 namespace App\Helpers;
 
 use Exception;
+use GuzzleHttp\Client;
 use Illuminate\Support\Arr;
 
 class Configuration
 {
+    public static string $profile;
+
     /**
      * @var array
      */
@@ -35,7 +38,7 @@ class Configuration
         $profileConfig = $this->config[$profile];
 
         if (!isset($profileConfig[$key])) {
-            throw new Exception("The key {$key} doesn't exist in the configuration");
+            return '';
         }
 
         return $profileConfig[$key];
@@ -86,5 +89,18 @@ class Configuration
         }
 
         return $userHome;
+    }
+
+    public function customHttpClient(string $profile): Client
+    {
+        return new Client([
+            'base_uri'    => $this->get('api_url', $profile),
+            'http_errors' => false,
+            'headers'     => [
+                'Authorization' => "Bearer {$this->get('api_token', $profile)}",
+                'Accept'        => 'application/json',
+                'Content-Type'  => 'application/json',
+            ],
+        ]);
     }
 }
