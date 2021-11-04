@@ -5,8 +5,18 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 
 $response = [
-    ['name' => 'hellfish-media'],
-    ['name' => 'staging.hellfish-media'],
+    [
+        'id'            => 1,
+        'provider_name' => 'DigitalOcean',
+        'name'          => 'hellfish-media',
+        'ip_address'    => '127.0.0.1',
+    ],
+    [
+        'id'            => 2,
+        'provider_name' => 'DigitalOcean',
+        'name'          => 'staging.hellfish-media',
+        'ip_address'    => '127.0.0.1',
+    ],
 ];
 
 beforeEach(function () use ($response) {
@@ -33,13 +43,4 @@ test('list command with no api token configured', function () use ($response) {
 
 test('servers json list command', function () use ($response) {
     $this->artisan('servers:list')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
-});
-
-test('servers table list command', function () use ($response) {
-    $this->artisan('servers:list --format=table')->expectsTable([
-        'name',
-    ], [
-        ['hellfish-media'],
-        ['staging.hellfish-media'],
-    ]);
 });
