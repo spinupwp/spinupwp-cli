@@ -2,7 +2,9 @@
 
 namespace App\Commands\Servers;
 
-class ListCommand extends ServerCommand
+use App\Commands\BaseCommand;
+
+class ListCommand extends BaseCommand
 {
     protected $signature = 'servers:list {--format=} {--profile=}';
 
@@ -10,8 +12,13 @@ class ListCommand extends ServerCommand
 
     protected function action()
     {
-        return $this->filterData(
-            collect($this->spinupwp->servers->list())
-        );
+        $servers = collect($this->spinupwp->servers->list());
+
+        return $servers->map(fn ($item) => [
+            'id'            => $item->id,
+            'provider_name' => $item->provider_name,
+            'name'          => $item->name,
+            'ip_address'    => $item->ip_address,
+        ]);
     }
 }
