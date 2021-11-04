@@ -35,13 +35,12 @@ abstract class BaseCommand extends Command
         try {
             $this->spinupwp->setApiKey($this->apiToken());
 
+            // allow to use a different API URL
             if (!empty($this->config->get('api_url', $this->profile()))) {
                 $this->spinupwp->setClient(Configuration::getCustomHttpClient($this->profile()));
             }
 
-            $payload = $this->action();
-
-            $this->format($payload);
+            $this->format($this->action());
 
             return 0;
         } catch (Exception $e) {
