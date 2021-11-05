@@ -51,6 +51,7 @@ class Configuration
 
     public function get(string $key, string $profile = 'default'): string
     {
+        $this->config = $this->readConfig();
         if (empty($this->config)) {
             return '';
         }
