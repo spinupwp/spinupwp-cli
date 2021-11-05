@@ -5,7 +5,6 @@ namespace App\Commands;
 use App\Helpers\Configuration;
 use DeliciousBrains\SpinupWp\SpinupWp;
 use Exception;
-use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
 
