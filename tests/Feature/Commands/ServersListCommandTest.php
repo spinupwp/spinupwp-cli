@@ -44,3 +44,10 @@ test('list command with no api token configured', function () use ($response) {
 test('servers json list command', function () use ($response) {
     $this->artisan('servers:list')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
 });
+
+test('servers table list command', function () use ($response) {
+    $this->artisan('servers:list --format table')->expectsTable(array_keys($response[0]), [
+        array_values($response[0]),
+        array_values($response[1]),
+    ]);
+});
