@@ -64,6 +64,4 @@ return [
 
     'config_path' => $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
 
-    'api_url' => env('API_URL'),
-
 ];
