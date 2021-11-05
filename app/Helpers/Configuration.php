@@ -14,7 +14,7 @@ class Configuration
 
     public static function setCustomHttpClient(string $profile, Client $client = null): void
     {
-        $config                   = new self();
+        $config                   = app('App\Helpers\Configuration');
         static::$customHttpClient = $client ?? new Client([
             'base_uri'    => $config->get('api_url', $profile),
             'http_errors' => false,

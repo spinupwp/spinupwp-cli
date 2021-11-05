@@ -52,9 +52,13 @@ function setTestConfigFile()
 {
     setConfigPath();
     $config = new Configuration();
-    $config->set('api_token', 'myapikey123');
-    $config->set('format', 'json');
-    $config->set('api_url', 'api.spinupwp.local');
+    file_put_contents($config->configFilePath(), json_encode([
+        'default' => [
+            'api_token' => 'myapikey123',
+            'format'    => 'json',
+            'api_url'   => 'api.spinupwp.local',
+        ],
+    ], JSON_PRETTY_PRINT));
 }
 
 function deleteTestConfigFile($test = '')
