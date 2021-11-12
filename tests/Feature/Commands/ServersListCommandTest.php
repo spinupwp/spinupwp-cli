@@ -28,8 +28,10 @@ afterEach(function () {
 });
 
 it('list command with no api token configured', function () use ($response) {
+    $this->spinupwp->setApiKey('');
     $this->artisan('servers:list --profile=johndoe')
         ->assertExitCode(1);
+    $this->spinupwp->setApiKey('123');
 });
 
 test('servers json list command', function () use ($response) {

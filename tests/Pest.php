@@ -21,7 +21,7 @@ use Tests\CreatesApplication;
 uses(TestCase::class, CreatesApplication::class)
     ->beforeEach(function () {
         $this->clientMock = Mockery::mock(Client::class);
-        $this->spinupwp = resolve(SpinupWp::class)->setClient($this->clientMock);
+        $this->spinupwp = resolve(SpinupWp::class)->setClient($this->clientMock)->setApiKey('123');
     })
     ->in('Feature', 'Unit');
 
