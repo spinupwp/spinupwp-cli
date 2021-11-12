@@ -8,7 +8,7 @@ class ListCommand extends BaseCommand
 {
     protected $signature = 'servers:list {--format=} {--profile=}';
 
-    protected $description = 'Retrieve a list or servers';
+    protected $description = 'Retrieves a list of servers';
 
     protected function action()
     {
