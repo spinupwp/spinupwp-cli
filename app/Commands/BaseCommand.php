@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Helpers\Configuration;
 use DeliciousBrains\SpinupWp\SpinupWp;
 use Exception;
+use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
 
@@ -36,7 +37,17 @@ abstract class BaseCommand extends Command
 
             // allow to use a different API URL
             if (!empty($this->config->get('api_url', $this->profile()))) {
-                $this->spinupwp->setClient(Configuration::getCustomHttpClient($this->profile()));
+                $this->spinupwp->setClient(
+                    new Client([
+                        'base_uri'    => $this->config->get('api_url', $this->profile()),
+                        'http_errors' => false,
+                        'headers'     => [
+                            'Authorization' => "Bearer {$this->config->get('api_token', $this->profile())}",
+                            'Accept'        => 'application/json',
+                            'Content-Type'  => 'application/json',
+                        ],
+                    ])
+                );
             }
 
             $this->format($this->action());
