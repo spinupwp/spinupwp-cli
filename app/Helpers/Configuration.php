@@ -10,30 +10,6 @@ class Configuration
 {
     public static string $profile;
 
-    public static $customHttpClient = null;
-
-    public static function setCustomHttpClient(string $profile, Client $client = null): void
-    {
-        $config                   = app('App\Helpers\Configuration');
-        static::$customHttpClient = $client ?? new Client([
-            'base_uri'    => $config->get('api_url', $profile),
-            'http_errors' => false,
-            'headers'     => [
-                'Authorization' => "Bearer {$config->get('api_token', $profile)}",
-                'Accept'        => 'application/json',
-                'Content-Type'  => 'application/json',
-            ],
-        ]);
-    }
-
-    public static function getCustomHttpClient(string $profile): Client
-    {
-        if (is_null(static::$customHttpClient)) {
-            static::setCustomHttpClient($profile);
-        }
-        return static::$customHttpClient;
-    }
-
     /**
      * @var array
      */
