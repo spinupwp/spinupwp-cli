@@ -2,7 +2,6 @@
 
 namespace App\Helpers;
 
-use Exception;
 use Illuminate\Support\Arr;
 
 class Configuration
@@ -24,6 +23,7 @@ class Configuration
 
     public function get(string $key, string $profile = 'default'): string
     {
+        $this->config = $this->readConfig();
         if (empty($this->config)) {
             return '';
         }
@@ -35,7 +35,7 @@ class Configuration
         $profileConfig = $this->config[$profile];
 
         if (!isset($profileConfig[$key])) {
-            throw new Exception("The key {$key} doesn't exist in the configuration");
+            return '';
         }
 
         return $profileConfig[$key];

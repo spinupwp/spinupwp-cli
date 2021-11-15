@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Helpers\Configuration;
+use DeliciousBrains\SpinupWp\SpinupWp;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(SpinupWp::class, fn ($app) => new SpinupWp());
+
+        $this->app->singleton(Configuration::class, fn ($app) => new Configuration());
     }
 }

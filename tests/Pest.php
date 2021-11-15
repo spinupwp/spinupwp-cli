@@ -1,5 +1,12 @@
 <?php
 
+use App\Helpers\Configuration;
+use DeliciousBrains\SpinupWp\SpinupWp;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Config;
+use LaravelZero\Framework\Testing\TestCase;
+use Tests\CreatesApplication;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -11,10 +18,12 @@
 |
 */
 
-use App\Helpers\Configuration;
-use Illuminate\Support\Facades\Config;
-
-uses(Tests\TestCase::class)->in('Feature', 'Unit');
+uses(TestCase::class, CreatesApplication::class)
+    ->beforeEach(function () {
+        $this->clientMock = Mockery::mock(Client::class);
+        $this->spinupwp = resolve(SpinupWp::class)->setClient($this->clientMock)->setApiKey('123');
+    })
+    ->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -52,8 +61,12 @@ function setTestConfigFile()
 {
     setConfigPath();
     $config = new Configuration();
-    $config->set('api_token', 'myapikey123');
-    $config->set('format', 'json');
+    file_put_contents($config->configFilePath(), json_encode([
+        'default' => [
+            'api_token' => 'myapikey123',
+            'format'    => 'json',
+        ],
+    ], JSON_PRETTY_PRINT));
 }
 
 function deleteTestConfigFile($test = '')
