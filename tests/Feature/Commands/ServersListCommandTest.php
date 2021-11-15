@@ -4,14 +4,28 @@ use GuzzleHttp\Psr7\Response;
 
 $response = [
     [
-        'id'         => 1,
-        'name'       => 'hellfish-media',
-        'ip_address' => '127.0.0.1',
+        'id'            => 1,
+        'name'          => 'hellfish-media',
+        'ip_address'    => '127.0.0.1',
+        'provider_name' => 'DigitalOcean',
+        'disk_space'    => [
+            'total'      => 25210576000,
+            'available'  => 17549436000,
+            'used'       => 7661140000,
+            'updated_at' => '2021-11-03T16:52:48.000000Z',
+        ],
     ],
     [
-        'id'         => 2,
-        'name'       => 'staging.hellfish-media',
-        'ip_address' => '127.0.0.1',
+        'id'            => 2,
+        'name'          => 'staging.hellfish-media',
+        'ip_address'    => '127.0.0.1',
+        'provider_name' => 'DigitalOcean',
+        'disk_space'    => [
+            'total'      => 25210576000,
+            'available'  => 17549436000,
+            'used'       => 7661140000,
+            'updated_at' => '2021-11-03T16:52:48.000000Z',
+        ],
     ],
 ];
 beforeEach(function () use ($response) {
@@ -38,9 +52,20 @@ test('servers json list command', function () use ($response) {
     $this->artisan('servers:list')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
 });
 
-test('servers table list command', function () use ($response) {
-    $this->artisan('servers:list --format table')->expectsTable(array_keys($response[0]), [
-        array_values($response[0]),
-        array_values($response[1]),
-    ]);
+test('servers table list command', function () {
+    $this->artisan('servers:list --format table')->expectsTable(
+        ['ID', 'Name', 'IP Address'],
+        [
+            [
+                '1',
+                'hellfish-media',
+                '127.0.0.1',
+            ],
+            [
+                '2',
+                'staging.hellfish-media',
+                '127.0.0.1',
+            ],
+        ]
+    );
 });
