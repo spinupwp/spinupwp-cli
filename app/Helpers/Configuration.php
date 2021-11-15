@@ -2,14 +2,10 @@
 
 namespace App\Helpers;
 
-use Exception;
-use GuzzleHttp\Client;
 use Illuminate\Support\Arr;
 
 class Configuration
 {
-    public static string $profile;
-
     /**
      * @var array
      */
