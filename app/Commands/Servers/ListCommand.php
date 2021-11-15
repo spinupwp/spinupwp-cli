@@ -14,6 +14,10 @@ class ListCommand extends BaseCommand
     {
         $servers = collect($this->spinupwp->servers->list());
 
+        if ($this->displayFormat() === 'json') {
+            return $servers;
+        }
+
         return $servers->map(fn ($item) => [
             'ID'         => $item->id,
             'Name'       => $item->name,
