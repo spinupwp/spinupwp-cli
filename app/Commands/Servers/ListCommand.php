@@ -15,9 +15,9 @@ class ListCommand extends BaseCommand
         $servers = collect($this->spinupwp->servers->list());
 
         return $servers->map(fn ($item) => [
-            'id'         => $item->id,
-            'name'       => $item->name,
-            'ip_address' => $item->ip_address,
+            'ID'         => $item->id,
+            'Name'       => $item->name,
+            'IP Address' => $item->ip_address,
         ]);
     }
 }
