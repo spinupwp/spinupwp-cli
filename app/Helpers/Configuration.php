@@ -2,18 +2,13 @@
 
 namespace App\Helpers;
 
-use Exception;
-use GuzzleHttp\Client;
 use Illuminate\Support\Arr;
 
 class Configuration
 {
     public static string $profile;
 
-    /**
-     * @var array
-     */
-    protected $config;
+    protected array $config;
 
     public function __construct()
     {
