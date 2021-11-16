@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 class Configuration
 {
     protected string $path;
+
     protected array $config;
 
     public function __construct(string $path)
