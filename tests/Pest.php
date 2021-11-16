@@ -51,16 +51,9 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function setConfigPath()
-{
-    $mockPath = storage_path();
-    Config::set('app.config_path', $mockPath);
-}
-
 function setTestConfigFile()
 {
-    setConfigPath();
-    $config = new Configuration();
+    $config = resolve(Configuration::class);
     file_put_contents($config->configFilePath(), json_encode([
         'default' => [
             'api_token' => 'myapikey123',
@@ -71,8 +64,7 @@ function setTestConfigFile()
 
 function deleteTestConfigFile($test = '')
 {
-    setConfigPath();
-    $configFile = (new Configuration)->configFilePath();
+    $configFile = (resolve(Configuration::class))->configFilePath();
     if (!file_exists($configFile)) {
         return;
     }

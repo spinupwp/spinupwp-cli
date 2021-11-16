@@ -62,6 +62,4 @@ return [
         'table',
     ],
 
-    'config_path' => $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
-
 ];

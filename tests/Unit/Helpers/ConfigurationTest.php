@@ -7,7 +7,7 @@ beforeEach(function () {
 });
 
 test('isConfigured method', function () {
-    $config = new Configuration();
+    $config = resolve(Configuration::class);
     $isConfigured = $config->isConfigured();
     expect($isConfigured)->toBeFalse();
     setTestConfigFile();
@@ -17,12 +17,12 @@ test('isConfigured method', function () {
 
 test('get method', function () {
     setTestConfigFile();
-    $config = new Configuration();
+    $config = resolve(Configuration::class);
     expect($config->get('api_token'))->toEqual('myapikey123');
 });
 
 test('set method', function () {
-    $config = new Configuration();
+    $config = resolve(Configuration::class);
 
     // first time
     $config->set('api_token', 'mynewapitoken');
