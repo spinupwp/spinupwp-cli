@@ -18,10 +18,10 @@ class ListCommand extends BaseCommand
             return $servers;
         }
 
-        return $servers->map(fn ($item) => [
-            'ID'         => $item->id,
-            'Name'       => $item->name,
-            'IP Address' => $item->ip_address,
+        return $servers->map(fn ($server) => [
+            'ID'         => $server->id,
+            'Name'       => $server->name,
+            'IP Address' => $server->ip_address,
         ]);
     }
 }

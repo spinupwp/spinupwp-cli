@@ -123,7 +123,7 @@ abstract class BaseCommand extends Command
                         $value = '';
                     }
                     if (is_bool($value)) {
-                        $value = $value ? 'yes' : 'no';
+                        $value = $value ? 'Enabled' : 'Disabled';
                     }
                     return $value;
                 }, array_values($item));
