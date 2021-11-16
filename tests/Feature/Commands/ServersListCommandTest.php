@@ -15,8 +15,8 @@ $response = [
             'used'       => 7661140000,
             'updated_at' => '2021-11-03T16:52:48.000000Z',
         ],
-        'database'       => [
-            'server' => 'mysql-8.0'
+        'database' => [
+            'server' => 'mysql-8.0',
         ],
     ],
     [
@@ -31,8 +31,8 @@ $response = [
             'used'       => 7661140000,
             'updated_at' => '2021-11-03T16:52:48.000000Z',
         ],
-        'database'       => [
-            'server' => 'mysql-8.0'
+        'database' => [
+            'server' => 'mysql-8.0',
         ],
     ],
 ];
@@ -69,14 +69,14 @@ test('servers table list command', function () {
                 'hellfish-media',
                 '127.0.0.1',
                 '20.04',
-                'mysql-8.0'
+                'mysql-8.0',
             ],
             [
                 '2',
                 'staging.hellfish-media',
                 '127.0.0.1',
                 '20.04',
-                'mysql-8.0'
+                'mysql-8.0',
             ],
         ]
     );

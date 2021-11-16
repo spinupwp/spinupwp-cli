@@ -15,7 +15,7 @@ class ListCommand extends BaseCommand
         $serverId = $this->argument('server_id');
 
         if ($serverId) {
-            $sites = collect($this->spinupwp->sites->listForServer((int)$serverId));
+            $sites = collect($this->spinupwp->sites->listForServer((int) $serverId));
         } else {
             $sites = collect($this->spinupwp->sites->list());
         }
@@ -24,7 +24,7 @@ class ListCommand extends BaseCommand
             return $sites;
         }
 
-        return $sites->map(fn($site) => [
+        return $sites->map(fn ($site) => [
             'ID'         => $site->id,
             'Server ID'  => $site->server_id,
             'Domain'     => $site->domain,

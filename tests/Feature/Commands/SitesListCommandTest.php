@@ -9,12 +9,12 @@ $response = [
         'domain'      => 'hellfishmedia.com',
         'site_user'   => 'hellfish',
         'php_version' => '8.0',
-        'page_cache' => [
+        'page_cache'  => [
             'enabled' => true,
         ],
         'https' => [
             'enabled' => true,
-        ]
+        ],
     ],
     [
         'id'          => 2,
@@ -22,12 +22,12 @@ $response = [
         'domain'      => 'staging.hellfishmedia.com',
         'site_user'   => 'staging-hellfish',
         'php_version' => '8.0',
-        'page_cache' => [
+        'page_cache'  => [
             'enabled' => false,
         ],
         'https' => [
             'enabled' => false,
-        ]
+        ],
     ],
 ];
 beforeEach(function () use ($response) {
