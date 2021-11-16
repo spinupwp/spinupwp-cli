@@ -8,6 +8,7 @@ use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 abstract class BaseCommand extends Command
 {
@@ -77,12 +78,33 @@ abstract class BaseCommand extends Command
         return 'default';
     }
 
-    protected function format($resource)
+    protected function format($resource): void
     {
+        $this->setStyles();
+
         if ($this->displayFormat() === 'table') {
-            return $this->toTable($resource);
+            $this->toTable($resource);
+            return;
         }
-        return $this->toJson($resource);
+
+        $this->toJson($resource);
+    }
+
+    protected function setStyles(): void
+    {
+        if (!$this->output->getFormatter()->hasStyle('enabled')) {
+            $this->output->getFormatter()->setStyle(
+                'enabled',
+                new OutputFormatterStyle('green'),
+            );
+        }
+
+        if (!$this->output->getFormatter()->hasStyle('disabled')) {
+            $this->output->getFormatter()->setStyle(
+                'disabled',
+                new OutputFormatterStyle('red'),
+            );
+        }
     }
 
     protected function displayFormat(): string
@@ -123,7 +145,7 @@ abstract class BaseCommand extends Command
                         $value = '';
                     }
                     if (is_bool($value)) {
-                        $value = $value ? 'yes' : 'no';
+                        $value = $value ? '<enabled>Y</enabled>' : '<disabled>N</disabled>';
                     }
                     return $value;
                 }, array_values($item));
