@@ -6,13 +6,19 @@ use App\Commands\BaseCommand;
 
 class ListCommand extends BaseCommand
 {
-    protected $signature = 'sites:list {--format=} {--profile=}';
+    protected $signature = 'sites:list {server_id? : Only list sites belonging to this server} {--format=} {--profile=}';
 
     protected $description = 'Retrieves a list of sites';
 
     protected function action()
     {
-        $sites = collect($this->spinupwp->sites->list());
+        $serverId = $this->argument('server_id');
+
+        if ($serverId) {
+            $sites = collect($this->spinupwp->sites->listForServer((int)$serverId));
+        } else {
+            $sites = collect($this->spinupwp->sites->list());
+        }
 
         if ($this->displayFormat() === 'json') {
             return $sites;
