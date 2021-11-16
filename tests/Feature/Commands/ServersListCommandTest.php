@@ -4,27 +4,35 @@ use GuzzleHttp\Psr7\Response;
 
 $response = [
     [
-        'id'            => 1,
-        'name'          => 'hellfish-media',
-        'ip_address'    => '127.0.0.1',
-        'provider_name' => 'DigitalOcean',
-        'disk_space'    => [
+        'id'             => 1,
+        'name'           => 'hellfish-media',
+        'provider_name'  => 'DigitalOcean',
+        'ubuntu_version' => '20.04',
+        'ip_address'     => '127.0.0.1',
+        'disk_space'     => [
             'total'      => 25210576000,
             'available'  => 17549436000,
             'used'       => 7661140000,
             'updated_at' => '2021-11-03T16:52:48.000000Z',
         ],
+        'database'       => [
+            'server' => 'mysql-8.0'
+        ],
     ],
     [
-        'id'            => 2,
-        'name'          => 'staging.hellfish-media',
-        'ip_address'    => '127.0.0.1',
-        'provider_name' => 'DigitalOcean',
-        'disk_space'    => [
+        'id'             => 2,
+        'name'           => 'staging.hellfish-media',
+        'provider_name'  => 'DigitalOcean',
+        'ubuntu_version' => '20.04',
+        'ip_address'     => '127.0.0.1',
+        'disk_space'     => [
             'total'      => 25210576000,
             'available'  => 17549436000,
             'used'       => 7661140000,
             'updated_at' => '2021-11-03T16:52:48.000000Z',
+        ],
+        'database'       => [
+            'server' => 'mysql-8.0'
         ],
     ],
 ];
@@ -54,17 +62,21 @@ test('servers json list command', function () use ($response) {
 
 test('servers table list command', function () {
     $this->artisan('servers:list --format table')->expectsTable(
-        ['ID', 'Name', 'IP Address'],
+        ['ID', 'Name', 'IP Address', 'Ubuntu', 'Database'],
         [
             [
                 '1',
                 'hellfish-media',
                 '127.0.0.1',
+                '20.04',
+                'mysql-8.0'
             ],
             [
                 '2',
                 'staging.hellfish-media',
                 '127.0.0.1',
+                '20.04',
+                'mysql-8.0'
             ],
         ]
     );

@@ -22,6 +22,8 @@ class ListCommand extends BaseCommand
             'ID'         => $server->id,
             'Name'       => $server->name,
             'IP Address' => $server->ip_address,
+            'Ubuntu'     => $server->ubuntu_version,
+            'Database'   => $server->database['server'],
         ]);
     }
 }
