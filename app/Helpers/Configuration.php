@@ -6,13 +6,13 @@ use Illuminate\Support\Arr;
 
 class Configuration
 {
-    /**
-     * @var array
-     */
-    protected $config;
+    protected string $path;
 
-    public function __construct()
+    protected array $config;
+
+    public function __construct(string $path)
     {
+        $this->path   = $path;
         $this->config = $this->readConfig();
     }
 
@@ -74,17 +74,10 @@ class Configuration
 
     public function configFilePath(): string
     {
-        return $this->getConfigPath() . 'config.json';
-    }
-
-    protected function getConfigPath(): string
-    {
-        $userHome = config('app.config_path') . '/.spinupwp/';
-
-        if (!file_exists($userHome)) {
-            mkdir($userHome);
+        if (!file_exists($this->path)) {
+            mkdir($this->path);
         }
 
-        return $userHome;
+        return $this->path . 'config.json';
     }
 }

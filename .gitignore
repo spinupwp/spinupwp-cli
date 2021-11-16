@@ -2,6 +2,7 @@
 /.idea
 /.vscode
 /.vagrant
+/tests/.spinupwp
 .phpunit.result.cache
 .php-cs-fixer.cache
 composer.lock

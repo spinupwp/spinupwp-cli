@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'version' => app('git.version'),
+    'version' => '0.1.1',
 
     /*
     |--------------------------------------------------------------------------
@@ -61,7 +61,5 @@ return [
         'json',
         'table',
     ],
-
-    'config_path' => $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
 
 ];

@@ -27,6 +27,14 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(SpinupWp::class, fn ($app) => new SpinupWp());
 
-        $this->app->singleton(Configuration::class, fn ($app) => new Configuration());
+        $this->app->singleton(Configuration::class, function () {
+            $path = isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'testing'
+                ? base_path('tests')
+                : ($_SERVER['HOME'] ?? $_SERVER['USERPROFILE']);
+
+            $path .= '/.spinupwp/';
+
+            return new Configuration($path);
+        });
     }
 }

@@ -3,7 +3,6 @@
 use App\Helpers\Configuration;
 
 beforeEach(function () {
-    setConfigPath();
     deleteTestConfigFile();
 });
 
@@ -16,5 +15,5 @@ test('configure command for default profile', function () {
         ->expectsQuestion('Default output format (json/table)', 'json')
         ->expectsOutput('SpinupWP CLI configured successfully');
 
-    expect((new Configuration)->get('api_token'))->toEqual('my-spinupwp-api-token');
+    expect((resolve(Configuration::class))->get('api_token'))->toEqual('my-spinupwp-api-token');
 });
