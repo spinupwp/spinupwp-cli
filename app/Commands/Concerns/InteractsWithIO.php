@@ -4,6 +4,7 @@ namespace App\Commands\Concerns;
 
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 
 trait InteractsWithIO
 {
@@ -85,5 +86,27 @@ trait InteractsWithIO
         }
 
         $this->table($tableHeaders, $rows);
+    }
+
+    public function askToSelectSite(string $question): int
+    {
+        $choices = collect($this->spinupwp->sites->list());
+
+        return $this->askToSelect(
+            $question,
+            $choices->keyBy('id')->map(fn($site) => $site->domain)->toArray()
+        );
+    }
+
+    protected function askToSelect(string $question, array $choices, $default = null): int
+    {
+        $question = new class($question, $choices, $default) extends ChoiceQuestion {
+            public function isAssoc(array $array): bool
+            {
+                return true;
+            }
+        };
+
+        return (int)$this->output->askQuestion($question);
     }
 }
