@@ -51,8 +51,8 @@ class ConfigureCommand extends BaseCommand
         return 0;
     }
 
-    protected function action()
+    protected function action(): int
     {
-        return null;
+        return self::INVALID;
     }
 }
