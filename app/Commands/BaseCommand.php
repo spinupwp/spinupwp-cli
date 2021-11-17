@@ -41,7 +41,7 @@ abstract class BaseCommand extends Command
                     'Authorization' => "Bearer {$this->apiToken()}",
                     'Accept'        => 'application/json',
                     'Content-Type'  => 'application/json',
-                    'User-Agent'    => 'SpinupWP/' . config('app.version')
+                    'User-Agent'    => 'SpinupWP/' . config('app.version'),
                 ],
             ];
             if (!$this->spinupwp->hasApiKey()) {
