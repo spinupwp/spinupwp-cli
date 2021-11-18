@@ -32,12 +32,18 @@ class SshCommand extends BaseCommand
 
         $this->line("Establishing a secure connection to [<comment>{$server->name}</comment>] as [<comment>{$site->site_user}</comment>]...");
 
-        return $this->ssh(
+        $exitCode = $this->ssh(
             $site->site_user,
             $server->ip_address,
             $server->ssh_port,
             $this->cdCommand(),
         );
+
+        if ($exitCode === 255) {
+            $this->error("Unable to connect to \"{$server->name}\". Have you added your SSH key to the \"{$site->site_user}\" user?");
+        }
+
+        return $exitCode;
     }
 
     protected function cdCommand(): string

@@ -31,11 +31,17 @@ class SshCommand extends BaseCommand
 
         $this->line("Establishing a secure connection to [<comment>{$server->name}</comment>] as [<comment>{$user}</comment>]...");
 
-        return $this->ssh(
+        $exitCode = $this->ssh(
             $user,
             $server->ip_address,
             $server->ssh_port,
         );
+
+        if ($exitCode === 255) {
+            $this->error("Unable to connect to \"{$server->name}\". Have you added your SSH key to the \"{$user}\" user?");
+        }
+
+        return $exitCode;
     }
 
     protected function establishUser(): string
