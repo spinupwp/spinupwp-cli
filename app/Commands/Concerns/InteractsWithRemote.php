@@ -4,7 +4,7 @@ namespace App\Commands\Concerns;
 
 trait InteractsWithRemote
 {
-    protected function ssh($user, $host, int $port = 22): int
+    protected function ssh(string $user, string $host, int $port = 22, string $command = ''): int
     {
         $options = collect([
             'ConnectTimeout' => 5,
@@ -16,7 +16,7 @@ trait InteractsWithRemote
             return "-o $option=$value";
         })->implode(' ');
 
-        passthru("ssh {$options} -t {$user}@{$host} -p {$port}", $exitCode);
+        passthru("ssh {$options} -t {$user}@{$host} -p {$port} '{$command}'", $exitCode);
 
         return (int)$exitCode;
     }

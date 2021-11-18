@@ -11,7 +11,11 @@ class SshCommand extends BaseCommand
     use InteractsWithIO;
     use InteractsWithRemote;
 
-    protected $signature = 'sites:ssh {site_id?} {--profile=}';
+    protected $signature = 'sites:ssh
+                            {site_id?}
+                            {--f|files : Navigate to the files directory}
+                            {--l|logs : Navigate to the logs directory}
+                            {--profile=}';
 
     protected $description = 'Start an SSH session as the site user';
 
@@ -32,6 +36,22 @@ class SshCommand extends BaseCommand
             $site->site_user,
             $server->ip_address,
             $server->ssh_port,
+            $this->cdCommand(),
         );
+    }
+
+    protected function cdCommand(): string
+    {
+        $cdCommand = '';
+        $cdFlags   = ['files', 'logs'];
+
+        foreach ($cdFlags as $flag) {
+            if ($this->option($flag)) {
+                $cdCommand = "cd ./{$flag}; bash --login";
+                break;
+            }
+        }
+
+        return $cdCommand;
     }
 }
