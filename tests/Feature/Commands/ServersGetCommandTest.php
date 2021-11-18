@@ -34,3 +34,21 @@ test('servers json get command', function () use ($response) {
     );
     $this->artisan('servers:get 1')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
 });
+
+test('servers table get command', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'servers/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+    $this->artisan('servers:get 1 --format=table')->expectsTable(
+        ['ID', 'Name', 'IP Address', 'Ubuntu', 'Database'],
+        [
+            [
+                '1',
+                'hellfish-media',
+                '127.0.0.1',
+                '20.04',
+                'mysql-8.0',
+            ],
+        ]
+    );
+});

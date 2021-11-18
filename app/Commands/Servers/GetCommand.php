@@ -20,12 +20,12 @@ class GetCommand extends BaseCommand
             return $server;
         }
 
-        return [
+        return collect([[
             'ID'         => $server->id,
             'Name'       => $server->name,
             'IP Address' => $server->ip_address,
             'Ubuntu'     => $server->ubuntu_version,
             'Database'   => $server->database['server'],
-        ];
+        ]]);
     }
 }
