@@ -98,6 +98,16 @@ trait InteractsWithIO
         );
     }
 
+    public function askToSelectServer(string $question): int
+    {
+        $choices = collect($this->spinupwp->servers->list());
+
+        return $this->askToSelect(
+            $question,
+            $choices->keyBy('id')->map(fn($server) => $server->name)->toArray()
+        );
+    }
+
     protected function askToSelect(string $question, array $choices, $default = null): int
     {
         $question = new class($question, $choices, $default) extends ChoiceQuestion {
