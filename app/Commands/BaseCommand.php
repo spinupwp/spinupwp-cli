@@ -117,7 +117,10 @@ abstract class BaseCommand extends Command
 
     protected function toJson($resource): void
     {
-        $this->line(json_encode($resource->toArray(), JSON_PRETTY_PRINT));
+        if (!is_array($resource)) {
+            $resource = $resource->toArray();
+        }
+        $this->line(json_encode($resource, JSON_PRETTY_PRINT));
     }
 
     protected function toTable($resource): void
