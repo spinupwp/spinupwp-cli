@@ -94,7 +94,7 @@ trait InteractsWithIO
 
         return $this->askToSelect(
             $question,
-            $choices->keyBy('id')->map(fn($site) => $site->domain)->toArray()
+            $choices->keyBy('id')->map(fn ($site) => $site->domain)->toArray()
         );
     }
 
@@ -104,7 +104,7 @@ trait InteractsWithIO
 
         return $this->askToSelect(
             $question,
-            $choices->keyBy('id')->map(fn($server) => $server->name)->toArray()
+            $choices->keyBy('id')->map(fn ($server) => $server->name)->toArray()
         );
     }
 
@@ -117,6 +117,6 @@ trait InteractsWithIO
             }
         };
 
-        return (int)$this->output->askQuestion($question);
+        return (int) $this->output->askQuestion($question);
     }
 }

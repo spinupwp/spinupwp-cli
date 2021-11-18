@@ -20,7 +20,7 @@ class ListCommand extends BaseCommand
         $servers = collect($this->spinupwp->servers->list());
 
         if ($this->displayFormat() === 'table') {
-            $servers->transform(fn($server) => [
+            $servers->transform(fn ($server) => [
                 'ID'         => $server->id,
                 'Name'       => $server->name,
                 'IP Address' => $server->ip_address,

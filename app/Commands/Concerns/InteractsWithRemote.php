@@ -18,6 +18,6 @@ trait InteractsWithRemote
 
         passthru("ssh {$options} -t {$user}@{$host} -p {$port} '{$command}'", $exitCode);
 
-        return (int)$exitCode;
+        return (int) $exitCode;
     }
 }

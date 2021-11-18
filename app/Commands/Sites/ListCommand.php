@@ -27,7 +27,7 @@ class ListCommand extends BaseCommand
         }
 
         if ($this->displayFormat() === 'table') {
-            $sites->transform(fn($site) => [
+            $sites->transform(fn ($site) => [
                 'ID'         => $site->id,
                 'Server ID'  => $site->server_id,
                 'Domain'     => $site->domain,
