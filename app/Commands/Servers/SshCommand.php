@@ -47,7 +47,7 @@ class SshCommand extends BaseCommand
     protected function establishUser(): string
     {
         $user        = $this->argument('user');
-        $defaultUser = $this->config->get('default_ssh_user', $this->profile(), null);
+        $defaultUser = $this->config->get('ssh_user', $this->profile(), null);
 
         if (is_string($user)) {
             if (is_null($defaultUser)) {
@@ -77,6 +77,6 @@ class SshCommand extends BaseCommand
         } while (!in_array($response, ['y', 'n']));
 
         $value = $response === 'y' ? $user : '';
-        $this->config->set('default_ssh_user', $value, $this->profile());
+        $this->config->set('ssh_user', $value, $this->profile());
     }
 }
