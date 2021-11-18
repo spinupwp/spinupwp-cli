@@ -12,8 +12,8 @@ class SshCommand extends BaseCommand
     use InteractsWithRemote;
 
     protected $signature = 'servers:ssh
-                            {server_id?}
-                            {user?}
+                            {server_id? : The server to connect to}
+                            {user? : The SSH user to connect as}
                             {--profile=}';
 
     protected $description = 'Start an SSH session';

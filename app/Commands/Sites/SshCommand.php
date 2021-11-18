@@ -12,7 +12,7 @@ class SshCommand extends BaseCommand
     use InteractsWithRemote;
 
     protected $signature = 'sites:ssh
-                            {site_id?}
+                            {site_id? : The site to connect to}
                             {--f|files : Navigate to the files directory}
                             {--l|logs : Navigate to the logs directory}
                             {--profile=}';
