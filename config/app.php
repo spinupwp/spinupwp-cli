@@ -62,4 +62,6 @@ return [
         'table',
     ],
 
+    'ssh_timeout' => 5,
+
 ];

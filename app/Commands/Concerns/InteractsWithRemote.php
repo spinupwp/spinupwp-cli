@@ -7,7 +7,7 @@ trait InteractsWithRemote
     protected function ssh(string $user, string $host, int $port = 22, string $command = ''): int
     {
         $options = collect([
-            'ConnectTimeout' => 5,
+            'ConnectTimeout' => config('app.ssh_timeout'),
             'ControlMaster'  => 'auto',
             'ControlPath'    => $this->config->sshControlPath(),
             'ControlPersist' => 100,

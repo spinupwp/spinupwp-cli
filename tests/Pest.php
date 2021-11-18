@@ -22,6 +22,7 @@ uses(TestCase::class, CreatesApplication::class)
     ->beforeEach(function () {
         $this->clientMock = Mockery::mock(Client::class);
         $this->spinupwp = resolve(SpinupWp::class)->setClient($this->clientMock)->setApiKey('123');
+        config()->set('app.ssh_timeout', -1);
     })
     ->in('Feature', 'Unit');
 
