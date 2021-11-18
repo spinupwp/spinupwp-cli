@@ -26,13 +26,8 @@ class SshCommand extends BaseCommand
             $serverId = $this->askToSelectServer('Which server would you like to start an SSH session for');
         }
 
-        $user = $this->argument('user');
-
-        if (empty($user)) {
-            $user = $this->ask('Which user would you like to connect as');
-        }
-
         $server = $this->spinupwp->servers->get((int)$serverId);
+        $user   = $this->establishUser();
 
         $this->line("Establishing a secure connection to [<comment>{$server->name}</comment>] as [<comment>{$user}</comment>]...");
 
@@ -41,5 +36,41 @@ class SshCommand extends BaseCommand
             $server->ip_address,
             $server->ssh_port,
         );
+    }
+
+    protected function establishUser(): string
+    {
+        $user        = $this->argument('user');
+        $defaultUser = $this->config->get('default_ssh_user', $this->profile(), null);
+
+        if (is_string($user)) {
+            if (is_null($defaultUser)) {
+                $this->askToSetDefaultUser($user);
+            }
+
+            return $user;
+        }
+
+        if (!empty($defaultUser)) {
+            return $defaultUser;
+        }
+
+        $user = $this->ask('Which user would you like to connect as');
+
+        if (is_null($defaultUser)) {
+            $this->askToSetDefaultUser($user);
+        }
+
+        return $user;
+    }
+
+    protected function askToSetDefaultUser(string $user): void
+    {
+        do {
+            $response = strtolower($this->ask("Do you want to set \"{$user}\" as your default SSH user? (y/n)", 'y'));
+        } while (!in_array($response, ['y', 'n']));
+
+        $value = $response === 'y' ? $user : '';
+        $this->config->set('default_ssh_user', $value, $this->profile());
     }
 }
