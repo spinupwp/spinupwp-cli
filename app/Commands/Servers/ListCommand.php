@@ -9,9 +9,11 @@ class ListCommand extends BaseCommand
 {
     use InteractsWithIO;
 
-    protected $signature = 'servers:list {--format=} {--profile=}';
+    protected $signature = 'servers:list
+                            {--format=}
+                            {--profile=}';
 
-    protected $description = 'Retrieves a list of servers';
+    protected $description = 'List all servers';
 
     protected function action(): int
     {
