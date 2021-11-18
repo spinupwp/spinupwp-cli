@@ -6,8 +6,18 @@ trait InteractsWithRemote
 {
     protected function ssh($user, $host, int $port = 22): int
     {
-        passthru("ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no -t {$user}@{$host} -p {$port}", $exitCode);
+        $options = collect([
+            'ConnectTimeout' => 5,
+            'ControlMaster'  => 'auto',
+            'ControlPath'    => $this->config->sshControlPath(),
+            'ControlPersist' => 100,
+            'LogLevel'       => 'QUIET',
+        ])->map(function ($value, $option) {
+            return "-o $option=$value";
+        })->implode(' ');
 
-        return (int) $exitCode;
+        passthru("ssh {$options} -t {$user}@{$host} -p {$port}", $exitCode);
+
+        return (int)$exitCode;
     }
 }
