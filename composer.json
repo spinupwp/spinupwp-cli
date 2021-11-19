@@ -5,7 +5,8 @@
     "license": "MIT",
     "require": {
         "php": "^7.4|^8.0",
-        "deliciousbrains/spinupwp-php-sdk": "^0.3.0"
+        "deliciousbrains/spinupwp-php-sdk": "^0.4.0",
+        "phplucidframe/console-table": "^1.2"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.2",
