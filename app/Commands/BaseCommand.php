@@ -8,6 +8,7 @@ use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
+use LucidFrame\Console\ConsoleTable;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 abstract class BaseCommand extends Command
@@ -17,6 +18,8 @@ abstract class BaseCommand extends Command
     protected SpinupWp $spinupwp;
 
     protected bool $requiresToken = true;
+
+    protected bool $largeOutput = false;
 
     public function __construct(Configuration $configuration, SpinupWp $spinupWp)
     {
@@ -81,6 +84,11 @@ abstract class BaseCommand extends Command
     protected function format($resource): void
     {
         $this->setStyles();
+
+        if ($this->displayFormat() === 'table' && $this->largeOutput) {
+            $this->largeOutput($resource);
+            return;
+        }
 
         if ($this->displayFormat() === 'table') {
             $this->toTable($resource);
@@ -161,6 +169,16 @@ abstract class BaseCommand extends Command
             $tableHeaders,
             $rows,
         );
+    }
+
+    protected function largeOutput(array $resource): void
+    {
+        $table = new ConsoleTable();
+
+        foreach ($resource as $key => $value) {
+            $table->addRow([$key, $value]);
+        }
+        $table->hideBorder()->display();
     }
 
     abstract protected function action();
