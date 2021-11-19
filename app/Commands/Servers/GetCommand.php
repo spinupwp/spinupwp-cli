@@ -10,6 +10,8 @@ class GetCommand extends BaseCommand
 
     protected $description = 'Get a server';
 
+    protected bool $largeOutput = true;
+
     public function action()
     {
         $serverId = $this->argument('server_id');
@@ -20,12 +22,14 @@ class GetCommand extends BaseCommand
             return $server;
         }
 
-        return collect([[
-            'ID'         => $server->id,
-            'Name'       => $server->name,
-            'IP Address' => $server->ip_address,
-            'Ubuntu'     => $server->ubuntu_version,
-            'Database'   => $server->database['server'],
-        ]]);
+        return [
+            'ID'            => $server->id,
+            'Name'          => $server->name,
+            'Provider name' => $server->provider_name,
+            'IP Address'    => $server->ip_address,
+            'Ubuntu'        => $server->ubuntu_version,
+            'Database'      => $server->database['server'],
+            'SSH port'      => $server->ssh_port,
+        ];
     }
 }
