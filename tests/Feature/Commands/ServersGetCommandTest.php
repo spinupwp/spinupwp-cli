@@ -18,6 +18,23 @@ $response = [
     'database' => [
         'server' => 'mysql-8.0',
     ],
+    'ssh_port' => '22',
+    'timezone' => 'UTC',
+    'region'   => 'TOR1',
+    'size'     => '1 GB / 1 vCPU',
+    'database' => [
+        'server' => 'mysql-8.0',
+        'host'   => 'localhost',
+        'port'   => 3306,
+    ],
+    'ssh_publickey'     => 'ssh-rsa AAAA....',
+    'git_publickey'     => 'ssh-rsa AAAA....',
+    'connection_status' => 'connected',
+    'reboot_required'   => true,
+    'upgrade_required'  => false,
+    'install_notes'     => null,
+    'created_at'        => '2021-01-01T12:00:00.000000Z',
+    'status'            => 'provisioned',
 
 ];
 beforeEach(function () use ($response) {
@@ -33,4 +50,33 @@ test('servers json get command', function () use ($response) {
         new Response(200, [], json_encode(['data' => $response]))
     );
     $this->artisan('servers:get 1')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
+});
+
+test('servers table get command', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'servers/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+    $this->artisan('servers:get 1 --format=table')->expectsTable([], [
+        ['ID', '1'],
+        ['Name', 'hellfish-media'],
+        ['Provider Name', 'DigitalOcean'],
+        ['IP Address', '127.0.0.1'],
+        ['Ubuntu', '20.04'],
+        ['Database Server', 'mysql-8.0'],
+        ['Database Host', 'localhost'],
+        ['Database Port', '3306'],
+        ['SSH Port', '22'],
+        ['Disk Space', '7.13 GB / 23.48 GB'],
+        ['Timezone', 'UTC'],
+        ['Region', 'TOR1'],
+        ['Size', '1 GB / 1 vCPU'],
+        ['SSH Public Key', 'ssh-rsa AAAA....'],
+        ['Git Public Key', 'ssh-rsa AAAA....'],
+        ['Connection Status', 'Connected'],
+        ['Reboot Required', 'Yes'],
+        ['Upgrade Required', 'No'],
+        ['Install Notes', ''],
+        ['Created At', '2021-01-01T12:00:00.000000Z'],
+        ['Status', 'provisioned'],
+    ]);
 });
