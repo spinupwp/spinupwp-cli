@@ -14,6 +14,11 @@ class ListCommand extends BaseCommand
     {
         $servers = collect($this->spinupwp->servers->list());
 
+        if ($servers->isEmpty()) {
+            $this->warn('No servers found.');
+            return $servers;
+        }
+
         if ($this->displayFormat() === 'json') {
             return $servers;
         }

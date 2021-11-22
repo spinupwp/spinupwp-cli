@@ -82,6 +82,10 @@ abstract class BaseCommand extends Command
 
     protected function format($resource): void
     {
+        if (empty($resource) || $resource->isEmpty()) {
+            return;
+        }
+
         $this->setStyles();
 
         if ($this->displayFormat() === 'table' && $this->largeOutput) {

@@ -20,6 +20,11 @@ class ListCommand extends BaseCommand
             $sites = collect($this->spinupwp->sites->list());
         }
 
+        if ($sites->isEmpty()) {
+            $this->warn('No sites found.');
+            return $sites;
+        }
+
         if ($this->displayFormat() === 'json') {
             return $sites;
         }
