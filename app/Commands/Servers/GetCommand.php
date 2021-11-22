@@ -14,6 +14,8 @@ class GetCommand extends BaseCommand
 
     public function action()
     {
+        $this->columnsMaxWidths[] = [1, 100];
+
         $serverId = $this->argument('server_id');
 
         $server = $this->spinupwp->servers->get($serverId);

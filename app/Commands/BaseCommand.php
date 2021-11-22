@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Helper\Table;
 
 abstract class BaseCommand extends Command
 {
@@ -19,6 +20,8 @@ abstract class BaseCommand extends Command
     protected bool $requiresToken = true;
 
     protected bool $largeOutput = false;
+
+    protected array $columnsMaxWidths = [];
 
     public function __construct(Configuration $configuration, SpinupWp $spinupWp)
     {
@@ -176,16 +179,22 @@ abstract class BaseCommand extends Command
 
     protected function largeOutput(array $resource): void
     {
-        $table = [];
+        $table = new Table($this->output);
+        $rows  = [];
 
         foreach ($resource as $key => $value) {
-            $table[] = ['<enabled>' . $key . '</enabled>', $value];
+            $rows[] = ['<enabled>' . $key . '</enabled>', $value];
         }
 
-        $this->table(
-            [],
-            $table,
-        );
+        $table->setRows($rows)->setStyle('default');
+
+        if (!empty($this->columnsMaxWidths)) {
+            foreach ($this->columnsMaxWidths as $column) {
+                $table->setColumnMaxWidth($column[0], $column[1]);
+            }
+        }
+
+        $table->render();
     }
 
     abstract protected function action();
