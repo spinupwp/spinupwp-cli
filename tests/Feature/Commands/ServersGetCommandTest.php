@@ -34,10 +34,3 @@ test('servers json get command', function () use ($response) {
     );
     $this->artisan('servers:get 1')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
 });
-
-test('servers table get command', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->with('GET', 'servers/1', [])->andReturn(
-        new Response(200, [], json_encode(['data' => $response]))
-    );
-    $this->artisan('servers:get 1 --format=table')->doesntExpectOutput(json_encode($response, JSON_PRETTY_PRINT));
-});

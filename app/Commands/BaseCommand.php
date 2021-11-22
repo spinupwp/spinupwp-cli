@@ -8,7 +8,6 @@ use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
-use LucidFrame\Console\ConsoleTable;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 abstract class BaseCommand extends Command
@@ -173,12 +172,16 @@ abstract class BaseCommand extends Command
 
     protected function largeOutput(array $resource): void
     {
-        $table = new ConsoleTable();
+        $table = [];
 
         foreach ($resource as $key => $value) {
-            $table->addRow([$key, $value]);
+            $table[] = ['<enabled>' . $key . '</enabled>', $value];
         }
-        $table->hideBorder()->display();
+
+        $this->table(
+            [],
+            $table,
+        );
     }
 
     abstract protected function action();
