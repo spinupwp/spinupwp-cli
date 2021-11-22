@@ -82,7 +82,7 @@ abstract class BaseCommand extends Command
 
     protected function format($resource): void
     {
-        if (empty($resource) || $resource->isEmpty()) {
+        if (empty($resource) || ($resource instanceof Collection && $resource->isEmpty())) {
             return;
         }
 
