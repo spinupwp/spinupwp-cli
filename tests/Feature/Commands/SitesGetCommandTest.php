@@ -3,7 +3,7 @@
 use GuzzleHttp\Psr7\Response;
 
 $response = [
-    'id'                 => 0,
+    'id'                 => 1,
     'server_id'          => 1,
     'domain'             => 'hellfish.media',
     'additional_domains' => [
@@ -53,6 +53,7 @@ $response = [
     'wp_theme_updates'  => 0,
     'wp_plugin_updates' => 3,
     'git'               => [
+        'enabled'        => true,
         'repo'           => 'git@github.com:deliciousbrains/spinupwp-composer-site.git',
         'branch'         => 'main',
         'deploy_script'  => 'composer install --optimize-autoload --no-dev',
@@ -82,31 +83,30 @@ test('sites json get command', function () use ($response) {
     $this->artisan('sites:get 1')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
 });
 
-// test('sites table get command', function () use ($response) {
-//     $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
-//         new Response(200, [], json_encode(['data' => $response]))
-//     );
-//     $this->artisan('sites:get 1 --format=table')->expectsTable([], [
-//         ['ID', '1'],
-//         ['Name', 'hellfish-media'],
-//         ['Provider Name', 'DigitalOcean'],
-//         ['IP Address', '127.0.0.1'],
-//         ['SSH Port', '22'],
-//         ['Ubuntu', '20.04'],
-//         ['Timezone', 'UTC'],
-//         ['Region', 'TOR1'],
-//         ['Size', '1 GB / 1 vCPU'],
-//         ['Disk Space', '7.7 GB of 25 GB used'],
-//         ['Database Server', 'mysql-8.0'],
-//         ['Database Host', 'localhost'],
-//         ['Database Port', '3306'],
-//         ['SSH Public Key', 'ssh-rsa AAAA....'],
-//         ['Git Public Key', 'ssh-rsa AAAA....'],
-//         ['Connection Status', 'Connected'],
-//         ['Reboot Required', 'Yes'],
-//         ['Upgrade Required', 'No'],
-//         ['Install Notes', ''],
-//         ['Created At', '2021-01-01T12:00:00.000000Z'],
-//         ['Status', 'Provisioned'],
-//     ]);
-// });
+test('sites table get command', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+    $this->artisan('sites:get 1 --format=table')->expectsTable([], [
+        ['ID', '1'],
+        ['Server ID', '1'],
+        ['Domain', 'hellfish.media'],
+        ['Additional Domains', 'www.hellfish.media'],
+        ['Site User', 'hellfishmedia'],
+        ['PHP Version', '7.4'],
+        ['Public Folder', '/'],
+        ['Is Wordpress', 'Yes'],
+        ['Page Cache', 'Enabled'],
+        ['HTTPS', 'Enabled'],
+        ['Nginx', 'Uploads Directory Protected: Yes, XMLRPC Protected: Yes, Subdirectory Rewrite In Place: No'],
+        ['Database', 'ID: 1, User ID: 1, Table Prefix: wp_'],
+        ['Backups', 'Files: Yes, Database: Yes, Retention Period: 30, Next Run Time: 2021-01-01T12:00:00.000000Z'],
+        ['WP Core Update', 'Yes'],
+        ['WP Theme Updates', '0'],
+        ['WP Plugin Updates', '3'],
+        ['Git', 'Repo: git@github.com:deliciousbrains/spinupwp-composer-site.git, Branch: main, Deploy Script: composer install --optimize-autoload --no-dev'],
+        ['Basic Auth', 'Enabled'],
+        ['Created At', '2021-01-01T12:00:00.000000Z'],
+        ['Status', 'Deployed'],
+    ]);
+});
