@@ -183,7 +183,7 @@ abstract class BaseCommand extends Command
         $rows  = [];
 
         foreach ($resource as $key => $value) {
-            $rows[] = ['<enabled>' . $key . '</enabled>', $value];
+            $rows[] = ['<info>' . $key . '</info>', $value];
         }
 
         $table->setRows($rows)->setStyle('default');
@@ -195,6 +195,21 @@ abstract class BaseCommand extends Command
         }
 
         $table->render();
+    }
+
+    protected function formatBytes(int $bytes, int $precision = 1, bool $trueSize = false): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $block = ($trueSize) ? 1024 : 1000;
+
+        $bytes = max($bytes, 0);
+        $pow   = floor(($bytes ? log($bytes) : 0) / log($block));
+        $pow   = min($pow, count($units) - 1);
+        $bytes /= pow($block, $pow);
+
+        $total = ($trueSize || $precision > 0) ? round($bytes, $precision) : floor($bytes);
+
+        return $total . ' ' . $units[$pow];
     }
 
     abstract protected function action();
