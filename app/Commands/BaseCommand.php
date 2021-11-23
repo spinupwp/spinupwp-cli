@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Helper\Table;
 
 abstract class BaseCommand extends Command
 {
@@ -17,6 +18,10 @@ abstract class BaseCommand extends Command
     protected SpinupWp $spinupwp;
 
     protected bool $requiresToken = true;
+
+    protected bool $largeOutput = false;
+
+    protected array $columnsMaxWidths = [];
 
     public function __construct(Configuration $configuration, SpinupWp $spinupWp)
     {
@@ -80,11 +85,16 @@ abstract class BaseCommand extends Command
 
     protected function format($resource): void
     {
-        if (empty($resource) || $resource->isEmpty()) {
+        if (empty($resource) || ($resource instanceof Collection && $resource->isEmpty())) {
             return;
         }
 
         $this->setStyles();
+
+        if ($this->displayFormat() === 'table' && $this->largeOutput) {
+            $this->largeOutput($resource);
+            return;
+        }
 
         if ($this->displayFormat() === 'table') {
             $this->toTable($resource);
@@ -121,7 +131,10 @@ abstract class BaseCommand extends Command
 
     protected function toJson($resource): void
     {
-        $this->line(json_encode($resource->toArray(), JSON_PRETTY_PRINT));
+        if (!is_array($resource)) {
+            $resource = $resource->toArray();
+        }
+        $this->line(json_encode($resource, JSON_PRETTY_PRINT));
     }
 
     protected function toTable($resource): void
@@ -162,6 +175,41 @@ abstract class BaseCommand extends Command
             $tableHeaders,
             $rows,
         );
+    }
+
+    protected function largeOutput(array $resource): void
+    {
+        $table = new Table($this->output);
+        $rows  = [];
+
+        foreach ($resource as $key => $value) {
+            $rows[] = ['<info>' . $key . '</info>', $value];
+        }
+
+        $table->setRows($rows)->setStyle('default');
+
+        if (!empty($this->columnsMaxWidths)) {
+            foreach ($this->columnsMaxWidths as $column) {
+                $table->setColumnMaxWidth($column[0], $column[1]);
+            }
+        }
+
+        $table->render();
+    }
+
+    protected function formatBytes(int $bytes, int $precision = 1, bool $trueSize = false): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $block = ($trueSize) ? 1024 : 1000;
+
+        $bytes = max($bytes, 0);
+        $pow   = floor(($bytes ? log($bytes) : 0) / log($block));
+        $pow   = min($pow, count($units) - 1);
+        $bytes /= pow($block, $pow);
+
+        $total = ($trueSize || $precision > 0) ? round($bytes, $precision) : floor($bytes);
+
+        return $total . ' ' . $units[$pow];
     }
 
     abstract protected function action();
