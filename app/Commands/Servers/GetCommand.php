@@ -13,7 +13,7 @@ class GetCommand extends BaseCommand
     use HasLargeOutput;
     use SpecifyColumns;
 
-    protected $signature = 'servers:get {server_id} {--format=} {--profile=}';
+    protected $signature = 'servers:get {server_id} {--format=} {--profile=} {--columns=}';
 
     protected $description = 'Get a server';
 
