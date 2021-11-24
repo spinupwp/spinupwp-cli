@@ -87,6 +87,31 @@ test('servers table list command', function () use ($response) {
     );
 });
 
+test('servers table list specified columns command', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
+        new Response(200, [], json_encode([
+            'data' => $response,
+        ]))
+    );
+    $this->artisan('servers:list --format table --columns id,name,ip_address,ubuntu_version')->expectsTable(
+        ['ID', 'Name', 'IP Address', 'Ubuntu'],
+        [
+            [
+                '1',
+                'hellfish-media',
+                '127.0.0.1',
+                '20.04',
+            ],
+            [
+                '2',
+                'staging.hellfish-media',
+                '127.0.0.1',
+                '20.04',
+            ],
+        ]
+    );
+});
+
 test('empty servers list', function () {
     $this->clientMock->shouldReceive('request')->with('GET', 'servers?page=1', [])->andReturn(
         new Response(200, [], json_encode([
