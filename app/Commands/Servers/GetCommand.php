@@ -3,14 +3,23 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\HasLargeOutput;
+use App\Helpers\Configuration;
+use DeliciousBrains\SpinupWp\SpinupWp;
 
 class GetCommand extends BaseCommand
 {
+    use HasLargeOutput;
+
     protected $signature = 'servers:get {server_id} {--format=} {--profile=}';
 
     protected $description = 'Get a server';
 
-    protected bool $largeOutput = true;
+    public function __construct(Configuration $configuration, SpinupWp $spinupWp)
+    {
+        parent::__construct($configuration, $spinupWp);
+        $this->largeOutput = true;
+    }
 
     public function action()
     {

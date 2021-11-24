@@ -9,7 +9,6 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use LaravelZero\Framework\Commands\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Console\Helper\Table;
 
 abstract class BaseCommand extends Command
 {
@@ -18,10 +17,6 @@ abstract class BaseCommand extends Command
     protected SpinupWp $spinupwp;
 
     protected bool $requiresToken = true;
-
-    protected bool $largeOutput = false;
-
-    protected array $columnsMaxWidths = [];
 
     public function __construct(Configuration $configuration, SpinupWp $spinupWp)
     {
@@ -91,7 +86,7 @@ abstract class BaseCommand extends Command
 
         $this->setStyles();
 
-        if ($this->displayFormat() === 'table' && $this->largeOutput) {
+        if ($this->displayFormat() === 'table' && (isset($this->largeOutput) && $this->largeOutput)) {
             $this->largeOutput($resource);
             return;
         }
@@ -175,26 +170,6 @@ abstract class BaseCommand extends Command
             $tableHeaders,
             $rows,
         );
-    }
-
-    protected function largeOutput(array $resource): void
-    {
-        $table = new Table($this->output);
-        $rows  = [];
-
-        foreach ($resource as $key => $value) {
-            $rows[] = ['<info>' . $key . '</info>', $value];
-        }
-
-        $table->setRows($rows)->setStyle('default');
-
-        if (!empty($this->columnsMaxWidths)) {
-            foreach ($this->columnsMaxWidths as $column) {
-                $table->setColumnMaxWidth($column[0], $column[1]);
-            }
-        }
-
-        $table->render();
     }
 
     protected function formatBytes(int $bytes, int $precision = 1, bool $trueSize = false): string
