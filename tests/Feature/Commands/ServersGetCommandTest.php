@@ -80,3 +80,14 @@ test('servers table get command', function () use ($response) {
         ['Status', 'Provisioned'],
     ]);
 });
+
+test('servers table get specified columns', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'servers/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+    $this->artisan('servers:get 1 --format=table --columns=id,name,ip_address')->expectsTable([], [
+        ['ID', '1'],
+        ['Name', 'hellfish-media'],
+        ['IP Address', '127.0.0.1'],
+    ]);
+});
