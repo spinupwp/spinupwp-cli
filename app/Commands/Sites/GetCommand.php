@@ -44,10 +44,10 @@ class GetCommand extends BaseCommand
                 'WP Core Update'              => $site->wp_core_update ? 'Yes' : 'No',
                 'WP Theme Updates'            => $site->wp_theme_updates,
                 'WP Plugin Updates'           => $site->wp_plugin_updates,
-                'Basic Auth'                  => $site->basic_auth['enabled'] ? 'Enabled' : 'Disabled',
                 'Created At'                  => $site->created_at,
                 'Status'                      => ucfirst($site->status),
             ],
+            $this->basicAuthData($site),
             $this->gitData($site),
             $this->backupsData($site),
         );
@@ -58,12 +58,12 @@ class GetCommand extends BaseCommand
         $backups = ['Scheduled Backupś' => 'Disabled'];
 
         if ($site->backups['files'] || $site->backups['database']) {
-            $backups['Scheduled Backupś'] = 'Disabled';
+            $backups['Scheduled Backups'] = 'Disabled';
             if ($site->backups['next_run_time']) {
-                $backups['Scheduled Backupś'] = 'Enabled';
+                $backups['Scheduled Backups'] = 'Enabled';
                 $backups['Next Run Time']     = $site->backups['next_run_time'];
             }
-            $backups['File backups']     = ($site->backups['files'] ? 'Enabled' : 'Disabled');
+            $backups['File Backups']     = ($site->backups['files'] ? 'Enabled' : 'Disabled');
             $backups['Database Backups'] = ($site->backups['database'] ? 'Enabled' : 'Disabled');
             $backups['Retention Period'] = $site->backups['retention_period'];
         }
@@ -84,9 +84,21 @@ class GetCommand extends BaseCommand
         }
 
         if ($site->git['enabled'] && $site->git['push_enabled']) {
-            $git['Deployment URl'] = $site->git['deployment_url'];
+            $git['Deployment URL'] = $site->git['deployment_url'];
         }
 
         return $git;
+    }
+
+    public function basicAuthData(Site $site): array
+    {
+        $basicAuth = ['Basic Auth' => 'Disabled'];
+
+        if ($site->basic_auth['enabled']) {
+            $basicAuth['Basic Auth']          = 'Enabled';
+            $basicAuth['Basic Auth Username'] = $site->basic_auth['username'];
+        }
+
+        return $basicAuth;
     }
 }
