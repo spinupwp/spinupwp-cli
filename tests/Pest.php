@@ -71,3 +71,15 @@ function deleteTestConfigFile($test = '')
     }
     unlink($configFile);
 }
+
+function listResponseJson(array $data): string
+{
+    return json_encode([
+        'data'       => $data,
+        'pagination' => [
+            'previous' => null,
+            'next'     => null,
+            'count'    => count($data),
+        ],
+    ]);
+}

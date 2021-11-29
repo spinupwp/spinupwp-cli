@@ -7,6 +7,8 @@ use DeliciousBrains\SpinupWp\SpinupWp;
 use Exception;
 use GuzzleHttp\Client;
 use LaravelZero\Framework\Commands\Command;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Helper\Table;
 
 abstract class BaseCommand extends Command
 {
@@ -15,6 +17,10 @@ abstract class BaseCommand extends Command
     protected SpinupWp $spinupwp;
 
     protected bool $requiresToken = true;
+
+    protected bool $largeOutput = false;
+
+    protected array $columnsMaxWidths = [];
 
     public function __construct(Configuration $configuration, SpinupWp $spinupWp)
     {
