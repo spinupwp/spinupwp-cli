@@ -25,10 +25,24 @@ trait SpecifyColumns
         }
 
         foreach ($this->columnsMap as $name => $resourceProp) {
-            if (isset($resourceProp['filter'])) {
-                $columns[$name] = $resourceProp['filter']($resource->{$resourceProp['property']});
+            if (isset($resourceProp['ignore']) && $resourceProp['ignore']($resource->{$resourceProp['property']})) {
                 continue;
             }
+
+            if (isset($resourceProp['filter'])) {
+                $value = $resourceProp['filter']($resource->{$resourceProp['property']});
+
+                if (is_array($value)) {
+                    foreach ($value as $key => $_value) {
+                        $columns[$key] = $_value;
+                    }
+                    continue;
+                }
+
+                $columns[$name] = $value;
+                continue;
+            }
+
             $columns[$name] = $resource->{$resourceProp};
         }
 
