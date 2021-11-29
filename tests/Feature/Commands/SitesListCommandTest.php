@@ -46,18 +46,14 @@ it('list command with no api token configured', function () {
 
 test('sites json list command', function () use ($response) {
     $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
-        new Response(200, [], json_encode([
-            'data' => $response,
-        ]))
+        new Response(200, [], listResponseJson($response))
     );
     $this->artisan('sites:list')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
 });
 
 test('sites table list command', function () use ($response) {
     $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
-        new Response(200, [], json_encode([
-            'data' => $response,
-        ]))
+        new Response(200, [], listResponseJson($response))
     );
     $this->artisan('sites:list --format table')->expectsTable(
         ['ID', 'Server ID', 'Domain', 'Site User', 'PHP', 'Page Cache', 'HTTPS'],
@@ -86,9 +82,7 @@ test('sites table list command', function () use ($response) {
 
 test('empty sites list', function () {
     $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
-        new Response(200, [], json_encode([
-            'data' => [],
-        ]))
+        new Response(200, [], listResponseJson([]))
     );
     $this->artisan('sites:list')->expectsOutput('No sites found.');
 });
