@@ -85,11 +85,9 @@ test('servers table list command', function () use ($response) {
 
 test('servers table list specified columns command', function () use ($response) {
     $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
-        new Response(200, [], json_encode([
-            'data' => $response,
-        ]))
+        new Response(200, [], listResponseJson($response))
     );
-    $this->artisan('servers:list --format table --columns id,name,ip_address,ubuntu_version')->expectsTable(
+    $this->artisan('servers:list --format=table --columns=id,name,ip_address,ubuntu_version')->expectsTable(
         ['ID', 'Name', 'IP Address', 'Ubuntu'],
         [
             [
