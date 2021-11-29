@@ -56,7 +56,7 @@ trait InteractsWithIO
             return $this->option('format');
         }
 
-        return (string)$this->config->get('format', $this->profile());
+        return (string) $this->config->get('format', $this->profile());
     }
 
     /**
@@ -64,7 +64,7 @@ trait InteractsWithIO
      */
     protected function toJson($resource): void
     {
-        $this->line((string)json_encode($resource->toArray(), JSON_PRETTY_PRINT));
+        $this->line((string) json_encode($resource->toArray(), JSON_PRETTY_PRINT));
     }
 
     /**
@@ -112,7 +112,7 @@ trait InteractsWithIO
 
         return $this->askToSelect(
             $question,
-            $choices->keyBy('id')->map(fn($site) => $site->domain)->toArray()
+            $choices->keyBy('id')->map(fn ($site) => $site->domain)->toArray()
         );
     }
 
@@ -122,7 +122,7 @@ trait InteractsWithIO
 
         return $this->askToSelect(
             $question,
-            $choices->keyBy('id')->map(fn($server) => $server->name)->toArray()
+            $choices->keyBy('id')->map(fn ($server) => $server->name)->toArray()
         );
     }
 
@@ -138,7 +138,7 @@ trait InteractsWithIO
             }
         };
 
-        return (int)$this->output->askQuestion($question);
+        return (int) $this->output->askQuestion($question);
     }
 
     protected function largeOutput(array $resource): void
