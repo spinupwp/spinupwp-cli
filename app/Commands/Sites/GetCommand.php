@@ -18,7 +18,7 @@ class GetCommand extends BaseCommand
 
     public function action(): int
     {
-        $site = $this->spinupwp->sites->get((int)$this->argument('site_id'));
+        $site = $this->spinupwp->sites->get((int) $this->argument('site_id'));
 
         if ($this->displayFormat() === 'json') {
             $this->toJson($site);
@@ -28,7 +28,7 @@ class GetCommand extends BaseCommand
         $additionalDomains = '';
 
         if (!empty($site->additional_domains)) {
-            $additionalDomains = implode(PHP_EOL, array_map(fn($domain) => $domain['domain'], $site->additional_domains));
+            $additionalDomains = implode(PHP_EOL, array_map(fn ($domain) => $domain['domain'], $site->additional_domains));
         }
 
         $data = [
@@ -71,7 +71,7 @@ class GetCommand extends BaseCommand
 
     public function backupsData(Site $site, array $data): array
     {
-        $scheduledBackups = (bool)$site->backups['next_run_time'];
+        $scheduledBackups = (bool) $site->backups['next_run_time'];
 
         $data['Scheduled Backups'] = $scheduledBackups ? 'Enabled' : 'Disabled';
 
