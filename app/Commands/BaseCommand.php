@@ -28,6 +28,10 @@ abstract class BaseCommand extends Command
 
     public function handle(): int
     {
+        if (method_exists($this, 'setup')) {
+            $this->setup();
+        }
+
         if ($this->requiresToken && !$this->config->isConfigured()) {
             $this->error("You must first run 'spinupwp configure' in order to set up your API token.");
             return 1;
