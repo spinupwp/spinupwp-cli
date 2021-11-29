@@ -9,6 +9,9 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 trait InteractsWithIO
 {
+    /**
+     * @param mixed $resource
+     */
     protected function format($resource): void
     {
         if (empty($resource) || ($resource instanceof Collection && $resource->isEmpty())) {
@@ -53,16 +56,23 @@ trait InteractsWithIO
             return $this->option('format');
         }
 
-        return $this->config->get('format', $this->profile());
+        return (string)$this->config->get('format', $this->profile());
     }
 
+    /**
+     * @param mixed $resource
+     */
     protected function toJson($resource): void
     {
-        $this->line(json_encode($resource->toArray(), JSON_PRETTY_PRINT));
+        $this->line((string)json_encode($resource->toArray(), JSON_PRETTY_PRINT));
     }
 
+    /**
+     * @param mixed $resource
+     */
     protected function toTable($resource): void
     {
+        $rows         = [];
         $tableHeaders = [];
 
         if ($resource instanceof Collection) {
@@ -73,8 +83,6 @@ trait InteractsWithIO
             }
 
             $tableHeaders = array_keys($firstElement);
-
-            $rows = [];
 
             $resource->each(function ($item) use (&$rows) {
                 if (!is_array($item)) {
@@ -104,7 +112,7 @@ trait InteractsWithIO
 
         return $this->askToSelect(
             $question,
-            $choices->keyBy('id')->map(fn ($site) => $site->domain)->toArray()
+            $choices->keyBy('id')->map(fn($site) => $site->domain)->toArray()
         );
     }
 
@@ -114,10 +122,13 @@ trait InteractsWithIO
 
         return $this->askToSelect(
             $question,
-            $choices->keyBy('id')->map(fn ($server) => $server->name)->toArray()
+            $choices->keyBy('id')->map(fn($server) => $server->name)->toArray()
         );
     }
 
+    /**
+     * @param mixed $default
+     */
     protected function askToSelect(string $question, array $choices, $default = null): int
     {
         $question = new class($question, $choices, $default) extends ChoiceQuestion {
@@ -127,7 +138,7 @@ trait InteractsWithIO
             }
         };
 
-        return (int) $this->output->askQuestion($question);
+        return (int)$this->output->askQuestion($question);
     }
 
     protected function largeOutput(array $resource): void
