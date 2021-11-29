@@ -121,3 +121,24 @@ test('sites table get command', function () use ($response) {
         ['Status', 'Deployed'],
     ]);
 });
+
+test('sites table get command specifying columns', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+    $this->artisan('sites:get 1 --format=table --columns=domain,git,backups,status')->expectsTable([], [
+        ['Domain', 'hellfish.media'],
+        ['Git', 'Enabled'],
+        ['Repository', 'git@github.com:deliciousbrains/spinupwp-composer-site.git'],
+        ['Branch', 'main'],
+        ['Deploy Script', 'composer install --optimize-autoload --no-dev'],
+        ['Push-to-deploy', 'Enabled'],
+        ['Deployment URL', 'https://api.spinupwp.app/git/jeJLdKrl63/deploy'],
+        ['Scheduled Backups', 'Enabled'],
+        ['File Backups', 'Enabled'],
+        ['Database Backups', 'Enabled'],
+        ['Backup Retention Period', '30 days'],
+        ['Next Backup Time', '2021-01-01T12:00:00.000000Z'],
+        ['Status', 'Deployed'],
+    ]);
+});
