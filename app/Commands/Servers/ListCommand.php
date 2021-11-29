@@ -4,8 +4,6 @@ namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
 use App\Commands\Concerns\SpecifyColumns;
-use App\Helpers\Configuration;
-use DeliciousBrains\SpinupWp\SpinupWp;
 
 class ListCommand extends BaseCommand
 {
@@ -15,10 +13,8 @@ class ListCommand extends BaseCommand
 
     protected $description = 'Retrieves a list of servers';
 
-    public function __construct(Configuration $configuration, SpinupWp $spinupWp)
+    protected function setup()
     {
-        parent::__construct($configuration, $spinupWp);
-
         $this->columnsMap = [
             'ID'            => 'id',
             'Name'          => 'name',
