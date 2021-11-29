@@ -3,12 +3,10 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\InteractsWithIO;
 use App\Commands\Concerns\InteractsWithRemote;
 
 class SshCommand extends BaseCommand
 {
-    use InteractsWithIO;
     use InteractsWithRemote;
 
     protected $signature = 'servers:ssh

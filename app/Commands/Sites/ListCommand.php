@@ -3,12 +3,9 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\InteractsWithIO;
 
 class ListCommand extends BaseCommand
 {
-    use InteractsWithIO;
-
     protected $signature = 'sites:list
                             {server_id? : Only list sites belonging to this server}
                             {--format=}
@@ -28,7 +25,7 @@ class ListCommand extends BaseCommand
 
         if ($sites->isEmpty()) {
             $this->warn('No sites found.');
-            return $sites;
+            return self::SUCCESS;
         }
 
         if ($this->displayFormat() === 'table') {

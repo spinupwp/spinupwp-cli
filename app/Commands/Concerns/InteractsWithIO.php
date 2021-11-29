@@ -4,13 +4,23 @@ namespace App\Commands\Concerns;
 
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
 trait InteractsWithIO
 {
     protected function format($resource): void
     {
+        if (empty($resource) || ($resource instanceof Collection && $resource->isEmpty())) {
+            return;
+        }
+
         $this->setStyles();
+
+        if ($this->largeOutput && $this->displayFormat() === 'table') {
+            $this->largeOutput($resource);
+            return;
+        }
 
         if ($this->displayFormat() === 'table') {
             $this->toTable($resource);
@@ -118,5 +128,40 @@ trait InteractsWithIO
         };
 
         return (int) $this->output->askQuestion($question);
+    }
+
+    protected function largeOutput(array $resource): void
+    {
+        $table = new Table($this->output);
+        $rows  = [];
+
+        foreach ($resource as $key => $value) {
+            $rows[] = ['<info>' . $key . '</info>', $value];
+        }
+
+        $table->setRows($rows)->setStyle('default');
+
+        if (!empty($this->columnsMaxWidths)) {
+            foreach ($this->columnsMaxWidths as $column) {
+                $table->setColumnMaxWidth($column[0], $column[1]);
+            }
+        }
+
+        $table->render();
+    }
+
+    protected function formatBytes(int $bytes, int $precision = 1, bool $trueSize = false): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $block = ($trueSize) ? 1024 : 1000;
+
+        $bytes = max($bytes, 0);
+        $pow   = floor(($bytes ? log($bytes) : 0) / log($block));
+        $pow   = min($pow, count($units) - 1);
+        $bytes /= pow($block, $pow);
+
+        $total = ($trueSize || $precision > 0) ? round($bytes, $precision) : floor($bytes);
+
+        return $total . ' ' . $units[$pow];
     }
 }

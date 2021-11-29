@@ -2,16 +2,17 @@
 
 namespace App\Commands;
 
+use App\Commands\Concerns\InteractsWithIO;
 use App\Helpers\Configuration;
 use DeliciousBrains\SpinupWp\SpinupWp;
 use Exception;
 use GuzzleHttp\Client;
 use LaravelZero\Framework\Commands\Command;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Console\Helper\Table;
 
 abstract class BaseCommand extends Command
 {
+    use InteractsWithIO;
+
     protected Configuration $config;
 
     protected SpinupWp $spinupwp;

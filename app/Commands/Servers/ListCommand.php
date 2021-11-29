@@ -3,12 +3,9 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\InteractsWithIO;
 
 class ListCommand extends BaseCommand
 {
-    use InteractsWithIO;
-
     protected $signature = 'servers:list
                             {--format=}
                             {--profile=}';
@@ -21,7 +18,7 @@ class ListCommand extends BaseCommand
 
         if ($servers->isEmpty()) {
             $this->warn('No servers found.');
-            return $servers;
+            return self::SUCCESS;
         }
 
         if ($this->displayFormat() === 'table') {
