@@ -3,15 +3,78 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\HasLargeOutput;
+use App\Commands\Concerns\SpecifyColumns;
 use DeliciousBrains\SpinupWp\Resources\Site;
 
 class GetCommand extends BaseCommand
 {
-    protected $signature = 'sites:get {site_id} {--format=} {--profile=}';
+    use HasLargeOutput;
+    use SpecifyColumns;
+
+    protected $signature = 'sites:get {site_id} {--format=} {--profile=} {--columns=}';
 
     protected $description = 'Get a site';
 
-    protected bool $largeOutput = true;
+    protected array $columnsMap = [];
+
+    protected function setUp()
+    {
+        $this->largeOutput = true;
+        $this->columnsMap  = [
+            'ID'                 => 'id',
+            'Server ID'          => 'server_id',
+            'Domain'             => 'domain',
+            'Additional Domains' => [
+                'property' => 'additional_domains',
+                'filter'   => fn ($value)   => implode(PHP_EOL, array_map(fn ($domain) => $domain['domain'], $value)),
+            ],
+            'Site User'     => 'site_user',
+            'PHP Version'   => 'php_version',
+            'Public Folder' => 'public_folder',
+            'Page Cache'    => [
+                'property' => 'page_cache',
+                'filter'   => fn ($value)   => $value['enabled'] ? 'Enabled' : 'Disabled',
+            ],
+            'HTTPS' => [
+                'property' => 'https',
+                'filter'   => fn ($value)   => $value['enabled'] ? 'Enabled' : 'Disabled',
+            ],
+            'Database Table Prefix' => [
+                'property' => 'database',
+                'ignore'   => fn ($value)   => empty($value['table_prefix']),
+                'filter'   => fn ($value)   => $value['table_prefix'],
+
+            ],
+            'Git' => [
+                'property' => 'git',
+                'filter'   => fn ($value)   => $this->gitData($value),
+            ],
+            'WP Core Update' => [
+                'property' => 'wp_core_update',
+                'filter'   => fn ($value)   => $value ? 'Yes' : 'No',
+            ],
+            'WP Theme Updates'  => 'wp_theme_updates',
+            'WP Plugin Updates' => 'wp_plugin_updates',
+            'Backups'           => [
+                'property' => 'backups',
+                'filter'   => fn ($value)   => $this->backupsData($value),
+            ],
+            'Nginx' => [
+                'property' => 'nginx',
+                'filter'   => fn ($value)   => $this->nginxData($value),
+            ],
+            'Basic Auth' => [
+                'property' => 'basic_auth',
+                'filter'   => fn ($value)   => $this->basicAuthData($value),
+            ],
+            'Created At' => 'created_at',
+            'Status'     => [
+                'property' => 'status',
+                'filter'   => fn ($value)   => ucfirst($value),
+            ],
+        ];
+    }
 
     public function action()
     {
@@ -20,94 +83,65 @@ class GetCommand extends BaseCommand
         if ($this->displayFormat() === 'json') {
             return $site;
         }
-        $additionalDomains = '';
 
-        if (!empty($site->additional_domains)) {
-            $additionalDomains = implode(PHP_EOL, array_map(fn ($domain) => $domain['domain'], $site->additional_domains));
-        }
-
-        $data = [
-            'ID'                 => $site->id,
-            'Server ID'          => $site->server_id,
-            'Domain'             => $site->domain,
-            'Additional Domains' => $additionalDomains,
-            'Site User'          => $site->site_user,
-            'PHP Version'        => $site->php_version,
-            'Public Folder'      => $site->public_folder,
-            'Page Cache'         => $site->page_cache['enabled'] ? 'Enabled' : 'Disabled',
-            'HTTPS'              => $site->https['enabled'] ? 'Enabled' : 'Disabled',
-        ];
-
-        if ($site->database['table_prefix']) {
-            $data['Database Table Prefix'] = $site->database['table_prefix'];
-        }
-
-        $data = $this->gitData($site, $data);
-
-        $data['WP Core Update']    = $site->wp_core_update ? 'Yes' : 'No';
-        $data['WP Theme Updates']  = $site->wp_theme_updates;
-        $data['WP Plugin Updates'] = $site->wp_plugin_updates;
-
-        $data = $this->backupsData($site, $data);
-
-        $data['Uploads Directory Protection'] = $site->nginx['uploads_directory_protected'] ? 'Enabled' : 'Disabled';
-        $data['XML-RPC Protection']           = $site->nginx['xmlrpc_protected'] ? 'Enabled' : 'Disabled';
-        $data['Multisite Rewrite Rules']      = $site->nginx['subdirectory_rewrite_in_place'] ? 'Enabled' : 'Disabled';
-
-        $data = $this->basicAuthData($site, $data);
-
-        $data['Created At'] = $site->created_at;
-        $data['Status']     = ucfirst($site->status);
-
-        return $data;
+        return $this->specifyColumns($site);
     }
 
-    public function backupsData(Site $site, array $data): array
+    public function nginxData(array $nginxData): array
     {
-        $scheduledBackups = (bool) $site->backups['next_run_time'];
+        return [
+            'Uploads Directory Protection' => $nginxData['uploads_directory_protected'] ? 'Enabled' : 'Disabled',
+            'XML-RPC Protection'           => $nginxData['xmlrpc_protected'] ? 'Enabled' : 'Disabled',
+            'Multisite Rewrite Rules'      => $nginxData['subdirectory_rewrite_in_place'] ? 'Enabled' : 'Disabled',
+        ];
+    }
+
+    public function backupsData(array $backupsData): array
+    {
+        $scheduledBackups = (bool) $backupsData['next_run_time'];
 
         $data['Scheduled Backups'] = $scheduledBackups ? 'Enabled' : 'Disabled';
 
-        $data['File Backups']     = ($site->backups['files'] ? 'Enabled' : 'Disabled');
-        $data['Database Backups'] = ($site->backups['database'] ? 'Enabled' : 'Disabled');
+        $data['File Backups']     = ($backupsData['files'] ? 'Enabled' : 'Disabled');
+        $data['Database Backups'] = ($backupsData['database'] ? 'Enabled' : 'Disabled');
 
-        if ($site->backups['files'] || $site->backups['database']) {
-            $data['Backup Retention Period'] = $site->backups['retention_period'] . ' days';
+        if ($backupsData['files'] || $backupsData['database']) {
+            $data['Backup Retention Period'] = $backupsData['retention_period'] . ' days';
         }
 
         if ($scheduledBackups) {
-            $data['Next Backup Time'] = $site->backups['next_run_time'];
+            $data['Next Backup Time'] = $backupsData['next_run_time'];
         }
 
         return $data;
     }
 
-    public function gitData(Site $site, array $data): array
+    public function gitData(array $gitData): array
     {
         $data['Git'] = 'Disabled';
 
-        if ($site->git['enabled']) {
+        if ($gitData['enabled']) {
             $data['Git']            = 'Enabled';
-            $data['Repository']     = $site->git['repo'];
-            $data['Branch']         = $site->git['branch'];
-            $data['Deploy Script']  = $site->git['deploy_script'];
-            $data['Push-to-deploy'] = $site->git['push_enabled'] ? 'Enabled' : 'Disabled';
+            $data['Repository']     = $gitData['repo'];
+            $data['Branch']         = $gitData['branch'];
+            $data['Deploy Script']  = $gitData['deploy_script'];
+            $data['Push-to-deploy'] = $gitData['push_enabled'] ? 'Enabled' : 'Disabled';
         }
 
-        if ($site->git['enabled'] && $site->git['push_enabled']) {
-            $data['Deployment URL'] = $site->git['deployment_url'];
+        if ($gitData['enabled'] && $gitData['push_enabled']) {
+            $data['Deployment URL'] = $gitData['deployment_url'];
         }
 
         return $data;
     }
 
-    public function basicAuthData(Site $site, array $data): array
+    public function basicAuthData(array $basicAuthData): array
     {
         $data['Basic Auth'] = 'Disabled';
 
-        if ($site->basic_auth['enabled']) {
+        if ($basicAuthData['enabled']) {
             $data['Basic Auth']          = 'Enabled';
-            $data['Basic Auth Username'] = $site->basic_auth['username'];
+            $data['Basic Auth Username'] = $basicAuthData['username'];
         }
 
         return $data;
