@@ -18,12 +18,15 @@ abstract class BaseCommand extends Command
 
     protected bool $requiresToken = true;
 
+    protected string $command;
+
     public function __construct(Configuration $configuration, SpinupWp $spinupWp)
     {
         parent::__construct();
 
         $this->config   = $configuration;
         $this->spinupwp = $spinupWp;
+        $this->command  = explode(' ', $this->signature)[0];
     }
 
     public function handle(): int
