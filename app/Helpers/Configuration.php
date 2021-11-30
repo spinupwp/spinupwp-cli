@@ -52,6 +52,24 @@ class Configuration
         $this->config = $config;
     }
 
+    public function getCommandConfiguration(string $command, string $profile = 'default'): array
+    {
+        $this->config = $this->readConfig();
+
+        return Arr::get($this->config, "{$profile}.command_options.{$command}", []);
+    }
+
+    public function setCommandConfiguration(string $command, string $key, string $value, string $profile = 'default'): void
+    {
+        $config = $this->config;
+
+        Arr::set($config, "{$profile}.command_options.{$command}.{$key}", $value);
+
+        file_put_contents($this->configFilePath(), json_encode($config, JSON_PRETTY_PRINT));
+
+        $this->config = $config;
+    }
+
     public function teamExists(string $profile): bool
     {
         return isset($this->config[$profile]);
