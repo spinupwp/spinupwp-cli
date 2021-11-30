@@ -4,24 +4,23 @@ namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
 use App\Commands\Concerns\HasLargeOutput;
-use App\Commands\Concerns\SpecifyColumns;
-use DeliciousBrains\SpinupWp\Resources\Site;
+use App\Commands\Concerns\SpecifyFields;
 
 class GetCommand extends BaseCommand
 {
     use HasLargeOutput;
-    use SpecifyColumns;
+    use SpecifyFields;
 
-    protected $signature = 'sites:get {site_id} {--format=} {--profile=} {--columns=}';
+    protected $signature = 'sites:get {site_id} {--format=} {--profile=} {--fields=}';
 
     protected $description = 'Get a site';
 
-    protected array $columnsMap = [];
+    protected array $fieldsMap = [];
 
     protected function setUp()
     {
         $this->largeOutput = true;
-        $this->columnsMap  = [
+        $this->fieldsMap   = [
             'ID'                 => 'id',
             'Server ID'          => 'server_id',
             'Domain'             => 'domain',
@@ -84,7 +83,7 @@ class GetCommand extends BaseCommand
             return $site;
         }
 
-        return $this->specifyColumns($site);
+        return $this->specifyFields($site);
     }
 
     public function nginxData(array $nginxData): array

@@ -4,16 +4,16 @@ namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
 use App\Commands\Concerns\HasLargeOutput;
-use App\Commands\Concerns\SpecifyColumns;
+use App\Commands\Concerns\SpecifyFields;
 use App\Helpers\Configuration;
 use DeliciousBrains\SpinupWp\SpinupWp;
 
 class GetCommand extends BaseCommand
 {
     use HasLargeOutput;
-    use SpecifyColumns;
+    use SpecifyFields;
 
-    protected $signature = 'servers:get {server_id} {--format=} {--profile=} {--columns=}';
+    protected $signature = 'servers:get {server_id} {--format=} {--profile=} {--fields=}';
 
     protected $description = 'Get a server';
 
@@ -22,7 +22,7 @@ class GetCommand extends BaseCommand
         parent::__construct($configuration, $spinupWp);
         $this->largeOutput = true;
 
-        $this->columnsMap = [
+        $this->fieldsMap = [
             'ID'            => 'id',
             'Name'          => 'name',
             'Provider Name' => 'provider_name',
@@ -83,6 +83,6 @@ class GetCommand extends BaseCommand
 
         $this->columnsMaxWidths[] = [1, 50];
 
-        return $this->specifyColumns($server);
+        return $this->specifyFields($server);
     }
 }

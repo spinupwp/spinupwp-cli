@@ -126,7 +126,7 @@ test('sites table get command specifying columns', function () use ($response) {
     $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
         new Response(200, [], json_encode(['data' => $response]))
     );
-    $this->artisan('sites:get 1 --format=table --columns=domain,git,backups,status')->expectsTable([], [
+    $this->artisan('sites:get 1 --format=table --fields=domain,git,backups,status')->expectsTable([], [
         ['Domain', 'hellfish.media'],
         ['Git', 'Enabled'],
         ['Repository', 'git@github.com:deliciousbrains/spinupwp-composer-site.git'],

@@ -3,19 +3,19 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\SpecifyColumns;
+use App\Commands\Concerns\SpecifyFields;
 
 class ListCommand extends BaseCommand
 {
-    use SpecifyColumns;
+    use SpecifyFields;
 
-    protected $signature = 'servers:list {--format=} {--profile=} {--columns=}';
+    protected $signature = 'servers:list {--format=} {--profile=} {--fields=}';
 
     protected $description = 'Retrieves a list of servers';
 
     protected function setup()
     {
-        $this->columnsMap = [
+        $this->fieldsMap = [
             'ID'            => 'id',
             'Name'          => 'name',
             'Provider Name' => 'provider_name',
@@ -77,8 +77,8 @@ class ListCommand extends BaseCommand
             return $servers;
         }
 
-        if ($this->option('columns')) {
-            return $servers->map(fn ($server) => $this->specifyColumns($server));
+        if ($this->option('fields')) {
+            return $servers->map(fn ($server) => $this->specifyFields($server));
         }
 
         return $servers->map(fn ($server) => [
