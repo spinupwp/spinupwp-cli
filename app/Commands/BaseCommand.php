@@ -39,7 +39,7 @@ abstract class BaseCommand extends Command
         }
 
         try {
-            $clientOptions = [
+            $this->spinupwp->setClient(new Client([
                 'base_uri'    => $this->config->get('api_url', $this->profile(), 'https://api.spinupwp.app/v1/'),
                 'http_errors' => false,
                 'headers'     => [
@@ -48,9 +48,7 @@ abstract class BaseCommand extends Command
                     'Content-Type'  => 'application/json',
                     'User-Agent'    => 'SpinupWP/' . config('app.version'),
                 ],
-            ];
-
-            $this->spinupwp->setClient(new Client($clientOptions));
+            ]));
 
             $this->format($this->action());
 
