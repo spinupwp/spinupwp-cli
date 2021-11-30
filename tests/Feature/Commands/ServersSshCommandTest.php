@@ -51,7 +51,7 @@ test('ssh command with server ID supplied and no SSH user', function () {
 test('ssh command with no server ID supplied', function () {
     $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
         new Response(200, [], json_encode([
-            'data'       => [
+            'data' => [
                 [
                     'id'         => 1,
                     'name'       => 'hellfishmedia',
