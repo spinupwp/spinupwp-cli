@@ -21,21 +21,21 @@ class Configuration
         return file_exists($this->configFilePath());
     }
 
-    public function get(string $key, string $profile = 'default'): string
+    public function get(string $key, string $profile = 'default', string $default = ''): string
     {
         $this->config = $this->readConfig();
         if (empty($this->config)) {
-            return '';
+            return $default;
         }
 
         if (!$this->teamExists($profile)) {
-            return '';
+            return $default;
         }
 
         $profileConfig = $this->config[$profile];
 
         if (!isset($profileConfig[$key])) {
-            return '';
+            return $default;
         }
 
         return $profileConfig[$key];
