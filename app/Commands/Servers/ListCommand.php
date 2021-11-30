@@ -78,15 +78,16 @@ class ListCommand extends BaseCommand
         }
 
         if ($this->option('fields')) {
+            $this->saveFieldsFilter();
             return $servers->map(fn ($server) => $this->specifyFields($server));
         }
 
-        return $servers->map(fn ($server) => [
-            'ID'         => $server->id,
-            'Name'       => $server->name,
-            'IP Address' => $server->ip_address,
-            'Ubuntu'     => $server->ubuntu_version,
-            'Database'   => $server->database['server'],
-        ]);
+        return $servers->map(fn ($server) => $this->specifyFields($server, [
+            'id',
+            'name',
+            'ip_address',
+            'ubunto_version',
+            'database',
+        ]));
     }
 }
