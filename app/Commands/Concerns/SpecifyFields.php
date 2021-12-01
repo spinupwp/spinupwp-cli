@@ -69,6 +69,9 @@ trait SpecifyFields
 
         if ($saveConfiguration) {
             $this->config->setCommandConfiguration($this->command, 'fields', $this->option('fields'), $this->profile());
+            return;
         }
+
+        $this->config->setCommandConfiguration($this->command, 'fields', '', $this->profile());
     }
 }
