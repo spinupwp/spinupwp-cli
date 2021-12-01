@@ -30,15 +30,15 @@ class ListCommand extends BaseCommand
                 'filter'   => fn ($value)   => $this->formatBytes($value['used']) . ' of ' . $this->formatBytes($value['total'], 0) . ' used',
             ],
             'Database Server' => [
-                'property' => 'database',
+                'property' => 'database|database.server',
                 'filter'   => fn ($value)   => $value['server'],
             ],
             'Database Host' => [
-                'property' => 'database',
+                'property' => 'database|database.host',
                 'filter'   => fn ($value)   => $value['host'],
             ],
             'Database Port' => [
-                'property' => 'database',
+                'property' => 'database|database.port',
                 'filter'   => fn ($value)   => $value['port'],
             ],
             'SSH Public Key'    => 'ssh_publickey',
@@ -86,8 +86,8 @@ class ListCommand extends BaseCommand
             'id',
             'name',
             'ip_address',
-            'ubunto_version',
-            'database',
+            'ubuntu_version',
+            'database.server',
         ]));
     }
 }

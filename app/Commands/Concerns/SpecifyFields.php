@@ -24,22 +24,17 @@ trait SpecifyFields
             $fieldsFilter = explode(',', str_replace(' ', '', $this->option('fields')));
         }
 
-        if (!empty($fieldsFilter)) {
-            $this->fieldsMap = array_filter($this->fieldsMap, function ($field) use ($fieldsFilter) {
-                if (!is_array($field)) {
-                    return in_array($field, $fieldsFilter);
-                }
-                return in_array($field['property'], $fieldsFilter);
-            });
-        }
+        $this->applyFilter($fieldsFilter);
 
         foreach ($this->fieldsMap as $name => $resourceProp) {
             if (isset($resourceProp['ignore']) && $resourceProp['ignore']($resource->{$resourceProp['property']})) {
                 continue;
             }
 
+            $property = $this->getFinalResourceProperty($resourceProp);
+
             if (isset($resourceProp['filter'])) {
-                $value = $resourceProp['filter']($resource->{$resourceProp['property']});
+                $value = $resourceProp['filter']($resource->{$property});
 
                 if (is_array($value)) {
                     foreach ($value as $key => $_value) {
@@ -58,6 +53,28 @@ trait SpecifyFields
         return $fields;
     }
 
+    protected function propertyInFilter(string $property, array $fieldsFilter): bool
+    {
+        if (strpos($property, '|') !== false) {
+            $properties = explode('|', $property);
+            return in_array($properties[0], $fieldsFilter) || in_array($properties[1], $fieldsFilter);
+        }
+        return in_array($property, $fieldsFilter);
+    }
+
+    protected function getFinalResourceProperty($property): string
+    {
+        if (is_array($property)) {
+            $property = $property['property'];
+        }
+
+        if (strpos($property, '|') !== false) {
+            return explode('|', $property)[0];
+        }
+
+        return $property;
+    }
+
     protected function saveFieldsFilter($saveConfiguration = false): void
     {
         $commandOptions = $this->config->getCommandConfiguration($this->command, $this->profile());
@@ -72,5 +89,17 @@ trait SpecifyFields
         }
 
         $this->config->setCommandConfiguration($this->command, 'fields', '', $this->profile());
+    }
+
+    protected function applyFilter(array $fieldsFilter): void
+    {
+        if (!empty($fieldsFilter)) {
+            $this->fieldsMap = array_filter($this->fieldsMap, function ($field) use ($fieldsFilter) {
+                if (is_array($field)) {
+                    $field = $field['property'];
+                }
+                return $this->propertyInFilter($field, $fieldsFilter);
+            });
+        }
     }
 }
