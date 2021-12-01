@@ -9,7 +9,7 @@ class ListCommand extends BaseCommand
 {
     use SpecifyFields;
 
-    protected $signature = 'servers:list {--format=} {--profile=} {--fields=}';
+    protected $signature = 'servers:list {--format=} {--profile=} {--fields=} {--savefields}';
 
     protected $description = 'Retrieves a list of servers';
 
@@ -78,7 +78,7 @@ class ListCommand extends BaseCommand
         }
 
         if ($this->option('fields')) {
-            $this->saveFieldsFilter();
+            $this->saveFieldsFilter($this->option('savefields'));
             return $servers->map(fn ($server) => $this->specifyFields($server));
         }
 

@@ -58,12 +58,11 @@ trait SpecifyFields
         return $fields;
     }
 
-    protected function saveFieldsFilter(): void
+    protected function saveFieldsFilter($saveConfiguration = false): void
     {
-        $commandOptions    = $this->config->getCommandConfiguration($this->command, $this->profile());
-        $saveConfiguration = false;
+        $commandOptions = $this->config->getCommandConfiguration($this->command, $this->profile());
 
-        if (empty($commandOptions)) {
+        if (empty($commandOptions) && !$saveConfiguration) {
             $saveConfiguration = $this->confirm('Do you want to save the specified fields as default for this command', true);
         }
 
