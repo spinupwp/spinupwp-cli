@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Configuration;
 use GuzzleHttp\Psr7\Response;
 
 $response = [
@@ -56,7 +57,7 @@ test('sites table list command', function () use ($response) {
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('sites:list --format table')->expectsTable(
-        ['ID', 'Server ID', 'Domain', 'Site User', 'PHP', 'Page Cache', 'HTTPS'],
+        ['ID', 'Server ID', 'Domain', 'Site User', 'PHP Version', 'Page Cache', 'HTTPS'],
         [
             [
                 1,
@@ -64,8 +65,8 @@ test('sites table list command', function () use ($response) {
                 'hellfishmedia.com',
                 'hellfish',
                 '8.0',
-                'Y',
-                'Y',
+                'Enabled',
+                'Enabled',
             ],
             [
                 2,
@@ -73,11 +74,36 @@ test('sites table list command', function () use ($response) {
                 'staging.hellfishmedia.com',
                 'staging-hellfish',
                 '8.0',
-                'N',
-                'N',
+                'Disabled',
+                'Disabled',
             ],
         ]
     );
+});
+
+test('sites table list with specified columns command and ask to save it in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
+        new Response(200, [], listResponseJson($response))
+    );
+    $this->artisan('sites:list --format table --fields=id,domain,site_user')
+        ->expectsConfirmation('Do you want to save the specified fields as default for this command?', 'yes')
+        ->expectsTable(
+            ['ID', 'Domain', 'Site User'],
+            [
+            [
+                1,
+                'hellfishmedia.com',
+                'hellfish',
+            ],
+            [
+                2,
+                'staging.hellfishmedia.com',
+                'staging-hellfish',
+            ],
+        ]
+        );
+
+    $this->assertEquals('id,domain,site_user', resolve(Configuration::class)->getCommandConfiguration('sites:list')['fields']);
 });
 
 test('empty sites list', function () {
