@@ -13,7 +13,7 @@ class ListCommand extends BaseCommand
 
     protected $description = 'Retrieves a list of servers';
 
-    protected function setup()
+    protected function setup(): void
     {
         $this->fieldsMap = [
             'ID'            => 'id',
