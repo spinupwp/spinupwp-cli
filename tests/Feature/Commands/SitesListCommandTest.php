@@ -81,7 +81,7 @@ test('sites table list command', function () use ($response) {
     );
 });
 
-test('sites table list with specified columns command and ask to save it in the config', function () use ($response) {
+test('sites table list with specified columns command and asks to save it in the config', function () use ($response) {
     $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );

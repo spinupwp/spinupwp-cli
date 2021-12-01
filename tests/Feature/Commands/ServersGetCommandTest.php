@@ -82,7 +82,7 @@ test('servers table get command', function () use ($response) {
     ]);
 });
 
-test('servers table get specified columns and ask to save it in the config', function () use ($response) {
+test('servers table get specified columns and asks to save it in the config', function () use ($response) {
     $this->clientMock->shouldReceive('request')->with('GET', 'servers/1', [])->andReturn(
         new Response(200, [], json_encode(['data' => $response]))
     );

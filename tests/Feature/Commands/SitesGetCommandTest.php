@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Configuration;
 use GuzzleHttp\Psr7\Response;
 
 $response = [
@@ -122,23 +123,39 @@ test('sites table get command', function () use ($response) {
     ]);
 });
 
-test('sites table get command specifying columns', function () use ($response) {
+test('sites table get command specifying columns and asks to save it in the config', function () use ($response) {
     $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
         new Response(200, [], json_encode(['data' => $response]))
     );
-    $this->artisan('sites:get 1 --format=table --fields=domain,git,backups,status')->expectsTable([], [
-        ['Domain', 'hellfish.media'],
-        ['Git', 'Enabled'],
-        ['Repository', 'git@github.com:deliciousbrains/spinupwp-composer-site.git'],
-        ['Branch', 'main'],
-        ['Deploy Script', 'composer install --optimize-autoload --no-dev'],
-        ['Push-to-deploy', 'Enabled'],
-        ['Deployment URL', 'https://api.spinupwp.app/git/jeJLdKrl63/deploy'],
-        ['Scheduled Backups', 'Enabled'],
-        ['File Backups', 'Enabled'],
-        ['Database Backups', 'Enabled'],
-        ['Backup Retention Period', '30 days'],
-        ['Next Backup Time', '2021-01-01T12:00:00.000000Z'],
-        ['Status', 'Deployed'],
-    ]);
+    $this->artisan('sites:get 1 --format=table --fields=domain,git,backups,status')
+        ->expectsConfirmation('Do you want to save the specified fields as default for this command?', 'yes')
+        ->expectsTable([], [
+            ['Domain', 'hellfish.media'],
+            ['Git', 'Enabled'],
+            ['Repository', 'git@github.com:deliciousbrains/spinupwp-composer-site.git'],
+            ['Branch', 'main'],
+            ['Deploy Script', 'composer install --optimize-autoload --no-dev'],
+            ['Push-to-deploy', 'Enabled'],
+            ['Deployment URL', 'https://api.spinupwp.app/git/jeJLdKrl63/deploy'],
+            ['Scheduled Backups', 'Enabled'],
+            ['File Backups', 'Enabled'],
+            ['Database Backups', 'Enabled'],
+            ['Backup Retention Period', '30 days'],
+            ['Next Backup Time', '2021-01-01T12:00:00.000000Z'],
+            ['Status', 'Deployed'],
+        ]);
+});
+
+test('sites table list only columns saved in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+
+    resolve(Configuration::class)->setCommandConfiguration('sites:get', 'fields', 'id,domain');
+
+    $this->artisan('sites:get 1 --format=table')
+        ->expectsTable([], [
+            ['ID', '1'],
+            ['Domain', 'hellfish.media'],
+        ]);
 });

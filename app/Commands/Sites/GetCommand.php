@@ -11,7 +11,7 @@ class GetCommand extends BaseCommand
     use HasLargeOutput;
     use SpecifyFields;
 
-    protected $signature = 'sites:get {site_id} {--format=} {--profile=} {--fields=}';
+    protected $signature = 'sites:get {site_id} {--format=} {--profile=} {--fields=} {--savefields}';
 
     protected $description = 'Get a site';
 
@@ -81,6 +81,10 @@ class GetCommand extends BaseCommand
 
         if ($this->displayFormat() === 'json') {
             return $site;
+        }
+
+        if ($this->option('fields')) {
+            $this->saveFieldsFilter($this->option('savefields'));
         }
 
         return $this->specifyFields($site);
