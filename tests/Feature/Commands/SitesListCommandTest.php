@@ -106,6 +106,28 @@ test('sites table list with specified columns command and ask to save it in the 
     $this->assertEquals('id,domain,site_user', resolve(Configuration::class)->getCommandConfiguration('sites:list')['fields']);
 });
 
+test('sites table list only columns saved in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1', [])->andReturn(
+        new Response(200, [], listResponseJson($response))
+    );
+
+    resolve(Configuration::class)->setCommandConfiguration('sites:list', 'fields', 'id,domain');
+
+    $this->artisan('sites:list --format=table')->expectsTable(
+        ['ID', 'Domain'],
+        [
+            [
+                1,
+                'hellfishmedia.com',
+            ],
+            [
+                2,
+                'staging.hellfishmedia.com',
+            ],
+        ]
+    );
+});
+
 test('empty sites list', function () {
     $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
         new Response(200, [], listResponseJson([]))
