@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Configuration;
 use GuzzleHttp\Psr7\Response;
 
 $response = [
@@ -81,13 +82,29 @@ test('servers table get command', function () use ($response) {
     ]);
 });
 
-test('servers table get specified columns', function () use ($response) {
+test('servers table get specified columns and ask to save it in the config', function () use ($response) {
     $this->clientMock->shouldReceive('request')->with('GET', 'servers/1', [])->andReturn(
         new Response(200, [], json_encode(['data' => $response]))
     );
-    $this->artisan('servers:get 1 --format=table --fields=id,name,ip_address')->expectsTable([], [
-        ['ID', '1'],
-        ['Name', 'hellfish-media'],
-        ['IP Address', '127.0.0.1'],
-    ]);
+    $this->artisan('servers:get 1 --format=table --fields=id,name,ip_address')
+        ->expectsConfirmation('Do you want to save the specified fields as default for this command?', 'yes')
+        ->expectsTable([], [
+            ['ID', '1'],
+            ['Name', 'hellfish-media'],
+            ['IP Address', '127.0.0.1'],
+        ]);
+});
+
+test('servers table list only columns saved in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'servers/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+
+    resolve(Configuration::class)->setCommandConfiguration('servers:get', 'fields', 'id,name');
+
+    $this->artisan('servers:get 1 --format=table')
+        ->expectsTable([], [
+            ['ID', '1'],
+            ['Name', 'hellfish-media'],
+        ]);
 });

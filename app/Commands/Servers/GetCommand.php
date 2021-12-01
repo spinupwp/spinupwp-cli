@@ -13,7 +13,7 @@ class GetCommand extends BaseCommand
     use HasLargeOutput;
     use SpecifyFields;
 
-    protected $signature = 'servers:get {server_id} {--format=} {--profile=} {--fields=}';
+    protected $signature = 'servers:get {server_id} {--format=} {--profile=} {--fields=} {--savefields}';
 
     protected $description = 'Get a server';
 
@@ -82,6 +82,10 @@ class GetCommand extends BaseCommand
         }
 
         $this->columnsMaxWidths[] = [1, 50];
+
+        if ($this->option('fields')) {
+            $this->saveFieldsFilter($this->option('savefields'));
+        }
 
         return $this->specifyFields($server);
     }
