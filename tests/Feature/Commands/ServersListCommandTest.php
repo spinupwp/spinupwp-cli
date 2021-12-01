@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Configuration;
 use GuzzleHttp\Psr7\Response;
 
 $response = [
@@ -63,7 +64,7 @@ test('servers table list command', function () use ($response) {
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('servers:list --format table')->expectsTable(
-        ['ID', 'Name', 'IP Address', 'Ubuntu', 'Database'],
+        ['ID', 'Name', 'IP Address', 'Ubuntu', 'Database Server'],
         [
             [
                 '1',
@@ -101,6 +102,30 @@ test('servers table list specified columns command and ask to save it in the con
                 'staging.hellfish-media',
                 '127.0.0.1',
                 '20.04',
+            ],
+        ]
+    );
+
+    $this->assertEquals('id,name,ip_address,ubuntu_version', resolve(Configuration::class)->getCommandConfiguration('servers:list')['fields']);
+});
+
+test('servers table list only columns saved in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
+        new Response(200, [], listResponseJson($response))
+    );
+
+    resolve(Configuration::class)->setCommandConfiguration('servers:list', 'fields', 'id,name');
+
+    $this->artisan('servers:list --format=table')->expectsTable(
+        ['ID', 'Name'],
+        [
+            [
+                '1',
+                'hellfish-media',
+            ],
+            [
+                '2',
+                'staging.hellfish-media',
             ],
         ]
     );
