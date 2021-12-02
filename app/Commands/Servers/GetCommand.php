@@ -5,8 +5,6 @@ namespace App\Commands\Servers;
 use App\Commands\BaseCommand;
 use App\Commands\Concerns\HasLargeOutput;
 use App\Commands\Concerns\SpecifyFields;
-use App\Helpers\Configuration;
-use DeliciousBrains\SpinupWp\SpinupWp;
 
 class GetCommand extends BaseCommand
 {
@@ -17,9 +15,8 @@ class GetCommand extends BaseCommand
 
     protected $description = 'Get a server';
 
-    public function __construct(Configuration $configuration, SpinupWp $spinupWp)
+    protected function setup()
     {
-        parent::__construct($configuration, $spinupWp);
         $this->largeOutput = true;
 
         $this->fieldsMap = [
