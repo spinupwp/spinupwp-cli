@@ -23,6 +23,8 @@ abstract class BaseCommand extends Command
 
     protected array $columnsMaxWidths = [];
 
+    protected $simpleOutput = false;
+
     public function __construct(Configuration $configuration, SpinupWp $spinupWp)
     {
         parent::__construct();
@@ -51,8 +53,11 @@ abstract class BaseCommand extends Command
                     ],
                 ]));
             }
+            $action = $this->action();
 
-            $this->format($this->action());
+            if (!$this->simpleOutput) {
+                $this->format($action);
+            }
 
             return 0;
         } catch (Exception $e) {
