@@ -40,22 +40,16 @@ abstract class BaseCommand extends Command
 
         try {
             if (!$this->spinupwp->hasApiKey()) {
-                $this->spinupwp->setApiKey($this->apiToken())->setClient();
-            }
-
-            // Allow to use a different API URL
-            if (!empty($this->config->get('api_url', $this->profile()))) {
-                $this->spinupwp->setClient(
-                    new Client([
-                        'base_uri'    => $this->config->get('api_url', $this->profile()),
-                        'http_errors' => false,
-                        'headers'     => [
-                            'Authorization' => "Bearer {$this->config->get('api_token', $this->profile())}",
-                            'Accept'        => 'application/json',
-                            'Content-Type'  => 'application/json',
-                        ],
-                    ])
-                );
+                $this->spinupwp->setClient(new Client([
+                    'base_uri'    => $this->config->get('api_url', $this->profile(), 'https://api.spinupwp.app/v1/'),
+                    'http_errors' => false,
+                    'headers'     => [
+                        'Authorization' => "Bearer {$this->apiToken()}",
+                        'Accept'        => 'application/json',
+                        'Content-Type'  => 'application/json',
+                        'User-Agent'    => 'SpinupWP/' . config('app.version'),
+                    ],
+                ]));
             }
 
             return $this->action();
