@@ -22,6 +22,7 @@ uses(TestCase::class, CreatesApplication::class)
     ->beforeEach(function () {
         $this->clientMock = Mockery::mock(Client::class);
         $this->spinupwp = resolve(SpinupWp::class)->setClient($this->clientMock)->setApiKey('123');
+        config()->set('app.ssh_timeout', -1);
     })
     ->in('Feature', 'Unit');
 
@@ -51,14 +52,14 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function setTestConfigFile()
+function setTestConfigFile($profileData = [])
 {
     $config = resolve(Configuration::class);
     file_put_contents($config->configFilePath(), json_encode([
-        'default' => [
+        'default' => array_merge([
             'api_token' => 'myapikey123',
             'format'    => 'json',
-        ],
+        ], $profileData),
     ], JSON_PRETTY_PRINT));
 }
 

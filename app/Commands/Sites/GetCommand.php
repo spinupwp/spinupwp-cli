@@ -7,19 +7,24 @@ use DeliciousBrains\SpinupWp\Resources\Site;
 
 class GetCommand extends BaseCommand
 {
-    protected $signature = 'sites:get {site_id} {--format=} {--profile=}';
+    protected $signature = 'sites:get
+                            {site_id : The site to output}
+                            {--format=}
+                            {--profile=}';
 
     protected $description = 'Get a site';
 
     protected bool $largeOutput = true;
 
-    public function action()
+    public function action(): int
     {
-        $site = $this->spinupwp->sites->get($this->argument('site_id'));
+        $site = $this->spinupwp->sites->get((int) $this->argument('site_id'));
 
         if ($this->displayFormat() === 'json') {
-            return $site;
+            $this->toJson($site);
+            return self::SUCCESS;
         }
+
         $additionalDomains = '';
 
         if (!empty($site->additional_domains)) {
@@ -59,7 +64,9 @@ class GetCommand extends BaseCommand
         $data['Created At'] = $site->created_at;
         $data['Status']     = ucfirst($site->status);
 
-        return $data;
+        $this->format($data);
+
+        return self::SUCCESS;
     }
 
     public function backupsData(Site $site, array $data): array
