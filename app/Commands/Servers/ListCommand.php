@@ -79,6 +79,8 @@ class ListCommand extends BaseCommand
         if ($this->option('fields')) {
             $this->saveFieldsFilter();
             $servers->transform(fn ($server) => $this->specifyFields($server));
+            $this->format($servers);
+            return self::SUCCESS;
         }
 
         if ($this->displayFormat() === 'table') {

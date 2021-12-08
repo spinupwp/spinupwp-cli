@@ -88,25 +88,23 @@ test('servers table list with specified columns command and asks to save it in t
     $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
-    $this->artisan('servers:list --format=table --fields=id,name,ip_address,ubuntu_version')->expectsConfirmation('Do you want to save the specified fields as default for this command?', 'yes')->expectsTable(
-        ['ID', 'Name', 'IP Address', 'Ubuntu'],
+    $this->artisan('servers:list --format=table --fields=id,name,ip_address')->expectsConfirmation('Do you want to save the specified fields as default for this command?', 'yes')->expectsTable(
+        ['ID', 'Name', 'IP Address'],
         [
             [
                 '1',
                 'hellfish-media',
                 '127.0.0.1',
-                '20.04',
             ],
             [
                 '2',
                 'staging.hellfish-media',
                 '127.0.0.1',
-                '20.04',
             ],
         ]
     );
 
-    $this->assertEquals('id,name,ip_address,ubuntu_version', resolve(Configuration::class)->getCommandConfiguration('servers:list')['fields']);
+    $this->assertEquals('id,name,ip_address', resolve(Configuration::class)->getCommandConfiguration('servers:list')['fields']);
 });
 
 test('servers table list only columns saved in the config', function () use ($response) {

@@ -66,6 +66,8 @@ class Configuration
     {
         $config = $this->config;
 
+        $command = trim($command);
+
         Arr::set($config, "{$profile}.command_options.{$command}.{$key}", $value);
 
         file_put_contents($this->configFilePath(), json_encode($config, JSON_PRETTY_PRINT));
