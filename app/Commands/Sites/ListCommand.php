@@ -8,7 +8,7 @@ use App\Commands\Concerns\SpecifyFields;
 class ListCommand extends BaseCommand
 {
     use SpecifyFields;
-    
+
     protected $signature = 'sites:list
                             {server_id? : Only list sites belonging to this server}
                             {--format=}
@@ -73,7 +73,7 @@ class ListCommand extends BaseCommand
         ];
     }
 
-    protected function action()
+    protected function action(): int
     {
         $serverId = $this->argument('server_id');
 
@@ -89,12 +89,13 @@ class ListCommand extends BaseCommand
         }
 
         if ($this->option('fields')) {
-            $this->saveFieldsFilter($this->option('savefields'));
+            $this->saveFieldsFilter();
             return $sites->map(fn ($site) => $this->specifyFields($site));
         }
 
         if ($this->displayFormat() === 'table') {
-            $sites->transform(fn ($site) => $this->specifyFields($site, [
+            $sites->transform(
+                fn ($site) => $this->specifyFields($site, [
                     'id',
                     'server_id',
                     'domain',
@@ -109,7 +110,5 @@ class ListCommand extends BaseCommand
         $this->format($sites);
 
         return self::SUCCESS;
-
-        
     }
 }

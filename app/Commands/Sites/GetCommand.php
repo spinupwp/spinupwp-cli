@@ -86,7 +86,7 @@ class GetCommand extends BaseCommand
         }
 
         if ($this->option('fields')) {
-            $this->saveFieldsFilter($this->option('savefields'));
+            $this->saveFieldsFilter();
         }
 
         $site = $this->specifyFields($site);

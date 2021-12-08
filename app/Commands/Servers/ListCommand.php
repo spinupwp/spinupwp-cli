@@ -8,6 +8,7 @@ use App\Commands\Concerns\SpecifyFields;
 class ListCommand extends BaseCommand
 {
     use SpecifyFields;
+
     protected $signature = 'servers:list
                             {--format=}
                             {--profile=}
@@ -66,7 +67,7 @@ class ListCommand extends BaseCommand
         ];
     }
 
-    protected function action()
+    protected function action(): int
     {
         $servers = collect($this->spinupwp->servers->list());
 
@@ -76,7 +77,7 @@ class ListCommand extends BaseCommand
         }
 
         if ($this->option('fields')) {
-            $this->saveFieldsFilter($this->option('savefields'));
+            $this->saveFieldsFilter();
             $servers->transform(fn ($server) => $this->specifyFields($server));
         }
 
@@ -89,7 +90,7 @@ class ListCommand extends BaseCommand
                 'database.server',
             ]));
         }
-        
+
         $this->format($servers);
 
         return self::SUCCESS;

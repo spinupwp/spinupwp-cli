@@ -3,7 +3,6 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\HasLargeOutput;
 use App\Commands\Concerns\SpecifyFields;
 
 class GetCommand extends BaseCommand
@@ -14,7 +13,7 @@ class GetCommand extends BaseCommand
                             {server_id : The server to output}
                             {--format=}
                             {--profile=}
-                            {--fields}';
+                            {--fields=}';
 
     protected $description = 'Get a server';
 
@@ -76,11 +75,11 @@ class GetCommand extends BaseCommand
         $server   = $this->spinupwp->servers->get((int) $serverId);
 
         if ($this->option('fields')) {
-            $this->saveFieldsFilter($this->option('savefields'));
+            $this->saveFieldsFilter();
         }
 
         if ($this->displayFormat() === 'table') {
-            $servers = $this->sepecifyFields($server);
+            $server = $this->specifyFields($server);
         }
 
         $this->format($server);
