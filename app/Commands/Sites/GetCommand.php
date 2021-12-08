@@ -8,8 +8,8 @@ use App\Commands\Concerns\SpecifyFields;
 
 class GetCommand extends BaseCommand
 {
-    use HasLargeOutput;
     use SpecifyFields;
+
     protected $signature = 'sites:get
                             {site_id : The site to output}
                             {--format=}
@@ -102,7 +102,6 @@ class GetCommand extends BaseCommand
             'XML-RPC Protection'           => $nginxData['xmlrpc_protected'] ? 'Enabled' : 'Disabled',
             'Multisite Rewrite Rules'      => $nginxData['subdirectory_rewrite_in_place'] ? 'Enabled' : 'Disabled',
         ];
-
     }
 
     public function backupsData(array $backupsData): array

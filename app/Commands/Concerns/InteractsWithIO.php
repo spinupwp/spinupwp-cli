@@ -9,6 +9,10 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 trait InteractsWithIO
 {
+    protected bool $largeOutput = false;
+
+    protected array $columnsMaxWidths = [];
+
     /**
      * @param mixed $resource
      */

@@ -8,9 +8,8 @@ use App\Commands\Concerns\SpecifyFields;
 
 class GetCommand extends BaseCommand
 {
-    use HasLargeOutput;
     use SpecifyFields;
-    
+
     protected $signature = 'servers:get
                             {server_id : The server to output}
                             {--format=}
@@ -22,7 +21,7 @@ class GetCommand extends BaseCommand
     protected function setup()
     {
         $this->largeOutput = true;
-        $this->fieldsMap = [
+        $this->fieldsMap   = [
             'ID'            => 'id',
             'Name'          => 'name',
             'Provider Name' => 'provider_name',
@@ -69,7 +68,6 @@ class GetCommand extends BaseCommand
                 'filter'   => fn ($value)   => ucfirst($value),
             ],
         ];
-        
     }
 
     public function action(): int
