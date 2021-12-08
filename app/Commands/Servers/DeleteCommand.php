@@ -17,7 +17,7 @@ class DeleteCommand extends BaseCommand
         $serverId = $this->argument('id');
 
         if (empty($serverId)) {
-            $serverId = $this->askToSelectServer('Which server would you like to start an SSH session for');
+            $serverId = $this->askToSelectServer('Which server would you like to delete?');
         }
 
         $delete = $this->option('force') || $this->confirm('Are you sure you want to delete this server?');
