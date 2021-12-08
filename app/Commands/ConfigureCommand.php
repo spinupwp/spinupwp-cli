@@ -19,16 +19,14 @@ class ConfigureCommand extends BaseCommand
         }
 
         if (!empty($this->config->get('api_token', $profile))) {
-            $this->alert("A profile named {$profile} is already configured");
-            $response = $this->ask('Do you want to overwrite the existing configuration? (y/n)', 'y');
+            $this->alert("A profile named \"{$profile}\" is already configured");
 
-            while (!in_array($response, ['y', 'n'])) {
-                $this->error("Please type 'y' or 'n'");
-                $response = $this->ask('Do you want to overwrite the existing configuration? (y/n)', 'y');
-            }
+            do {
+                $response = strtolower($this->ask('Do you want to overwrite the existing profile? (y/n)', 'y'));
+            } while (!in_array($response, ['y', 'n']));
 
             if ($response === 'n') {
-                return 0;
+                return self::SUCCESS;
             }
         }
 
@@ -41,18 +39,27 @@ class ConfigureCommand extends BaseCommand
         $defaultFormat = null;
 
         while (!in_array($defaultFormat, config('app.output_formats'))) {
-            $defaultFormat = $this->ask('Default output format (json/table)', null);
+            $defaultFormat = $this->anticipate('Default output format (json/table)', [
+                'json',
+                'table',
+            ], 'table');
         }
 
         $this->config->set('api_token', $apiKey, $profile);
         $this->config->set('format', $defaultFormat, $profile);
-        $this->info('SpinupWP CLI configured successfully');
 
-        return 0;
+        $this->info('Profile configured successfully.');
+
+        if ($profile !== 'default') {
+            $this->line('To use this profile, add the --profile option to your command:');
+            $this->line("`spinupwp servers:list --profile={$profile}`");
+        }
+
+        return self::SUCCESS;
     }
 
-    protected function action()
+    protected function action(): int
     {
-        return null;
+        return self::INVALID;
     }
 }
