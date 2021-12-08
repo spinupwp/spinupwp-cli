@@ -57,6 +57,8 @@ class Configuration
     {
         $this->config = $this->readConfig();
 
+        $command = trim($command);
+
         return Arr::get($this->config, "{$profile}.command_options.{$command}", []);
     }
 

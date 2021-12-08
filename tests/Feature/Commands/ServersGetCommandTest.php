@@ -95,7 +95,7 @@ test('servers table get specified columns and asks to save it in the config', fu
         ]);
 });
 
-test('servers table list only columns saved in the config', function () use ($response) {
+test('servers table get only columns saved in the config', function () use ($response) {
     $this->clientMock->shouldReceive('request')->with('GET', 'servers/1', [])->andReturn(
         new Response(200, [], json_encode(['data' => $response]))
     );
