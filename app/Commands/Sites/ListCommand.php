@@ -8,8 +8,11 @@ use App\Commands\Concerns\SpecifyFields;
 class ListCommand extends BaseCommand
 {
     use SpecifyFields;
-
-    protected $signature = 'sites:list {server_id? : Only list sites belonging to this server} {--format=} {--profile=} {--fields=} {--savefields}';
+    
+    protected $signature = 'sites:list
+                            {server_id? : Only list sites belonging to this server}
+                            {--format=}
+                            {--profile=}';
 
     protected $description = 'Retrieves a list of sites';
 
@@ -82,11 +85,7 @@ class ListCommand extends BaseCommand
 
         if ($sites->isEmpty()) {
             $this->warn('No sites found.');
-            return $sites;
-        }
-
-        if ($this->displayFormat() === 'json') {
-            return $sites;
+            return self::SUCCESS;
         }
 
         if ($this->option('fields')) {
@@ -94,14 +93,23 @@ class ListCommand extends BaseCommand
             return $sites->map(fn ($site) => $this->specifyFields($site));
         }
 
-        return $sites->map(fn ($site) => $this->specifyFields($site, [
-            'id',
-            'server_id',
-            'domain',
-            'site_user',
-            'php_version',
-            'page_cache',
-            'https',
-        ]));
+        if ($this->displayFormat() === 'table') {
+            $sites->transform(fn ($site) => $this->specifyFields($site, [
+                    'id',
+                    'server_id',
+                    'domain',
+                    'site_user',
+                    'php_version',
+                    'page_cache',
+                    'https',
+                ])
+            );
+        }
+
+        $this->format($sites);
+
+        return self::SUCCESS;
+
+        
     }
 }

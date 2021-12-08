@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
 
 class Configuration
 {
@@ -21,21 +22,21 @@ class Configuration
         return file_exists($this->configFilePath());
     }
 
-    public function get(string $key, string $profile = 'default'): string
+    public function get(string $key, string $profile = 'default', ?string $default = ''): ?string
     {
         $this->config = $this->readConfig();
         if (empty($this->config)) {
-            return '';
+            return $default;
         }
 
         if (!$this->teamExists($profile)) {
-            return '';
+            return $default;
         }
 
         $profileConfig = $this->config[$profile];
 
         if (!isset($profileConfig[$key])) {
-            return '';
+            return $default;
         }
 
         return $profileConfig[$key];
@@ -92,10 +93,21 @@ class Configuration
 
     public function configFilePath(): string
     {
-        if (!file_exists($this->path)) {
-            mkdir($this->path);
+        if (!File::isDirectory($this->path)) {
+            File::makeDirectory($this->path);
         }
 
         return $this->path . 'config.json';
+    }
+
+    public function sshControlPath(): string
+    {
+        $sshPath = $this->path . 'ssh/';
+
+        if (!File::isDirectory($sshPath)) {
+            File::makeDirectory($sshPath);
+        }
+
+        return $sshPath . '%h-%p-%r';
     }
 }

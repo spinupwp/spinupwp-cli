@@ -8,8 +8,10 @@ use App\Commands\Concerns\SpecifyFields;
 class ListCommand extends BaseCommand
 {
     use SpecifyFields;
-
-    protected $signature = 'servers:list {--format=} {--profile=} {--fields=} {--savefields}';
+    protected $signature = 'servers:list
+                            {--format=}
+                            {--profile=}
+                            {--fields=}';
 
     protected $description = 'Retrieves a list of servers';
 
@@ -70,24 +72,26 @@ class ListCommand extends BaseCommand
 
         if ($servers->isEmpty()) {
             $this->warn('No servers found.');
-            return $servers;
-        }
-
-        if ($this->displayFormat() === 'json') {
-            return $servers;
+            return self::SUCCESS;
         }
 
         if ($this->option('fields')) {
             $this->saveFieldsFilter($this->option('savefields'));
-            return $servers->map(fn ($server) => $this->specifyFields($server));
+            $servers->transform(fn ($server) => $this->specifyFields($server));
         }
 
-        return $servers->map(fn ($server) => $this->specifyFields($server, [
-            'id',
-            'name',
-            'ip_address',
-            'ubuntu_version',
-            'database.server',
-        ]));
+        if ($this->displayFormat() === 'table') {
+            $servers->transform(fn ($server) => $this->specifyFields($server, [
+                'id',
+                'name',
+                'ip_address',
+                'ubuntu_version',
+                'database.server',
+            ]));
+        }
+        
+        $this->format($servers);
+
+        return self::SUCCESS;
     }
 }

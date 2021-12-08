@@ -10,15 +10,18 @@ class GetCommand extends BaseCommand
 {
     use HasLargeOutput;
     use SpecifyFields;
-
-    protected $signature = 'servers:get {server_id} {--format=} {--profile=} {--fields=} {--savefields}';
+    
+    protected $signature = 'servers:get
+                            {server_id : The server to output}
+                            {--format=}
+                            {--profile=}
+                            {--fields}';
 
     protected $description = 'Get a server';
 
     protected function setup()
     {
         $this->largeOutput = true;
-
         $this->fieldsMap = [
             'ID'            => 'id',
             'Name'          => 'name',
@@ -66,24 +69,24 @@ class GetCommand extends BaseCommand
                 'filter'   => fn ($value)   => ucfirst($value),
             ],
         ];
+        
     }
 
-    public function action()
+    public function action(): int
     {
         $serverId = $this->argument('server_id');
-
-        $server = $this->spinupwp->servers->get($serverId);
-
-        if ($this->displayFormat() === 'json') {
-            return $server;
-        }
-
-        $this->columnsMaxWidths[] = [1, 50];
+        $server   = $this->spinupwp->servers->get((int) $serverId);
 
         if ($this->option('fields')) {
             $this->saveFieldsFilter($this->option('savefields'));
         }
 
-        return $this->specifyFields($server);
+        if ($this->displayFormat() === 'table') {
+            $servers = $this->sepecifyFields($server);
+        }
+
+        $this->format($server);
+
+        return self::SUCCESS;
     }
 }

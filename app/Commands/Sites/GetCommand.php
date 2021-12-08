@@ -10,12 +10,13 @@ class GetCommand extends BaseCommand
 {
     use HasLargeOutput;
     use SpecifyFields;
-
-    protected $signature = 'sites:get {site_id} {--format=} {--profile=} {--fields=} {--savefields}';
+    protected $signature = 'sites:get
+                            {site_id : The site to output}
+                            {--format=}
+                            {--profile=}
+                            {--fields}';
 
     protected $description = 'Get a site';
-
-    protected array $fieldsMap = [];
 
     protected function setUp()
     {
@@ -75,19 +76,23 @@ class GetCommand extends BaseCommand
         ];
     }
 
-    public function action()
+    public function action(): int
     {
-        $site = $this->spinupwp->sites->get($this->argument('site_id'));
+        $site = $this->spinupwp->sites->get((int) $this->argument('site_id'));
 
         if ($this->displayFormat() === 'json') {
-            return $site;
+            $this->toJson($site);
+            return self::SUCCESS;
         }
 
         if ($this->option('fields')) {
             $this->saveFieldsFilter($this->option('savefields'));
         }
 
-        return $this->specifyFields($site);
+        $site = $this->specifyFields($site);
+        $this->format($site);
+
+        return self::SUCCESS;
     }
 
     public function nginxData(array $nginxData): array
@@ -97,6 +102,7 @@ class GetCommand extends BaseCommand
             'XML-RPC Protection'           => $nginxData['xmlrpc_protected'] ? 'Enabled' : 'Disabled',
             'Multisite Rewrite Rules'      => $nginxData['subdirectory_rewrite_in_place'] ? 'Enabled' : 'Disabled',
         ];
+
     }
 
     public function backupsData(array $backupsData): array
