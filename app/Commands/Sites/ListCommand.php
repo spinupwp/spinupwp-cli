@@ -12,7 +12,8 @@ class ListCommand extends BaseCommand
     protected $signature = 'sites:list
                             {server_id? : Only list sites belonging to this server}
                             {--format=}
-                            {--profile=}';
+                            {--profile=}
+                            {--fields=}';
 
     protected $description = 'Retrieves a list of sites';
 
@@ -90,7 +91,9 @@ class ListCommand extends BaseCommand
 
         if ($this->option('fields')) {
             $this->saveFieldsFilter();
-            return $sites->map(fn ($site) => $this->specifyFields($site));
+            $sites->transform(fn ($site) => $this->specifyFields($site));
+            $this->format($sites);
+            return self::SUCCESS;
         }
 
         if ($this->displayFormat() === 'table') {

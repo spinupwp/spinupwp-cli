@@ -46,6 +46,7 @@ abstract class BaseCommand extends Command
                 $this->spinupwp->setClient(new Client([
                     'base_uri'    => $this->config->get('api_url', $this->profile(), 'https://api.spinupwp.app/v1/'),
                     'http_errors' => false,
+                    'verify'      => false,
                     'headers'     => [
                         'Authorization' => "Bearer {$this->apiToken()}",
                         'Accept'        => 'application/json',

@@ -14,7 +14,7 @@ class GetCommand extends BaseCommand
                             {site_id : The site to output}
                             {--format=}
                             {--profile=}
-                            {--fields}';
+                            {--fields=}';
 
     protected $description = 'Get a site';
 
