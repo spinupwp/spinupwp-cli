@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\Configuration;
+use App\Repositories\ConfigRepository;
 use GuzzleHttp\Psr7\Response;
 
 beforeEach(function () {

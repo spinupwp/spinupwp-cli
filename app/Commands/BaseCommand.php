@@ -3,7 +3,7 @@
 namespace App\Commands;
 
 use App\Commands\Concerns\InteractsWithIO;
-use App\Helpers\Configuration;
+use App\Repositories\ConfigRepository;
 use App\Repositories\SpinupWpRepository;
 use Exception;
 use GuzzleHttp\Client;
@@ -13,7 +13,7 @@ abstract class BaseCommand extends Command
 {
     use InteractsWithIO;
 
-    protected Configuration $config;
+    protected ConfigRepository $config;
 
     protected SpinupWpRepository $spinupwp;
 
@@ -23,7 +23,7 @@ abstract class BaseCommand extends Command
 
     protected array $columnsMaxWidths = [];
 
-    public function __construct(Configuration $configuration, SpinupWpRepository $spinupWp)
+    public function __construct(ConfigRepository $configuration, SpinupWpRepository $spinupWp)
     {
         parent::__construct();
 
