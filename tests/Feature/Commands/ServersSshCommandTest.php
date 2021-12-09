@@ -59,6 +59,11 @@ test('ssh command with no server ID supplied', function () {
                     'ssh_port'   => 22,
                 ],
             ],
+            'pagination' => [
+                'previous' => null,
+                'next'     => null,
+                'count'    => 1,
+            ],
         ]))
     );
 

@@ -49,6 +49,11 @@ test('ssh command with no site ID', function () {
                     'site_user' => 'hellfish',
                 ],
             ],
+            'pagination' => [
+                'previous' => null,
+                'next'     => null,
+                'count'    => 1,
+            ],
         ]))
     );
 
