@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Helpers\Configuration;
+use App\Repositories\SpinupWpRepository;
 use DeliciousBrains\SpinupWp\SpinupWp;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,7 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(SpinupWp::class, fn ($app) => new SpinupWp());
+        $this->app->singleton(SpinupWpRepository::class, function() {
+            return new SpinupWpRepository(new SpinupWp());
+        });
 
         $this->app->singleton(Configuration::class, function () {
             $path = isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'testing'

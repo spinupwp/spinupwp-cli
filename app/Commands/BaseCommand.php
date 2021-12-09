@@ -4,7 +4,7 @@ namespace App\Commands;
 
 use App\Commands\Concerns\InteractsWithIO;
 use App\Helpers\Configuration;
-use DeliciousBrains\SpinupWp\SpinupWp;
+use App\Repositories\SpinupWpRepository;
 use Exception;
 use GuzzleHttp\Client;
 use LaravelZero\Framework\Commands\Command;
@@ -15,7 +15,7 @@ abstract class BaseCommand extends Command
 
     protected Configuration $config;
 
-    protected SpinupWp $spinupwp;
+    protected SpinupWpRepository $spinupwp;
 
     protected bool $requiresToken = true;
 
@@ -23,7 +23,7 @@ abstract class BaseCommand extends Command
 
     protected array $columnsMaxWidths = [];
 
-    public function __construct(Configuration $configuration, SpinupWp $spinupWp)
+    public function __construct(Configuration $configuration, SpinupWpRepository $spinupWp)
     {
         parent::__construct();
 

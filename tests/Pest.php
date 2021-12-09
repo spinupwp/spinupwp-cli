@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\Configuration;
+use App\Repositories\SpinupWpRepository;
 use DeliciousBrains\SpinupWp\SpinupWp;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Config;
@@ -21,7 +22,7 @@ use Tests\CreatesApplication;
 uses(TestCase::class, CreatesApplication::class)
     ->beforeEach(function () {
         $this->clientMock = Mockery::mock(Client::class);
-        $this->spinupwp = resolve(SpinupWp::class)->setClient($this->clientMock)->setApiKey('123');
+        $this->spinupwp = resolve(SpinupWpRepository::class)->setClient($this->clientMock)->setApiKey('123');
         config()->set('app.ssh_timeout', -1);
     })
     ->in('Feature', 'Unit');
