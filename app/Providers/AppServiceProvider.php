@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(SpinupWpRepository::class, function() {
+        $this->app->singleton(SpinupWpRepository::class, function () {
             return new SpinupWpRepository(
                 resolve(SpinupWp::class),
             );
