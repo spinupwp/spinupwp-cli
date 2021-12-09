@@ -108,7 +108,7 @@ trait InteractsWithIO
 
     public function askToSelectSite(string $question): int
     {
-        $choices = collect($this->spinupwp->sites->list());
+        $choices = collect($this->spinupwp->listSites());
 
         return $this->askToSelect(
             $question,
@@ -118,7 +118,7 @@ trait InteractsWithIO
 
     public function askToSelectServer(string $question): int
     {
-        $choices = collect($this->spinupwp->servers->list());
+        $choices = collect($this->spinupwp->listServers());
 
         return $this->askToSelect(
             $question,

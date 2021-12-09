@@ -52,14 +52,14 @@ it('list command with no api token configured', function () use ($response) {
 });
 
 test('servers json list command', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('servers:list')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
 });
 
 test('servers table list command', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('servers:list --format table')->expectsTable(
@@ -84,7 +84,7 @@ test('servers table list command', function () use ($response) {
 });
 
 test('empty servers list', function () {
-    $this->clientMock->shouldReceive('request')->with('GET', 'servers?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->with('GET', 'servers?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson([]))
     );
     $this->artisan('servers:list')->expectsOutput('No servers found.');
