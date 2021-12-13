@@ -20,10 +20,14 @@ class DeleteCommand extends BaseCommand
     {
         $serverId = $this->argument('server_id');
 
+        if (empty($serverId)) {
+            $serverId = $this->askToSelectServer('Which server would you like to delete?');
+        }
+
         $delete = $this->option('force') || $this->confirm('Are you sure you want to delete this server?');
 
         if ($delete) {
-            $response = $this->spinupwp->servers->delete($serverId);
+            $response = $this->spinupwp->servers->delete($serverId, (bool) $this->option('delete-on-provider'));
             $this->info("Server deletion in progress. Event ID: {$response}");
         }
 
