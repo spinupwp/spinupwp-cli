@@ -12,7 +12,7 @@ class DeleteCommand extends BaseCommand
 
     protected $simpleOutput = true;
 
-    public function action()
+    public function action(): int
     {
         $serverId = $this->argument('id');
 
@@ -22,5 +22,7 @@ class DeleteCommand extends BaseCommand
             $response = $this->spinupwp->servers->delete($serverId);
             $this->info("Server deletion in progress. Event ID: {$response}");
         }
+
+        return self::SUCCESS;
     }
 }

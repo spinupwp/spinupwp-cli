@@ -54,10 +54,6 @@ abstract class BaseCommand extends Command
                 ]));
             }
 
-            if (!$this->simpleOutput) {
-                $this->format($action);
-            }
-
             return $this->action();
         } catch (Exception $e) {
             $this->error($e->getMessage());
