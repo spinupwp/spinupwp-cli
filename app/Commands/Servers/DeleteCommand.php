@@ -34,7 +34,7 @@ class DeleteCommand extends BaseCommand
         }
 
         if ($delete) {
-            $response = $this->spinupwp->servers->delete($serverId, (bool) $this->option('delete-on-provider'));
+            $response = $server->delete((bool) $this->option('delete-on-provider'));
             $this->info("Server deletion in progress. Event ID: {$response}");
         }
 
