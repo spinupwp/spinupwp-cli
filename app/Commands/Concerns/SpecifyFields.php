@@ -27,11 +27,11 @@ trait SpecifyFields
         $this->applyFilter($fieldsFilter);
 
         foreach ($this->fieldsMap as $name => $resourceProp) {
-            if (isset($resourceProp['ignore']) && $resourceProp['ignore']($resource->{$resourceProp['property']})) {
+            $property = $this->getFinalResourceProperty($resourceProp);
+
+            if (isset($resourceProp['ignore']) && $resourceProp['ignore']($resource->{$property})) {
                 continue;
             }
-
-            $property = $this->getFinalResourceProperty($resourceProp);
 
             if (isset($resourceProp['filter'])) {
                 $value = $resourceProp['filter']($resource->{$property});
