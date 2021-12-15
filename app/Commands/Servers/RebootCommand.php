@@ -9,6 +9,7 @@ class RebootCommand extends BaseCommand
     protected $signature = 'servers:reboot
                             {server_id? : The server to reboot}
                             {--all : Reboot all servers}
+                            {--force : Force reboot}
                             {--profile=}';
 
     protected $description = 'Reboot a server';
@@ -25,7 +26,9 @@ class RebootCommand extends BaseCommand
 
         $server = $this->spinupwp->servers->get($serverId);
 
-        if ($this->confirm("Are you sure you want to reboot \"{$server->name}\"?", 'yes')) {
+        $reboot = (bool) $this->option('force') || $this->confirm("Are you sure you want to reboot \"{$server->name}\"?", 'yes');
+
+        if ($reboot) {
             $serversToDelete[] = $server;
         }
 

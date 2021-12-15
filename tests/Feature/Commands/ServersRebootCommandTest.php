@@ -23,3 +23,8 @@ test('reboot a server', function () {
         ->expectsConfirmation('Are you sure you want to reboot "hellfish-media"?', 'yes')
         ->expectsOutput('Server reboot in progress. Event ID: 100');
 });
+
+test('reboot a server with force option', function () {
+    $this->artisan('servers:reboot 1 --force')
+        ->expectsOutput('Server reboot in progress. Event ID: 100');
+});
