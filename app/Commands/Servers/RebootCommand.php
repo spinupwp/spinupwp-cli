@@ -16,9 +16,12 @@ class RebootCommand extends BaseCommand
 
     public function action(): int
     {
-        $serversToDelete = [];
-
         $serverId = $this->argument('server_id');
+
+        if ((bool) $this->option('all')) {
+            $this->rebootAllServers();
+            return self::SUCCESS;
+        }
 
         if (empty($serverId)) {
             $serverId = $this->askToSelectServer('Which server would you like to reboot?');
@@ -28,19 +31,32 @@ class RebootCommand extends BaseCommand
 
         $reboot = (bool) $this->option('force') || $this->confirm("Are you sure you want to reboot \"{$server->name}\"?", 'yes');
 
-        if ($reboot) {
-            $serversToDelete[] = $server;
-        }
-
-        if (empty($serversToDelete)) {
+        if (!$reboot) {
             return self::SUCCESS;
         }
 
-        foreach ($serversToDelete as $server) {
-            $response = $server->reboot();
-            $this->info("Server reboot in progress. Event ID: {$response}");
-        }
+        $this->rebootServers([$server]);
 
         return self::SUCCESS;
+    }
+
+    protected function rebootAllServers(): void
+    {
+        $reboot = (bool) $this->option('force') || $this->confirm('Are you sure you want to reboot all servers?', 'yes');
+        if ($reboot) {
+            $this->rebootServers($this->spinupwp->servers->list());
+        }
+    }
+
+    protected function rebootServers($servers): void
+    {
+        if (empty($servers)) {
+            return;
+        }
+
+        foreach ($servers as $server) {
+            $response = $server->reboot();
+            $this->info("Rebooting server {$server->name}. Event ID: {$response}");
+        }
     }
 }
