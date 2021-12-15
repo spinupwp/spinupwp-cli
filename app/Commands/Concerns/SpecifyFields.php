@@ -80,9 +80,14 @@ trait SpecifyFields
     {
         $commandOptions = $this->config->getCommandConfiguration($this->command, $this->profile());
 
+        if (!empty($commandOptions)) {
+            return;
+        }
+
         if (empty($commandOptions) && !$saveConfiguration) {
             $saveConfiguration = $this->confirm('Do you want to save the specified fields as default for this command?', true);
         }
+
         if ($saveConfiguration) {
             $this->config->setCommandConfiguration($this->command, 'fields', $this->option('fields'), $this->profile());
             return;
