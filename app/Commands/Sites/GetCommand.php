@@ -67,7 +67,7 @@ class GetCommand extends BaseCommand
             ],
             'Push-to-deploy' => [
                 'ignore'   => fn ($value)   => !$value['enabled'],
-                'property' => 'git|git.push_to_deploy',
+                'property' => 'git|git.push_enabled',
                 'filter'   => fn ($value)   => $value['push_enabled'] ? 'Enabled' : 'Disabled',
             ],
             'Deployment URL' => [
