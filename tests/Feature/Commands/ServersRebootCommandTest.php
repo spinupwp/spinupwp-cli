@@ -19,5 +19,7 @@ afterEach(function () {
 });
 
 test('reboot a server', function () {
-    $this->artisan('servers:reboot 1')->expectsOutput('Server reboot in progress. Event ID: 100');
+    $this->artisan('servers:reboot 1')
+        ->expectsConfirmation('Are you sure you want to reboot "hellfish-media"?', 'yes')
+        ->expectsOutput('Server reboot in progress. Event ID: 100');
 });
