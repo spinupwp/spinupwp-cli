@@ -30,6 +30,7 @@ trait SpecifyFields
             $property = $this->getFinalResourceProperty($resourceProp);
 
             if (isset($resourceProp['ignore']) && $resourceProp['ignore']($resource->{$property})) {
+                $fields[$name] = '';
                 continue;
             }
 
