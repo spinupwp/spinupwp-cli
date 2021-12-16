@@ -16,12 +16,12 @@ class RebootCommand extends BaseCommand
 
     public function action(): int
     {
-        $serverId = $this->argument('server_id');
-
         if ((bool) $this->option('all')) {
             $this->rebootAllServers();
             return self::SUCCESS;
         }
+
+        $serverId = $this->argument('server_id');
 
         if (empty($serverId)) {
             $serverId = $this->askToSelectServer('Which server would you like to reboot?');
