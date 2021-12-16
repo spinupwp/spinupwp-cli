@@ -29,7 +29,7 @@ class DeleteCommand extends BaseCommand
         $delete = (bool) $this->option('force');
 
         if (!$delete) {
-            $this->warn("You're about to delete \"{$server->name}\"");
+            $this->alert("You're about to delete \"{$server->name}\"");
             $delete = $this->confirm('Do you wish to continue?', false);
         }
 
