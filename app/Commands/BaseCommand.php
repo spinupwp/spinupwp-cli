@@ -41,7 +41,7 @@ abstract class BaseCommand extends Command
         }
 
         try {
-            if (!$this->spinupwp->hasApiKey() || !empty($this->config->get('api_url', $this->profile()))) {
+            if (!$this->spinupwp->hasApiKey()) {
                 $this->spinupwp->setClient(new Client(
                     [
                         'base_uri'    => $this->config->get('api_url', $this->profile(), 'https://api.spinupwp.app/v1/'),
