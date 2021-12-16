@@ -26,14 +26,12 @@ test('delete a server with force option', function () {
 
 test('delete a server without force option', function () {
     $this->artisan('servers:delete 1')
-        ->expectsOutput("You're about to delete \"hellfish-media\"")
         ->expectsConfirmation('Do you wish to continue?', 'yes')
         ->expectsOutput('Server deletion in progress. Event ID: 100');
 });
 
 test('delete a server without force option and cancel deletion', function () {
     $this->artisan('servers:delete 1')
-        ->expectsOutput("You're about to delete \"hellfish-media\"")
         ->expectsConfirmation('Do you wish to continue?', 'no')
         ->doesntExpectOutput('Server deletion in progress. Event ID: 100');
 });
@@ -45,7 +43,7 @@ test('delete a server on provider', function () {
         new Response(200, [], json_encode(['event_id' => '100']))
     );
     $this->artisan('servers:delete 1 --delete-on-provider')
-        ->expectsOutput("You're about to delete \"hellfish-media\"")
+
         ->expectsConfirmation('Do you wish to continue?', 'yes')
         ->expectsOutput('Server deletion in progress. Event ID: 100');
 });
