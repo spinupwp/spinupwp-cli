@@ -30,7 +30,7 @@ class DeleteCommand extends BaseCommand
         }
 
         if ($force || $confirmed) {
-            $eventId = $this->spinupwp->sites->delete((int)$siteId);
+            $eventId = $this->spinupwp->sites->delete((int) $siteId);
 
             $this->successfulStep('Site queued for deletion.');
 

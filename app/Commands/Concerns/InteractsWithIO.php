@@ -189,10 +189,10 @@ trait InteractsWithIO
     protected function stepTable(array $headers, array $rows): void
     {
         $this->table(
-            collect($headers)->map(function($header) {
+            collect($headers)->map(function ($header) {
                 return "   <comment>$header</comment>";
             })->all(),
-            collect($rows)->map(function($row) {
+            collect($rows)->map(function ($row) {
                 return collect($row)->map(function ($cell) {
                     return "   <options=bold>$cell</>";
                 })->all();
