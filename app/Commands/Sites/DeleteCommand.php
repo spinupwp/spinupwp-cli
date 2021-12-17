@@ -3,7 +3,6 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
-use DeliciousBrains\SpinupWp\Resources\Site;
 
 class DeleteCommand extends BaseCommand
 {
@@ -31,8 +30,17 @@ class DeleteCommand extends BaseCommand
         }
 
         if ($force || $confirmed) {
-            $this->line("Deleting [<comment>{$site->domain}</comment>]...");
-            $this->spinupwp->sites->delete((int) $siteId);
+            $eventId = $this->spinupwp->sites->delete((int)$siteId);
+
+            $this->successfulStep('Site queued for deletion.');
+
+            $this->stepTable([
+                'Event ID',
+                'Domain',
+            ], [[
+                $eventId,
+                $site->domain,
+            ]]);
         }
 
         return self::SUCCESS;
