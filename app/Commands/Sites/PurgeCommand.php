@@ -13,12 +13,6 @@ class PurgeCommand extends \App\Commands\BaseCommand
 
     protected function action(): int
     {
-        $siteId = $this->argument('site_id');
-
-        if (empty($siteId)) {
-            $siteId = $this->askToSelectSite('Which site do you want to purge the page cache for?');
-        }
-
         $cacheToPurge = $this->option('cache');
 
         if (empty($cacheToPurge)) {
@@ -30,6 +24,17 @@ class PurgeCommand extends \App\Commands\BaseCommand
             $cacheToPurge = $cacheToPurge === 1 ? 'page' : 'object';
         }
 
+        if ($this->option('all')) {
+            $this->purgeCacheOnAllSites($cacheToPurge);
+            return self::SUCCESS;
+        }
+
+        $siteId = $this->argument('site_id');
+
+        if (empty($siteId)) {
+            $siteId = $this->askToSelectSite('Which site do you want to purge the page cache for?');
+        }
+
         $site = $this->spinupwp->sites->get($siteId);
 
         $this->purgeCache([$site], $cacheToPurge);
@@ -37,20 +42,28 @@ class PurgeCommand extends \App\Commands\BaseCommand
         return self::SUCCESS;
     }
 
-    protected function purgeCacheOnAllSites(): void
+    protected function purgeCacheOnAllSites(string $cacheToPurge): void
     {
+        $sites      = $this->spinupwp->sites->list();
+        $shouldWait = count($sites) > 59;
+        $this->purgeCache($sites, $cacheToPurge, $shouldWait);
     }
 
-    protected function purgeCache($sites, string $cacheToPurge): void
+    protected function purgeCache($sites, string $cacheToPurge, $shouldWait = false): void
     {
         if (empty($sites)) {
             return;
         }
 
         foreach ($sites as $site) {
-            $response = $cacheToPurge === 'page' ? $site->purgePageCache() : $site->purgeObjectCache();
             $cache    = $cacheToPurge === 'page' ? 'page' : 'object';
+            $response = $cacheToPurge === 'page' ? $site->purgePageCache() : $site->purgeObjectCache();
+
             $this->info("Purging {$cache} cache for site {$site->domain}. Event ID: {$response}");
+
+            if ($shouldWait) {
+                sleep(1);
+            }
         }
     }
 }
