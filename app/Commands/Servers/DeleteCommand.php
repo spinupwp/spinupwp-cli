@@ -14,8 +14,6 @@ class DeleteCommand extends BaseCommand
 
     protected $description = 'Delete a server';
 
-    protected $simpleOutput = true;
-
     public function action(): int
     {
         $serverId = $this->argument('server_id');
@@ -24,18 +22,26 @@ class DeleteCommand extends BaseCommand
             $serverId = $this->askToSelectServer('Which server would you like to delete?');
         }
 
-        $server = $this->spinupwp->servers->get($serverId);
+        $server = $this->spinupwp->servers->get((int) $serverId);
+        $force  = (bool) $this->option('force');
 
-        $delete = (bool) $this->option('force');
-
-        if (!$delete) {
+        if (!$force) {
             $this->alert("You're about to delete \"{$server->name}\"");
-            $delete = $this->confirm('Do you wish to continue?', false);
+            $confirmed = $this->confirm('Do you wish to continue?', false);
         }
 
-        if ($delete) {
-            $response = $server->delete((bool) $this->option('delete-on-provider'));
-            $this->info("Server deletion in progress. Event ID: {$response}");
+        if ($force || $confirmed) {
+            $eventId = $server->delete((bool) $this->option('delete-on-provider'));
+
+            $this->successfulStep('Server queued for deletion.');
+
+            $this->stepTable([
+                'Event ID',
+                'Server',
+            ], [[
+                $eventId,
+                $server->name,
+            ]]);
         }
 
         return self::SUCCESS;

@@ -23,8 +23,6 @@ abstract class BaseCommand extends Command
 
     protected array $columnsMaxWidths = [];
 
-    protected $simpleOutput = false;
-
     public function __construct(Configuration $configuration, SpinupWp $spinupWp)
     {
         parent::__construct();
