@@ -22,6 +22,11 @@ class GitDeployCommand extends BaseCommand
 
         $site = $this->spinupwp->sites->get((int) $siteId);
 
+        if (!$site->git['enabled']) {
+            $this->warn('This site is not configured for Git deployments.');
+            return self::SUCCESS;
+        }
+
         $response = $site->gitDeploy();
 
         $this->line("Deploying site \"{$site->domain}\". Event ID: {$response}.");
