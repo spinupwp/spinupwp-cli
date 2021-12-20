@@ -10,6 +10,9 @@ beforeEach(function () {
             'data' => [
                 'id'     => 1,
                 'domain' => 'hellfishmedia.com',
+                'git'    => [
+                    'enabled' => true,
+                ],
             ],
         ]))
     );
@@ -32,6 +35,9 @@ test('site git deploy command', function () {
                 [
                     'id'     => 1,
                     'domain' => 'hellfishmedia.com',
+                    'git'    => [
+                        'enabled' => true,
+                    ],
                 ],
             ],
             'pagination' => [
