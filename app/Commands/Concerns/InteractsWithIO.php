@@ -175,4 +175,29 @@ trait InteractsWithIO
 
         return $total . ' ' . $units[$pow];
     }
+
+    public function step(string $text): void
+    {
+        $this->line("<fg=blue>==></> <options=bold>{$text}</>");
+    }
+
+    public function successfulStep(string $text): void
+    {
+        $this->line("<fg=green>==></> <options=bold>{$text}</>");
+    }
+
+    protected function stepTable(array $headers, array $rows): void
+    {
+        $this->table(
+            collect($headers)->map(function ($header) {
+                return "   <comment>$header</comment>";
+            })->all(),
+            collect($rows)->map(function ($row) {
+                return collect($row)->map(function ($cell) {
+                    return "   <options=bold>$cell</>";
+                })->all();
+            })->all(),
+            'compact',
+        );
+    }
 }
