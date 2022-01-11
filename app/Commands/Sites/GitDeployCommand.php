@@ -10,7 +10,7 @@ class GitDeployCommand extends BaseCommand
                             {site_id? : The site to deploy}
                             {--profile=}';
 
-    protected $description = 'Deploy a site via Git';
+    protected $description = 'Run a Git deployment';
 
     public function action(): int
     {
@@ -27,9 +27,17 @@ class GitDeployCommand extends BaseCommand
             return self::SUCCESS;
         }
 
-        $response = $site->gitDeploy();
+        $eventId = $site->gitDeploy();
 
-        $this->line("Deploying site \"{$site->domain}\". Event ID: {$response}.");
+        $this->successfulStep('Site queued for deployment.');
+
+        $this->stepTable([
+            'Event ID',
+            'Site',
+        ], [[
+            $eventId,
+            $site->domain,
+        ]]);
 
         return self::SUCCESS;
     }
