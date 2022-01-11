@@ -24,7 +24,7 @@ beforeEach(function () {
 
 test('site git deploy command with site ID supplied', function () {
     $this->artisan('sites:deploy 1')
-        ->expectsOutput('Deploying site "hellfishmedia.com". Event ID: 100.')
+        ->expectsOutput('==> Site queued for deployment.')
         ->assertExitCode(0);
 });
 
@@ -50,6 +50,6 @@ test('site git deploy command', function () {
 
     $this->artisan('sites:deploy')
         ->expectsQuestion('Which site would you like to deploy?', '1')
-        ->expectsOutput('Deploying site "hellfishmedia.com". Event ID: 100.')
+        ->expectsOutput('==> Site queued for deployment.')
         ->assertExitCode(0);
 });
