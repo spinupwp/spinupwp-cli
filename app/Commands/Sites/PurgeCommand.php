@@ -19,7 +19,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
             $cacheToPurge = (int) $this->askToSelect('Which cache do you want to purge?', [
                 '1' => 'Page cache',
                 '2' => 'Object cache',
-            ]);
+            ], '1');
 
             $cacheToPurge = $cacheToPurge === 1 ? 'page' : 'object';
         }
