@@ -17,7 +17,7 @@ class RebootCommand extends BaseCommand
     public function action(): int
     {
         if ((bool) $this->option('all')) {
-            $this->rebootAllServers();
+            $this->rebootAll();
             return self::SUCCESS;
         }
 
@@ -34,7 +34,7 @@ class RebootCommand extends BaseCommand
         return self::SUCCESS;
     }
 
-    protected function rebootAllServers(): void
+    protected function rebootAll(): void
     {
         $reboot = (bool) $this->option('force') || $this->confirm('Are you sure you want to reboot all servers?', 'yes');
         if ($reboot) {
