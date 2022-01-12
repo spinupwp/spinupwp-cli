@@ -22,7 +22,13 @@ class Configuration
         return file_exists($this->configFilePath());
     }
 
-    public function get(string $key, string $profile = 'default', $default = '')
+    /**
+     * @param string $key
+     * @param string $profile
+     * @param mixed $default
+     * @return mixed
+     */
+    public function get(string $key, string $profile = 'default', $default = null)
     {
         $this->config = $this->readConfig();
 

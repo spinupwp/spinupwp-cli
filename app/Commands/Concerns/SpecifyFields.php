@@ -2,11 +2,13 @@
 
 namespace App\Commands\Concerns;
 
+use DeliciousBrains\SpinupWp\Resources\Resource;
+
 trait SpecifyFields
 {
     protected array $fieldsMap = [];
 
-    protected function specifyFields($resource, array $fieldsFilter = []): array
+    protected function specifyFields(Resource $resource, array $fieldsFilter = []): array
     {
         if (empty($this->fieldsMap)) {
             return $resource->toArray();
@@ -21,7 +23,8 @@ trait SpecifyFields
         }
 
         if ($this->option('fields')) {
-            $fieldsFilter = explode(',', str_replace(' ', '', $this->option('fields')));
+            $fields       = str_replace(' ', '', strval($this->option('fields')));
+            $fieldsFilter = explode(',', $fields);
         }
 
         $this->applyFilter($fieldsFilter);
@@ -63,6 +66,10 @@ trait SpecifyFields
         return in_array($property, $fieldsFilter);
     }
 
+    /**
+     * @param mixed $property
+     * @return string
+     */
     protected function getFinalResourceProperty($property): string
     {
         if (is_array($property)) {
@@ -76,7 +83,7 @@ trait SpecifyFields
         return $property;
     }
 
-    protected function saveFieldsFilter($saveConfiguration = false): void
+    protected function saveFieldsFilter(bool $saveConfiguration = false): void
     {
         $commandOptions = $this->config->getCommandConfiguration($this->command, $this->profile());
 
@@ -89,7 +96,7 @@ trait SpecifyFields
         }
 
         if ($saveConfiguration) {
-            $this->config->setCommandConfiguration($this->command, 'fields', $this->option('fields'), $this->profile());
+            $this->config->setCommandConfiguration($this->command, 'fields', strval($this->option('fields')), $this->profile());
             return;
         }
 

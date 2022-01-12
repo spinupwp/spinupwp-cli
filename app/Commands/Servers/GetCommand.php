@@ -17,7 +17,7 @@ class GetCommand extends BaseCommand
 
     protected $description = 'Get a server';
 
-    protected function setup()
+    protected function setup(): void
     {
         $this->largeOutput = true;
         $this->fieldsMap   = [

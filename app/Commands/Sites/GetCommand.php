@@ -18,7 +18,7 @@ class GetCommand extends BaseCommand
 
     protected $description = 'Get a site';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->largeOutput = true;
         $this->fieldsMap   = [
