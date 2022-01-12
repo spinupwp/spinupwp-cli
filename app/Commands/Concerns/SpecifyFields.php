@@ -23,8 +23,8 @@ trait SpecifyFields
         }
 
         if ($this->option('fields')) {
-            $fields       = str_replace(' ', '', strval($this->option('fields')));
-            $fieldsFilter = explode(',', $fields);
+            $fieldsOption = str_replace(' ', '', strval($this->option('fields')));
+            $fieldsFilter = explode(',', $fieldsOption);
         }
 
         $this->applyFilter($fieldsFilter);
