@@ -86,7 +86,7 @@ test('sites table list with specified columns command and asks to save it in the
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('sites:list --format table --fields=id,domain,site_user')
-        ->expectsConfirmation('Do you want to save the specified fields as default for this command?', 'yes')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'yes')
         ->expectsTable(
             ['ID', 'Domain', 'Site User'],
             [

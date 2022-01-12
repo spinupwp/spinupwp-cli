@@ -87,7 +87,7 @@ test('servers table get specified columns and asks to save it in the config', fu
         new Response(200, [], json_encode(['data' => $response]))
     );
     $this->artisan('servers:get 1 --format=table --fields=id,name,ip_address')
-        ->expectsConfirmation('Do you want to save the specified fields as default for this command?', 'yes')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'yes')
         ->expectsTable([], [
             ['ID', '1'],
             ['Name', 'hellfish-media'],

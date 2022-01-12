@@ -92,7 +92,7 @@ trait SpecifyFields
         }
 
         if (empty($commandOptions) && !$saveConfiguration) {
-            $saveConfiguration = $this->confirm('Do you want to save the specified fields as default for this command?', true);
+            $saveConfiguration = $this->confirm('Do you want to save the specified fields as the default for this command?', true);
         }
 
         if ($saveConfiguration) {

@@ -128,7 +128,7 @@ test('sites table get command specifying columns and asks to save it in the conf
         new Response(200, [], json_encode(['data' => $response]))
     );
     $this->artisan('sites:get 1 --format=table --fields=domain,git,backups,status')
-        ->expectsConfirmation('Do you want to save the specified fields as default for this command?', 'yes')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'yes')
         ->expectsTable([], [
             ['Domain', 'hellfish.media'],
             ['Git', 'Enabled'],
