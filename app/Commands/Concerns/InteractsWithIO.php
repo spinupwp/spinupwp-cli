@@ -11,8 +11,6 @@ trait InteractsWithIO
 {
     protected bool $largeOutput = false;
 
-    protected array $columnsMaxWidths = [];
-
     /**
      * @param mixed $resource
      */
@@ -155,12 +153,6 @@ trait InteractsWithIO
         }
 
         $table->setRows($rows)->setStyle('default');
-
-        if (!empty($this->columnsMaxWidths)) {
-            foreach ($this->columnsMaxWidths as $column) {
-                $table->setColumnMaxWidth($column[0], $column[1]);
-            }
-        }
 
         $table->render();
     }
