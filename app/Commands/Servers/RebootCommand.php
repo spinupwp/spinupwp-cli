@@ -18,6 +18,7 @@ class RebootCommand extends BaseCommand
     {
         if ((bool) $this->option('all')) {
             $this->rebootServers($this->spinupwp->servers->list()->toArray());
+            return self::SUCCESS;
         }
 
         $serverId = $this->argument('server_id');
@@ -39,9 +40,23 @@ class RebootCommand extends BaseCommand
             return;
         }
 
+        $events = [];
+
         foreach ($servers as $server) {
-            $response = $server->reboot();
-            $this->info("Rebooting server {$server->name}. Event ID: {$response}");
+            try {
+                $eventId = $server->reboot();
+                $this->successfulStep('Server queued for reboot.');
+
+                $this->stepTable([
+                    'Event ID',
+                    'Server',
+                ], [[
+                    $eventId,
+                    $server->name,
+                ]]);
+            } catch (\Exception $e) {
+                continue;
+            }
         }
     }
 }
