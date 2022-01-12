@@ -23,11 +23,6 @@ test('reboot a server', function () {
         ->expectsOutput('==> Server queued for reboot.');
 });
 
-test('reboot a server with force option', function () {
-    $this->artisan('servers:reboot 1 --force')
-        ->expectsOutput('==> Server queued for reboot.');
-});
-
 test('reboot all servers', function () {
     $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
         new Response(200, [], listResponseJson([
