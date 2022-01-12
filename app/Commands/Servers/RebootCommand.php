@@ -38,7 +38,7 @@ class RebootCommand extends BaseCommand
 
     protected function rebootAll(): void
     {
-        if ((bool) $this->option('force') || $this->confirm('Are you sure you want to reboot all servers?', 'yes')) {
+        if ((bool) $this->option('force') || $this->confirm('Are you sure you want to reboot all servers?', true)) {
             $this->rebootServers($this->spinupwp->servers->list()->toArray());
         }
     }
