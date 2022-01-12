@@ -9,6 +9,7 @@ class RebootCommand extends BaseCommand
     protected $signature = 'servers:reboot
                             {server_id? : The server to reboot}
                             {--all : Reboot all servers}
+                            {--f|force : Force reboot}
                             {--profile=}';
 
     protected $description = 'Reboot a server';
@@ -16,7 +17,7 @@ class RebootCommand extends BaseCommand
     public function action(): int
     {
         if ((bool) $this->option('all')) {
-            $this->rebootServers($this->spinupwp->servers->list()->toArray());
+            $this->rebootAll();
             return self::SUCCESS;
         }
 
@@ -28,9 +29,18 @@ class RebootCommand extends BaseCommand
 
         $server = $this->spinupwp->servers->get((int) $serverId);
 
-        $this->rebootServers([$server]);
+        if ((bool) $this->option('force') || $this->confirm("Are you sure you want to reboot \"{$server->name}\"?", true)) {
+            $this->rebootServers([$server]);
+        }
 
         return self::SUCCESS;
+    }
+
+    protected function rebootAll(): void
+    {
+        if ((bool) $this->option('force') || $this->confirm('Are you sure you want to reboot all servers?', 'yes')) {
+            $this->rebootServers($this->spinupwp->servers->list()->toArray());
+        }
     }
 
     protected function rebootServers(array $servers): void

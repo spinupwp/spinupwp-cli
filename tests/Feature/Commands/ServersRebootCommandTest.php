@@ -20,6 +20,12 @@ afterEach(function () {
 
 test('reboot a server', function () {
     $this->artisan('servers:reboot 1')
+        ->expectsConfirmation('Are you sure you want to reboot "hellfish-media"?', 'yes')
+        ->expectsOutput('==> Server queued for reboot.');
+});
+
+test('reboot a server with force option', function () {
+    $this->artisan('servers:reboot 1 --force')
         ->expectsOutput('==> Server queued for reboot.');
 });
 
@@ -34,6 +40,7 @@ test('reboot all servers', function () {
         new Response(200, [], json_encode(['event_id' => '101']))
     );
     $this->artisan('servers:reboot --all')
+        ->expectsConfirmation('Are you sure you want to reboot all servers?', 'yes')
         ->expectsOutput('==> Server queued for reboot.')
         ->expectsOutput('==> Server queued for reboot.');
 });
