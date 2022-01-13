@@ -108,7 +108,7 @@ test('servers table list with specified columns command and asks to save it in t
 });
 
 test('servers table list only columns saved in the config', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1&limit=100', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->with('GET', 'servers?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
 
@@ -127,6 +127,17 @@ test('servers table list only columns saved in the config', function () use ($re
             ],
         ]
     );
+
+    $this->artisan('servers:list --format=json')->expectsOutput(json_encode([
+        [
+            'id'   => 1,
+            'name' => 'hellfish-media',
+        ],
+        [
+            'id'   => 2,
+            'name' => 'staging.hellfish-media',
+        ],
+    ], JSON_PRETTY_PRINT));
 });
 
 test('empty servers list', function () {

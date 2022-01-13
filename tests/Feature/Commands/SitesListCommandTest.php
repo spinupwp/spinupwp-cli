@@ -106,8 +106,8 @@ test('sites table list with specified columns command and asks to save it in the
     $this->assertEquals('id,domain,site_user', resolve(Configuration::class)->getCommandConfiguration('sites:list')['fields']);
 });
 
-test('sites table list only columns saved in the config', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1&limit=100', [])->andReturn(
+test('sites list only columns saved in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
 
@@ -126,6 +126,17 @@ test('sites table list only columns saved in the config', function () use ($resp
             ],
         ]
     );
+
+    $this->artisan('sites:list --format=json')->expectsOutput(json_encode([
+        [
+            'id'     => 1,
+            'domain' => 'hellfishmedia.com',
+        ],
+        [
+            'id'     => 2,
+            'domain' => 'staging.hellfishmedia.com',
+        ],
+    ], JSON_PRETTY_PRINT));
 });
 
 test('empty sites list', function () {

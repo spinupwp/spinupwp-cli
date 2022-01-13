@@ -134,4 +134,9 @@ test('site table get only columns saved in the config', function () use ($respon
             ['ID', '1'],
             ['Domain', 'hellfish.media'],
         ]);
+
+    $this->artisan('sites:get 1')->expectsOutput(json_encode([
+        'id'     => 1,
+        'domain' => 'hellfish.media',
+    ], JSON_PRETTY_PRINT));
 });

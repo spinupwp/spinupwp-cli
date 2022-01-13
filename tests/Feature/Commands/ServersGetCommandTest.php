@@ -91,4 +91,9 @@ test('servers table get only columns saved in the config', function () use ($res
             ['ID', '1'],
             ['Name', 'hellfish-media'],
         ]);
+
+    $this->artisan('servers:get 1')->expectsOutput(json_encode([
+        'id'   => 1,
+        'name' => 'hellfish-media',
+    ], JSON_PRETTY_PRINT));
 });
