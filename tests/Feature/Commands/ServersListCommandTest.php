@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\Configuration;
+use App\Repositories\ConfigRepository as Configuration;
 use GuzzleHttp\Psr7\Response;
 
 $response = [
@@ -85,7 +85,7 @@ test('servers table list command', function () use ($response) {
 });
 
 test('servers table list with specified columns command and asks to save it in the config', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('servers:list --format=table --fields=id,name,ip_address')->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'yes')->expectsTable(
@@ -108,7 +108,7 @@ test('servers table list with specified columns command and asks to save it in t
 });
 
 test('servers table list only columns saved in the config', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
 

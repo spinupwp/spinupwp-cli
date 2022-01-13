@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\Configuration;
+use App\Repositories\ConfigRepository as Configuration;
 use GuzzleHttp\Psr7\Response;
 
 $response = [

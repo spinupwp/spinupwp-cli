@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\Configuration;
+use App\Repositories\ConfigRepository as Configuration;
 use GuzzleHttp\Psr7\Response;
 
 $response = [
@@ -82,7 +82,7 @@ test('sites table list command', function () use ($response) {
 });
 
 test('sites table list with specified columns command and asks to save it in the config', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('sites:list --format table --fields=id,domain,site_user')
@@ -107,7 +107,7 @@ test('sites table list with specified columns command and asks to save it in the
 });
 
 test('sites table list only columns saved in the config', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
 
