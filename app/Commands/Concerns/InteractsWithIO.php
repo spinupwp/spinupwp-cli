@@ -66,7 +66,11 @@ trait InteractsWithIO
      */
     protected function toJson($resource): void
     {
-        $this->line((string) json_encode($resource->toArray(), JSON_PRETTY_PRINT));
+        if (!is_array($resource)) {
+            $resource = $resource->toArray();
+        }
+
+        $this->line((string) json_encode($resource, JSON_PRETTY_PRINT));
     }
 
     /**
