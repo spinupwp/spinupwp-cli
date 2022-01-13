@@ -45,14 +45,14 @@ it('list command with no api token configured', function () {
 });
 
 test('sites json list command', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('sites:list')->expectsOutput(json_encode($response, JSON_PRETTY_PRINT));
 });
 
 test('sites table list command', function () use ($response) {
-    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('sites:list --format table')->expectsTable(
@@ -81,7 +81,7 @@ test('sites table list command', function () use ($response) {
 });
 
 test('empty sites list', function () {
-    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson([]))
     );
     $this->artisan('sites:list')->expectsOutput('No sites found.');
