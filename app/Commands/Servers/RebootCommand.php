@@ -68,7 +68,7 @@ class RebootCommand extends BaseCommand
             return;
         }
 
-        $this->successfulStep(ngettext('Server', 'Servers', count($events)) . ' queued for reboot.');
+        $this->successfulStep((count($events) === 1 ? 'Server' : 'Servers') . ' queued for reboot.');
 
         $this->stepTable([
             'Event ID',
