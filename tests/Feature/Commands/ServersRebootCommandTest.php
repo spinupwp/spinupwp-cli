@@ -41,5 +41,5 @@ test('reboot all servers', function () {
     );
     $this->artisan('servers:reboot --all')
         ->expectsConfirmation('Are you sure you want to reboot all servers?', 'yes')
-        ->expectsOutput('==> Server queued for reboot.');
+        ->expectsOutput('==> Servers queued for reboot.');
 });
