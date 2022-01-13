@@ -56,11 +56,19 @@ class RebootCommand extends BaseCommand
                 $eventId  = $server->reboot();
                 $events[] = ["{$eventId}", $server->name];
             } catch (\Exception $e) {
-                continue;
+                if (count($servers) === 1) {
+                    $this->error("{$server->name} could not be rebooted.");
+                    return;
+                }
             }
         }
 
-        $this->successfulStep('Server queued for reboot.');
+        if (empty($events)) {
+            $this->error('No servers could be rebooted.');
+            return;
+        }
+
+        $this->successfulStep(ngettext('Server', 'Servers', count($events)) . ' queued for reboot.');
 
         $this->stepTable([
             'Event ID',
