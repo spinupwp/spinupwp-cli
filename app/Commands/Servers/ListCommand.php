@@ -14,7 +14,7 @@ class ListCommand extends BaseCommand
                             {--profile=}
                             {--fields=}';
 
-    protected $description = 'Retrieves a list of servers';
+    protected $description = 'List all servers';
 
     protected function setup(): void
     {
