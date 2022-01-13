@@ -45,8 +45,8 @@ class ConfigRepository
 
     /**
      * @param string $key
-     * @param string $value
-     * @param mixed $profile
+     * @param mixed $value
+     * @param string $profile
      * @return void
      */
     public function set(string $key, $value, string $profile = 'default'): void
