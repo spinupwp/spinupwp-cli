@@ -145,7 +145,7 @@ class ListCommand extends BaseCommand
             return self::SUCCESS;
         }
 
-        if ($this->option('fields')) {
+        if ($this->shouldSpecifyFields()) {
             $this->saveFieldsFilter();
             $sites->transform(fn ($site) => $this->specifyFields($site));
             $this->format($sites);

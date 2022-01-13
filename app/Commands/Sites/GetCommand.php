@@ -135,10 +135,12 @@ class GetCommand extends BaseCommand
     public function action(): int
     {
         $siteId = $this->argument('site_id');
-        $site   = $this->spinupwp->sites->get((int) $siteId);
+        $site   = $this->spinupwp->getSite((int) $siteId);
 
-        if ($this->option('fields')) {
+        if ($this->shouldSpecifyFields()) {
             $this->saveFieldsFilter();
+            $this->format($this->specifyFields($site));
+            return self::SUCCESS;
         }
 
         if ($this->displayFormat() === 'table') {

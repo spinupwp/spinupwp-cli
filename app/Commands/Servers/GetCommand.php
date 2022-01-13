@@ -74,8 +74,10 @@ class GetCommand extends BaseCommand
         $serverId = $this->argument('server_id');
         $server   = $this->spinupwp->getServer((int) $serverId);
 
-        if ($this->option('fields')) {
+        if ($this->shouldSpecifyFields()) {
             $this->saveFieldsFilter();
+            $this->format($this->specifyFields($server));
+            return self::SUCCESS;
         }
 
         if ($this->displayFormat() === 'table') {
