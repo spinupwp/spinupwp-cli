@@ -9,7 +9,7 @@ class RebootCommand extends BaseCommand
     protected $signature = 'servers:reboot
                             {server_id? : The server to reboot}
                             {--all : Reboot all servers}
-                            {--f|force : Force reboot}
+                            {--f|force : Reboot the server without prompting for confirmation}
                             {--profile=}';
 
     protected $description = 'Reboot a server';
