@@ -1,13 +1,13 @@
 <?php
 
-use App\Helpers\Configuration;
+use App\Repositories\ConfigRepository;
 
 beforeEach(function () {
     deleteTestConfigFile();
 });
 
 test('isConfigured method', function () {
-    $config = resolve(Configuration::class);
+    $config = resolve(ConfigRepository::class);
     $isConfigured = $config->isConfigured();
     expect($isConfigured)->toBeFalse();
     setTestConfigFile();
@@ -17,12 +17,12 @@ test('isConfigured method', function () {
 
 test('get method', function () {
     setTestConfigFile();
-    $config = resolve(Configuration::class);
+    $config = resolve(ConfigRepository::class);
     expect($config->get('api_token'))->toEqual('myapikey123');
 });
 
 test('set method', function () {
-    $config = resolve(Configuration::class);
+    $config = resolve(ConfigRepository::class);
 
     // first time
     $config->set('api_token', 'mynewapitoken');

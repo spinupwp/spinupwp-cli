@@ -18,9 +18,9 @@ class ListCommand extends BaseCommand
         $serverId = $this->argument('server_id');
 
         if ($serverId) {
-            $sites = collect($this->spinupwp->sites->listForServer((int) $serverId));
+            $sites = $this->spinupwp->listSites((int) $serverId);
         } else {
-            $sites = collect($this->spinupwp->sites->list());
+            $sites = $this->spinupwp->listSites();
         }
 
         if ($sites->isEmpty()) {

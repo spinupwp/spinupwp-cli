@@ -20,7 +20,7 @@ class GetCommand extends BaseCommand
         $this->columnsMaxWidths[] = [1, 50];
 
         $serverId = $this->argument('server_id');
-        $server   = $this->spinupwp->servers->get((int) $serverId);
+        $server   = $this->spinupwp->getServer((int) $serverId);
 
         if ($this->displayFormat() === 'table') {
             $server = [

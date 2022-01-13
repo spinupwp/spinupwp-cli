@@ -1,9 +1,8 @@
 <?php
 
-use App\Helpers\Configuration;
-use DeliciousBrains\SpinupWp\SpinupWp;
+use App\Repositories\ConfigRepository;
+use App\Repositories\SpinupWpRepository;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Config;
 use LaravelZero\Framework\Testing\TestCase;
 use Tests\CreatesApplication;
 
@@ -21,7 +20,7 @@ use Tests\CreatesApplication;
 uses(TestCase::class, CreatesApplication::class)
     ->beforeEach(function () {
         $this->clientMock = Mockery::mock(Client::class);
-        $this->spinupwp = resolve(SpinupWp::class)->setClient($this->clientMock)->setApiKey('123');
+        $this->spinupwp = resolve(SpinupWpRepository::class)->setClient($this->clientMock)->setApiKey('123');
         config()->set('app.ssh_timeout', -1);
     })
     ->in('Feature', 'Unit');
@@ -54,7 +53,7 @@ expect()->extend('toBeOne', function () {
 
 function setTestConfigFile($profileData = [])
 {
-    $config = resolve(Configuration::class);
+    $config = resolve(ConfigRepository::class);
     file_put_contents($config->configFilePath(), json_encode([
         'default' => array_merge([
             'api_token' => 'myapikey123',
@@ -65,7 +64,7 @@ function setTestConfigFile($profileData = [])
 
 function deleteTestConfigFile($test = '')
 {
-    $configFile = (resolve(Configuration::class))->configFilePath();
+    $configFile = (resolve(ConfigRepository::class))->configFilePath();
     if (!file_exists($configFile)) {
         return;
     }
