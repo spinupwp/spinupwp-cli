@@ -32,8 +32,12 @@ trait SpecifyFields
         foreach ($this->fieldsMap as $name => $resourceProp) {
             $property = $this->getFinalResourceProperty($resourceProp);
 
+            if (!property_exists($resource, $property)) {
+                continue;
+            }
+
             if (isset($resourceProp['ignore']) && $resourceProp['ignore']($resource->{$property})) {
-                $fields[$name] = '';
+                $fields[$this->displayFormat() === 'table' ? $name : $resourceProp['property']] = '';
                 continue;
             }
 
@@ -47,11 +51,10 @@ trait SpecifyFields
                     continue;
                 }
 
-                $fields[$name] = $value;
+                $fields[$this->displayFormat() === 'table' ? $name : $resourceProp['property']] = $value;
                 continue;
             }
-
-            $fields[$name] = $resource->{$resourceProp};
+            $fields[$this->displayFormat() === 'table' ? $name : $resourceProp] = $resource->{$resourceProp};
         }
 
         return $fields;
@@ -113,5 +116,11 @@ trait SpecifyFields
                 return $this->propertyInFilter($field, $fieldsFilter);
             });
         }
+    }
+
+    protected function shouldSpecifyFields(): bool
+    {
+        $commandOptions = $this->config->getCommandConfiguration($this->command, $this->profile());
+        return $this->option('fields') || (isset($commandOptions['fields']) && !empty($commandOptions['fields']));
     }
 }
