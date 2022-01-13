@@ -3,8 +3,8 @@
 namespace App\Commands;
 
 use App\Commands\Concerns\InteractsWithIO;
-use App\Helpers\Configuration;
-use DeliciousBrains\SpinupWp\SpinupWp;
+use App\Repositories\ConfigRepository;
+use App\Repositories\SpinupWpRepository;
 use Exception;
 use GuzzleHttp\Client;
 use LaravelZero\Framework\Commands\Command;
@@ -13,15 +13,15 @@ abstract class BaseCommand extends Command
 {
     use InteractsWithIO;
 
-    protected Configuration $config;
+    protected ConfigRepository $config;
 
-    protected SpinupWp $spinupwp;
+    protected SpinupWpRepository $spinupwp;
 
     protected bool $requiresToken = true;
 
     protected string $command;
 
-    public function __construct(Configuration $configuration, SpinupWp $spinupWp)
+    public function __construct(ConfigRepository $configuration, SpinupWpRepository $spinupWp)
     {
         parent::__construct();
 

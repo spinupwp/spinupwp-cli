@@ -69,7 +69,7 @@ class ListCommand extends BaseCommand
 
     protected function action(): int
     {
-        $servers = collect($this->spinupwp->servers->list());
+        $servers = collect($this->spinupwp->listServers());
 
         if ($servers->isEmpty()) {
             $this->warn('No servers found.');

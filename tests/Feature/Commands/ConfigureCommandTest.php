@@ -1,6 +1,6 @@
 <?php
 
-use App\Helpers\Configuration;
+use App\Repositories\ConfigRepository;
 
 beforeEach(function () {
     deleteTestConfigFile();
@@ -15,5 +15,5 @@ test('configure command for default profile', function () {
         ->expectsQuestion('Default output format (json/table)', 'json')
         ->expectsOutput('Profile configured successfully.');
 
-    expect((resolve(Configuration::class))->get('api_token'))->toEqual('my-spinupwp-api-token');
+    expect((resolve(ConfigRepository::class))->get('api_token'))->toEqual('my-spinupwp-api-token');
 });

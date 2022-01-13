@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Repositories;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 
-class Configuration
+class ConfigRepository
 {
     protected string $path;
 

@@ -72,7 +72,7 @@ class GetCommand extends BaseCommand
     public function action(): int
     {
         $serverId = $this->argument('server_id');
-        $server   = $this->spinupwp->servers->get((int) $serverId);
+        $server   = $this->spinupwp->getServer((int) $serverId);
 
         if ($this->option('fields')) {
             $this->saveFieldsFilter();
