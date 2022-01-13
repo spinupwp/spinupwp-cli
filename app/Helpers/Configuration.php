@@ -43,7 +43,13 @@ class Configuration
         return Arr::get($this->config[$profile], $key, $default);
     }
 
-    public function set(string $key, string $value, string $profile = 'default'): void
+    /**
+     * @param string $key
+     * @param string $value
+     * @param mixed $profile
+     * @return void
+     */
+    public function set(string $key, $value, string $profile = 'default'): void
     {
         $config = $this->config;
 
