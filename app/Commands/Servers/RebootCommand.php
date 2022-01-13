@@ -53,19 +53,18 @@ class RebootCommand extends BaseCommand
 
         foreach ($servers as $server) {
             try {
-                $eventId = $server->reboot();
-                $this->successfulStep('Server queued for reboot.');
-
-                $this->stepTable([
-                    'Event ID',
-                    'Server',
-                ], [[
-                    $eventId,
-                    $server->name,
-                ]]);
+                $eventId  = $server->reboot();
+                $events[] = ["{$eventId}", $server->name];
             } catch (\Exception $e) {
                 continue;
             }
         }
+
+        $this->successfulStep('Server queued for reboot.');
+
+        $this->stepTable([
+            'Event ID',
+            'Server',
+        ], $events);
     }
 }
