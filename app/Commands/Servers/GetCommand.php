@@ -35,15 +35,15 @@ class GetCommand extends BaseCommand
                 'filter'   => fn ($value)   => $this->formatBytes($value['used']) . ' of ' . $this->formatBytes($value['total'], 0) . ' used',
             ],
             'Database Server' => [
-                'property' => 'database',
+                'property' => 'database|database.server',
                 'filter'   => fn ($value)   => $value['server'],
             ],
             'Database Host' => [
-                'property' => 'database',
+                'property' => 'database|database.host',
                 'filter'   => fn ($value)   => $value['host'],
             ],
             'Database Port' => [
-                'property' => 'database',
+                'property' => 'database|database.port',
                 'filter'   => fn ($value)   => $value['port'],
             ],
             'SSH Public Key'    => 'ssh_publickey',
@@ -79,7 +79,13 @@ class GetCommand extends BaseCommand
         }
 
         if ($this->displayFormat() === 'table') {
-            $server = $this->specifyFields($server);
+            $server = $this->specifyFields($server, [
+                'id',
+                'name',
+                'ip_address',
+                'ubuntu_version',
+                'database.server',
+            ]);
         }
 
         $this->format($server);

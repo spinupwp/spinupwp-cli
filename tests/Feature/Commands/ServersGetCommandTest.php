@@ -60,25 +60,9 @@ test('servers table get command', function () use ($response) {
     $this->artisan('servers:get 1 --format=table')->expectsTable([], [
         ['ID', '1'],
         ['Name', 'hellfish-media'],
-        ['Provider Name', 'DigitalOcean'],
         ['IP Address', '127.0.0.1'],
-        ['SSH Port', '22'],
         ['Ubuntu', '20.04'],
-        ['Timezone', 'UTC'],
-        ['Region', 'TOR1'],
-        ['Size', '1 GB / 1 vCPU'],
-        ['Disk Space', '7.7 GB of 25 GB used'],
         ['Database Server', 'mysql-8.0'],
-        ['Database Host', 'localhost'],
-        ['Database Port', '3306'],
-        ['SSH Public Key', 'ssh-rsa AAAA....'],
-        ['Git Public Key', 'ssh-rsa AAAA....'],
-        ['Connection Status', 'Connected'],
-        ['Reboot Required', 'Yes'],
-        ['Upgrade Required', 'No'],
-        ['Install Notes', ''],
-        ['Created At', '2021-01-01T12:00:00.000000Z'],
-        ['Status', 'Provisioned'],
     ]);
 });
 
