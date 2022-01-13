@@ -30,7 +30,7 @@ test('reboot a server with force option', function () {
 });
 
 test('reboot all servers', function () {
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1&limit=100', [])->andReturn(
         new Response(200, [], listResponseJson([
             ['id' => 1, 'name' => 'hellfish-media'],
             ['id' => 2, 'name' => 'staging.hellfish-media'],
