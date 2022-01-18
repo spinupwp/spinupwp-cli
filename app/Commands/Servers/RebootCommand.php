@@ -17,29 +17,25 @@ class RebootCommand extends BaseCommand
     public function action(): int
     {
         if ((bool) $this->option('all')) {
-            $this->rebootAll();
+            $this->actOnAllServers('reboot', 'rebootServers');
             return self::SUCCESS;
         }
 
-        $serverId = $this->argument('server_id');
-
-        if (empty($serverId)) {
-            $serverId = $this->askToSelectServer('Which server would you like to reboot');
-        }
+        $serverId = $this->selectServer('reboot');
 
         $server = $this->spinupwp->getServer((int) $serverId);
 
-        if ((bool) $this->option('force') || $this->confirm("Are you sure you want to reboot \"{$server->name}\"?", true)) {
+        if ($this->forceOrConfirm("Are you sure you want to reboot \"{$server->name}\"?")) {
             $this->rebootServers([$server]);
         }
 
         return self::SUCCESS;
     }
 
-    protected function rebootAll(): void
+    protected function actOnAllServers(string $action, string $callback): void
     {
-        if ((bool) $this->option('force') || $this->confirm('Are you sure you want to reboot all servers?', true)) {
-            $this->rebootServers($this->spinupwp->listServers()->toArray());
+        if ($this->forceOrConfirm(sprintf('Are you sure you want to %s all servers?', $action))) {
+            $this->$callback($this->spinupwp->listServers()->toArray());
         }
     }
 

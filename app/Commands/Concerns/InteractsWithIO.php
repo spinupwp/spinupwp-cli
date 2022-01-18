@@ -116,6 +116,20 @@ trait InteractsWithIO
         );
     }
 
+    public function selectServer(string $action): int
+    {
+        $serverId = $this->argument('server_id');
+
+        if (empty($serverId)) {
+            $serverId = $this->askToSelectServer(sprintf(
+                'Which server would you like to %s',
+                $action
+            ));
+        }
+
+        return $serverId;
+    }
+
     public function askToSelectServer(string $question): int
     {
         $choices = collect($this->spinupwp->listServers());
@@ -199,5 +213,17 @@ trait InteractsWithIO
             })->all(),
             'compact',
         );
+    }
+
+    protected function actOnAllServers(string $action, string $callback): void
+    {
+        if ($this->forceOrConfirm(sprintf('Are you sure you want to %s all servers?', $action))) {
+            $this->$callback($this->spinupwp->listServers()->toArray());
+        }
+    }
+
+    protected function forceOrConfirm(string $confirmation, ?bool $default = true): bool
+    {
+        return (bool) $this->option('force') || $this->confirm($confirmation, $default);
     }
 }
