@@ -3,6 +3,7 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
+use Illuminate\Support\Collection;
 
 class RebootCommand extends BaseCommand
 {
@@ -16,59 +17,22 @@ class RebootCommand extends BaseCommand
 
     public function action(): int
     {
+        $servers = collect();
+
         if ((bool) $this->option('all')) {
-            $this->actOnAllServers('reboot', 'rebootServers');
-            return self::SUCCESS;
-        }
+            if ($this->forceOrConfirm('Are you sure you want to reboot all servers?')) {
+                $servers = $this->spinupwp->listServers();
+            }
+        } else {
+            $server = $this->selectServer('reboot');
 
-        $serverId = $this->selectServer('reboot');
-
-        $server = $this->spinupwp->getServer((int) $serverId);
-
-        if ($this->forceOrConfirm("Are you sure you want to reboot \"{$server->name}\"?")) {
-            $this->rebootServers([$server]);
-        }
-
-        return self::SUCCESS;
-    }
-
-    protected function actOnAllServers(string $action, string $callback): void
-    {
-        if ($this->forceOrConfirm(sprintf('Are you sure you want to %s all servers?', $action))) {
-            $this->$callback($this->spinupwp->listServers()->toArray());
-        }
-    }
-
-    protected function rebootServers(array $servers): void
-    {
-        if (empty($servers)) {
-            return;
-        }
-
-        $events = [];
-
-        foreach ($servers as $server) {
-            try {
-                $eventId  = $server->reboot();
-                $events[] = ["{$eventId}", $server->name];
-            } catch (\Exception $e) {
-                if (count($servers) === 1) {
-                    $this->error("{$server->name} could not be rebooted.");
-                    return;
-                }
+            if ($this->forceOrConfirm("Are you sure you want to reboot \"{$server->name}\"?")) {
+                $servers = collect([$server]);
             }
         }
 
-        if (empty($events)) {
-            $this->error('No servers could be rebooted.');
-            return;
-        }
+        $this->queueResources($servers, 'reboot', 'reboot');
 
-        $this->successfulStep((count($events) === 1 ? 'Server' : 'Servers') . ' queued for reboot.');
-
-        $this->stepTable([
-            'Event ID',
-            'Server',
-        ], $events);
+        return self::SUCCESS;
     }
 }

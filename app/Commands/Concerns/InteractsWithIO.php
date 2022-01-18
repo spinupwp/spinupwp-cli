@@ -2,7 +2,9 @@
 
 namespace App\Commands\Concerns;
 
+use DeliciousBrains\SpinupWp\Resources\Server;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -116,18 +118,15 @@ trait InteractsWithIO
         );
     }
 
-    public function selectServer(string $action): int
+    public function selectServer(string $action): Server
     {
         $serverId = $this->argument('server_id');
 
         if (empty($serverId)) {
-            $serverId = $this->askToSelectServer(sprintf(
-                'Which server would you like to %s',
-                $action
-            ));
+            $serverId = $this->askToSelectServer("Which server would you like to $action");
         }
 
-        return $serverId;
+        return $this->spinupwp->getServer((int) $serverId);
     }
 
     public function askToSelectServer(string $question): int
@@ -215,15 +214,39 @@ trait InteractsWithIO
         );
     }
 
-    protected function actOnAllServers(string $action, string $callback): void
-    {
-        if ($this->forceOrConfirm(sprintf('Are you sure you want to %s all servers?', $action))) {
-            $this->$callback($this->spinupwp->listServers()->toArray());
-        }
-    }
-
     protected function forceOrConfirm(string $confirmation, ?bool $default = true): bool
     {
         return (bool) $this->option('force') || $this->confirm($confirmation, $default);
+    }
+
+    public function queueResources(Collection $resources, string $endpoint, string $verb): void
+    {
+        if ($resources->isEmpty()) {
+            return;
+        }
+
+        $resourceName = strtolower(class_basename($resources[0]));
+
+        $events = [];
+
+        $resources->each(function ($resource) use ($endpoint, &$events, $verb) {
+            try {
+                $events[] = ["{$resource->$endpoint()}", $resource->name];
+            } catch (\Exception $e) {
+                $this->error("{$resource->name} could not {$verb}.");
+            }
+        });
+
+        if (empty($events)) {
+            $this->error(sprintf(ucfirst('%s failed on all %s.'), $verb, Str::plural($resourceName)));
+            return;
+        }
+
+        $this->successfulStep(ucfirst(Str::plural($resourceName, count($events)) . " queued for $verb."));
+
+        $this->stepTable([
+            'Event ID',
+            'Server',
+        ], $events);
     }
 }
