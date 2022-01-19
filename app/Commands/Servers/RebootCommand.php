@@ -3,7 +3,6 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
-use Illuminate\Support\Collection;
 
 class RebootCommand extends BaseCommand
 {
