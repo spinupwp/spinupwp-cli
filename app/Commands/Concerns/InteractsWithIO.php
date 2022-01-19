@@ -118,7 +118,7 @@ trait InteractsWithIO
         );
     }
 
-    public function selectServer(string $action): Server
+    public function selectServer(string $action): Collection
     {
         $serverId = $this->argument('server_id');
 
@@ -126,7 +126,13 @@ trait InteractsWithIO
             $serverId = $this->askToSelectServer("Which server would you like to $action");
         }
 
-        return $this->spinupwp->getServer((int) $serverId);
+        $server = $this->spinupwp->getServer((int) $serverId);
+
+        if ($this->forceOrConfirm("Are you sure you want to $action \"{$server->name}\"?")) {
+            return collect([$server]);
+        }
+
+        return collect();
     }
 
     public function askToSelectServer(string $question): int
@@ -229,11 +235,14 @@ trait InteractsWithIO
 
         $events = [];
 
-        $resources->each(function ($resource) use ($endpoint, &$events, $verb) {
+        $resources->each(function ($resource) use ($resources, $endpoint, &$events, $verb) {
             try {
-                $events[] = ["{$resource->$endpoint()}", $resource->name];
+                $eventId = $resource->$endpoint();
+                $events[] = ["{$eventId}", $resource->name];
             } catch (\Exception $e) {
-                $this->error("{$resource->name} could not {$verb}.");
+                if ($resources->count() === 1) {
+                    $this->error("{$verb} failed on {$resource->name}.");
+                }
             }
         });
 
@@ -246,7 +255,7 @@ trait InteractsWithIO
 
         $this->stepTable([
             'Event ID',
-            'Server',
+            ucfirst($resourceName),
         ], $events);
     }
 }

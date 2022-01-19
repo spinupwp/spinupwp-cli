@@ -24,11 +24,7 @@ class RebootCommand extends BaseCommand
                 $servers = $this->spinupwp->listServers();
             }
         } else {
-            $server = $this->selectServer('reboot');
-
-            if ($this->forceOrConfirm("Are you sure you want to reboot \"{$server->name}\"?")) {
-                $servers = collect([$server]);
-            }
+            $servers = $this->selectServer('reboot');
         }
 
         $this->queueResources($servers, 'reboot', 'reboot');
