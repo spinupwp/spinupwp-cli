@@ -258,4 +258,9 @@ trait InteractsWithIO
             ucfirst($resourceName),
         ], $events);
     }
+
+    protected function forced(): bool
+    {
+        return (bool) $this->option('force');
+    }
 }
