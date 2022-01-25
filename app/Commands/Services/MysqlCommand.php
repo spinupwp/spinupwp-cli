@@ -3,9 +3,12 @@
 namespace App\Commands\Services;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\SelectsServer;
 
 class MysqlCommand extends BaseCommand
 {
+    use SelectsServer;
+
     protected $signature = 'services:mysql
                             {server_id? : The server id}
                             {--all : Restart MySQL on all servers}

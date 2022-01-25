@@ -3,9 +3,12 @@
 namespace App\Commands\Services;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\SelectsServer;
 
 class NginxCommand extends BaseCommand
 {
+    use SelectsServer;
+
     protected $signature = 'services:nginx
                             {server_id? : The server id}
                             {--all : Restart Nginx on all servers}

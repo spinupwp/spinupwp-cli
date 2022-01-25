@@ -3,9 +3,12 @@
 namespace App\Commands\Services;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\SelectsServer;
 
 class PhpCommand extends BaseCommand
 {
+    use SelectsServer;
+
     protected $signature = 'services:php
                             {server_id? : The server id}
                             {--all : Restart PHP on all servers}

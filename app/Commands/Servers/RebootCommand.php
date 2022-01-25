@@ -3,9 +3,12 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\SelectsServer;
 
 class RebootCommand extends BaseCommand
 {
+    use SelectsServer;
+
     protected $signature = 'servers:reboot
                             {server_id? : The server to reboot}
                             {--all : Reboot all servers}
