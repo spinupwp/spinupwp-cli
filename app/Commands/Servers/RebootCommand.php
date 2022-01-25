@@ -18,7 +18,7 @@ class RebootCommand extends BaseCommand
     {
         $servers = collect();
 
-        if ((bool) $this->option('all')) {
+        if ($this->option('all')) {
             if ($this->forceOrConfirm('Are you sure you want to reboot all servers?')) {
                 $servers = $this->spinupwp->listServers();
             }

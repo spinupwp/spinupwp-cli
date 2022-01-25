@@ -2,7 +2,6 @@
 
 namespace App\Commands\Concerns;
 
-use DeliciousBrains\SpinupWp\Resources\Server;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;

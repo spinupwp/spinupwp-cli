@@ -16,7 +16,7 @@ class MysqlCommand extends BaseCommand
 
     public function action(): int
     {
-        if ((bool) $this->option('all') && $this->forceOrConfirm('Are you sure you want to restart MySQL on all servers?')) {
+        if ($this->option('all') && $this->forceOrConfirm('Are you sure you want to restart MySQL on all servers?')) {
             $servers = $this->spinupwp->listServers();
         } else {
             $servers = $this->selectServer('restart MySQL on');
