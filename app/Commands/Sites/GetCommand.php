@@ -18,7 +18,7 @@ class GetCommand extends BaseCommand
 
     public function action(): int
     {
-        $site = $this->spinupwp->sites->get((int) $this->argument('site_id'));
+        $site = $this->spinupwp->getSite((int) $this->argument('site_id'));
 
         if ($this->displayFormat() === 'json') {
             $this->toJson($site);
