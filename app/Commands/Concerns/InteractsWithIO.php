@@ -160,25 +160,6 @@ trait InteractsWithIO
         return (int) $this->output->askQuestion($question);
     }
 
-    /**
-     * Initializes an options object, outputs prompt for and return user input.
-     *
-     * @param bool|string|array $defaultOverride
-     */
-    protected function resolveOptionPrompt(string $optionClass, $defaultOverride = null): ?string
-    {
-        $optionClass = resolve($optionClass);
-
-        if (!is_null($defaultOverride)) {
-            $optionClass->default = $defaultOverride;
-        }
-
-        if (in_array('App\Options\HasChoices', class_uses($optionClass))) {
-            return $this->{$optionClass->promptType}($optionClass->promptValue, $optionClass->choices, $optionClass->default);
-        }
-        return $this->{$optionClass->promptType}($optionClass->promptValue, $optionClass->default);
-    }
-
     protected function largeOutput(array $resource): void
     {
         $table = new Table($this->output);
