@@ -56,6 +56,10 @@ class PurgeCommand extends \App\Commands\BaseCommand
         }
 
         foreach ($sites as $site) {
+            if ($cacheToPurge === 'page' && !$site->page_cache['enabled']) {
+                continue;
+            }
+
             $cache    = $cacheToPurge === 'page' ? 'page' : 'object';
             $response = $cacheToPurge === 'page' ? $site->purgePageCache() : $site->purgeObjectCache();
 
