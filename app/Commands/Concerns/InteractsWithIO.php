@@ -106,9 +106,13 @@ trait InteractsWithIO
         $this->table($tableHeaders, $rows);
     }
 
-    public function askToSelectSite(string $question): int
+    public function askToSelectSite(string $question, callable $filter = null): int
     {
         $choices = collect($this->spinupwp->listSites());
+
+        if (!is_null($filter)) {
+            $choices = $choices->filter(fn ($site) => $filter($site));
+        }
 
         return $this->askToSelect(
             $question,

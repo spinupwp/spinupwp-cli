@@ -3,6 +3,7 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
+use Exception;
 
 class GitDeployCommand extends BaseCommand
 {
@@ -17,7 +18,7 @@ class GitDeployCommand extends BaseCommand
         $siteId = $this->argument('site_id');
 
         if (empty($siteId)) {
-            $siteId = $this->askToSelectSite('Which site would you like to deploy?');
+            $siteId = $this->askToSelectSite('Which site would you like to deploy?', fn ($site) => $site->git['enabled']);
         }
 
         $site = $this->spinupwp->sites->get((int) $siteId);
@@ -27,7 +28,12 @@ class GitDeployCommand extends BaseCommand
             return self::SUCCESS;
         }
 
-        $eventId = $site->gitDeploy();
+        try {
+            $eventId = $site->gitDeploy();
+        } catch (Exception $e) {
+            $this->warn('The site is already being deployed.');
+            return self::SUCCESS;
+        }
 
         $this->successfulStep('Site queued for deployment.');
 
