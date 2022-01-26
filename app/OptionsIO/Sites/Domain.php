@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Options\Sites;
+namespace App\OptionsIO\Sites;
 
-use App\Options\Option;
+use App\OptionsIO\Option;
 
 class Domain extends Option
 {

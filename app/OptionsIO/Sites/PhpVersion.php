@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Options\Sites;
+namespace App\OptionsIO\Sites;
 
-use App\Options\HasChoices;
-use App\Options\Option;
+use App\OptionsIO\HasChoices;
+use App\OptionsIO\Option;
 
 class PhpVersion extends Option
 {

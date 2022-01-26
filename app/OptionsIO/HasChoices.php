@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Options;
+namespace App\OptionsIO;
 
 trait HasChoices
 {
