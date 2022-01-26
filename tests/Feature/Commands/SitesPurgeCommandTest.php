@@ -7,8 +7,11 @@ beforeEach(function () {
 
     $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
         new Response(200, [], json_encode(['data' => [
-            'id'     => 1,
-            'domain' => 'hellfish.media',
+            'id'         => 1,
+            'domain'     => 'hellfish.media',
+            'page_cache' => [
+                'enabled' => true,
+            ],
         ]]))
     );
 
@@ -36,8 +39,8 @@ test('purge site object cache', function () {
 test('purge all sites page cache', function () {
     $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1', [])->andReturn(
         new Response(200, [], listResponseJson([
-            ['id' => 1, 'domain' => 'hellfish.media'],
-            ['id' => 2, 'domain' => 'staging.hellfish.media'],
+            ['id' => 1, 'domain' => 'hellfish.media', 'page_cache' => ['enabled' => true]],
+            ['id' => 2, 'domain' => 'staging.hellfish.media', 'page_cache' => ['enabled' => true]],
         ]))
     );
 
@@ -53,8 +56,8 @@ test('purge all sites page cache', function () {
 test('purge all sites object cache', function () {
     $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1', [])->andReturn(
         new Response(200, [], listResponseJson([
-            ['id' => 1, 'domain' => 'hellfish.media'],
-            ['id' => 2, 'domain' => 'staging.hellfish.media'],
+            ['id' => 1, 'domain' => 'hellfish.media', 'page_cache' => ['enabled' => true]],
+            ['id' => 2, 'domain' => 'staging.hellfish.media', 'page_cache' => ['enabled' => true]],
         ]))
     );
 
