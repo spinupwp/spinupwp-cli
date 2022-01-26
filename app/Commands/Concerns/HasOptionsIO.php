@@ -2,16 +2,16 @@
 
 namespace App\Commands\Concerns;
 
+use App\OptionsIO\Option;
+
 trait HasOptionsIO
 {
-    protected array $availableOptionIO = [];
-
     /**
      * Initializes an options object, outputs prompt for and return user input.
      *
      * @param bool|string|array $defaultOverride
      */
-    protected function resolveOptionIO(string $optionClass, $defaultOverride = null): ?string
+    protected function resolveOptionIO(string $optionClass, $defaultOverride = null, $returnDefault = false): ?string
     {
         $optionClass = resolve($optionClass);
 
@@ -19,14 +19,21 @@ trait HasOptionsIO
             $optionClass->default = $defaultOverride;
         }
 
-        if (in_array('App\Options\HasChoices', class_uses($optionClass))) {
+        if ($returnDefault) {
+            return $optionClass->default;
+        }
+
+        return $this->promptForOption($optionClass);
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function promptForOption(Option $optionClass)
+    {
+        if (in_array('App\OptionsIO\HasChoices', class_uses($optionClass))) {
             return $this->{$optionClass->promptType}($optionClass->promptValue, $optionClass->choices, $optionClass->default);
         }
         return $this->{$optionClass->promptType}($optionClass->promptValue, $optionClass->default);
-    }
-
-    public function getAvailableOptionsIO(): array
-    {
-        return $this->availableOptionIO;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Helpers\OptionsHelper;
+use App\OptionsIO\Sites\PhpVersion;
 use DeliciousBrains\SpinupWp\Endpoints\Event;
 use DeliciousBrains\SpinupWp\Endpoints\Server;
 use DeliciousBrains\SpinupWp\Endpoints\Site;
@@ -9,6 +11,7 @@ use DeliciousBrains\SpinupWp\Resources\Server as ServerResource;
 use DeliciousBrains\SpinupWp\Resources\Site as SiteResource;
 use DeliciousBrains\SpinupWp\SpinupWp;
 use GuzzleHttp\Client;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 /**
@@ -75,5 +78,34 @@ class SpinupWpRepository
         }
 
         return collect($this->spinupwp->sites->listForServer($serverId, 1, $params));
+    }
+
+    public function createSite(int $serverId, array $inputParams): SiteResource
+    {
+        $inputParams = [
+            'installation_method' => $inputParams['installation_method'],
+            'domain'              => $inputParams['domain'],
+            'php_version'         => OptionsHelper::PHP_VERSIONS[$inputParams['php_version']],
+            'site_user'           => $inputParams['site_user'],
+            'page_cache'          => [
+                'enabled' => $inputParams['page_cache_enabled'],
+            ],
+            'https' => [
+                'enabled' => $inputParams['https_enabled'],
+            ],
+            'database' => [
+                'name'     => $inputParams['db_name'],
+                'username' => $inputParams['db_user'],
+                'password' => $inputParams['db_pass'],
+            ],
+            'wordpress' => [
+                'title'          => $inputParams['wp_title'],
+                'admin_user'     => $inputParams['wp_admin_user'],
+                'admin_email'    => $inputParams['wp_admin_email'],
+                'admin_password' => $inputParams['wp_admin_pass'],
+            ],
+        ];
+
+        return $this->spinupwp->sites->create($serverId, $inputParams);
     }
 }
