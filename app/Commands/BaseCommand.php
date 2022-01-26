@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Commands\Concerns\InteractsWithIO;
 use App\Repositories\ConfigRepository;
 use App\Repositories\SpinupWpRepository;
+use DeliciousBrains\SpinupWp\Exceptions\ValidationException;
 use Exception;
 use GuzzleHttp\Client;
 use LaravelZero\Framework\Commands\Command;
@@ -53,6 +54,19 @@ abstract class BaseCommand extends Command
             }
 
             return $this->action();
+        } catch (ValidationException $e) {
+            $errorRows = [];
+            foreach ($e->errors()['errors'] as $field => $errors) {
+                $errorRows[] = [$field, implode("\n", $errors)];
+            }
+
+            $this->error('Validation errors occurred.');
+            $this->stepTable([
+                'Field',
+                'Error Message',
+            ], $errorRows);
+
+            return self::FAILURE;
         } catch (Exception $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
