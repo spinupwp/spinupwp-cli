@@ -29,7 +29,7 @@ test('site git deploy command with site ID supplied', function () {
 });
 
 test('site git deploy command', function () {
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1&limit=100', [])->andReturn(
         new Response(200, [], json_encode([
             'data' => [
                 [
