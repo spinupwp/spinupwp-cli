@@ -24,7 +24,7 @@ class SshCommand extends BaseCommand
             $serverId = $this->askToSelectServer('Which server would you like to start an SSH session for');
         }
 
-        $server = $this->spinupwp->servers->get((int) $serverId);
+        $server = $this->spinupwp->getServer((int) $serverId);
         $user   = $this->establishUser();
 
         $this->line("Establishing a secure connection to [<comment>{$server->name}</comment>] as [<comment>{$user}</comment>]...");
