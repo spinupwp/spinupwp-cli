@@ -12,7 +12,7 @@ abstract class Option
     /**
      * @var mixed default value when prompt is not displayed
      */
-    protected $defaultWhenSkipped = null;
+    protected $nonInteractiveDefault = null;
 
     protected string $promptType = 'ask';
 

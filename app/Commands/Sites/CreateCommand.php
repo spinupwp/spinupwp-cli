@@ -83,7 +83,7 @@ class CreateCommand extends BaseCommand
                     $default = $this->domain;
                 }
 
-                $userInput[$optionKey] = $this->resolveOptionIO($optionClass, $default, $this->forced());
+                $userInput[$optionKey] = $this->resolveOptionIO($optionClass, $default, $this->nonInteractive());
             }
 
             if ($optionKey === 'domain') {

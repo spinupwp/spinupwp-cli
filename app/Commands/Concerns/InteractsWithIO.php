@@ -235,7 +235,7 @@ trait InteractsWithIO
         ], $events);
     }
 
-    protected function forced(): bool
+    protected function nonInteractive(): bool
     {
         return (bool) $this->option('force');
     }

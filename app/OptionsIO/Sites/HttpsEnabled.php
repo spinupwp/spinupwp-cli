@@ -8,7 +8,7 @@ class HttpsEnabled extends Option
 {
     protected $default = 1;
 
-    protected $defaultWhenSkipped = 0;
+    protected $nonInteractiveDefault = 0;
 
     protected string $promptType = 'confirm';
 
