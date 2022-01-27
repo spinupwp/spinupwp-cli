@@ -10,7 +10,7 @@ trait SelectsServer
     {
         $serverId = $this->argument('server_id');
 
-        if (empty($serverId)) {
+        if (empty($serverId) && !$this->forced()) {
             $serverId = $this->askToSelectServer("Which server would you like to $action");
         }
 
