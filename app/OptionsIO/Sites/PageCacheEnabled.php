@@ -6,7 +6,9 @@ use App\OptionsIO\Option;
 
 class PageCacheEnabled extends Option
 {
-    protected $default = true;
+    protected $default = 1;
+
+    protected $defaultWhenSkipped = 0;
 
     protected string $promptType = 'confirm';
 

@@ -6,7 +6,9 @@ use App\OptionsIO\Option;
 
 class HttpsEnabled extends Option
 {
-    protected $default = true;
+    protected $default = 1;
+
+    protected $defaultWhenSkipped = 0;
 
     protected string $promptType = 'confirm';
 

@@ -11,7 +11,7 @@ trait HasOptionsIO
      *
      * @param bool|string|array $defaultOverride
      */
-    protected function resolveOptionIO(string $optionClass, $defaultOverride = null, $returnDefault = false): ?string
+    protected function resolveOptionIO(string $optionClass, $defaultOverride = null, bool $skipUserInput = false): ?string
     {
         $optionClass = resolve($optionClass);
 
@@ -19,8 +19,8 @@ trait HasOptionsIO
             $optionClass->default = $defaultOverride;
         }
 
-        if ($returnDefault) {
-            return $optionClass->default;
+        if ($skipUserInput) {
+            return $optionClass->defaultWhenSkipped ?? $optionClass->default;
         }
 
         return $this->promptForOption($optionClass);

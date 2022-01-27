@@ -5,9 +5,14 @@ namespace App\OptionsIO;
 abstract class Option
 {
     /**
-     * @var string|array|null
+     * @var mixed default value when prompt
      */
     protected $default = null;
+
+    /**
+     * @var mixed default value when prompt is not displayed
+     */
+    protected $defaultWhenSkipped = null;
 
     protected string $promptType = 'ask';
 
