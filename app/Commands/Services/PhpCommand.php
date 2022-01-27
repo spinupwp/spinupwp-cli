@@ -3,9 +3,12 @@
 namespace App\Commands\Services;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\SelectsServer;
 
 class PhpCommand extends BaseCommand
 {
+    use SelectsServer;
+
     protected $signature = 'services:php
                             {server_id? : The server id}
                             {--all : Restart PHP on all servers}
@@ -16,7 +19,7 @@ class PhpCommand extends BaseCommand
 
     public function action(): int
     {
-        if ((bool) $this->option('all') && $this->forceOrConfirm('Are you sure you want to restart PHP on all servers?')) {
+        if ($this->option('all') && $this->forceOrConfirm('Are you sure you want to restart PHP on all servers?')) {
             $servers = $this->spinupwp->listServers();
         } else {
             $servers = $this->selectServer('restart PHP on');

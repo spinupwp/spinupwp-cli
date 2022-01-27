@@ -3,9 +3,12 @@
 namespace App\Commands\Services;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\SelectsServer;
 
-class NgnixCommand extends BaseCommand
+class NginxCommand extends BaseCommand
 {
+    use SelectsServer;
+
     protected $signature = 'services:nginx
                             {server_id? : The server id}
                             {--all : Restart Nginx on all servers}
@@ -16,7 +19,7 @@ class NgnixCommand extends BaseCommand
 
     public function action(): int
     {
-        if ((bool) $this->option('all') && $this->forceOrConfirm('Are you sure you want to restart Nginx on all servers?')) {
+        if ($this->option('all') && $this->forceOrConfirm('Are you sure you want to restart Nginx on all servers?')) {
             $servers = $this->spinupwp->listServers();
         } else {
             $servers = $this->selectServer('restart Nginx on');

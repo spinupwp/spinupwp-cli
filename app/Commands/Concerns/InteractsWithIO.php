@@ -2,7 +2,6 @@
 
 namespace App\Commands\Concerns;
 
-use DeliciousBrains\SpinupWp\Resources\Server;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -108,40 +107,17 @@ trait InteractsWithIO
         $this->table($tableHeaders, $rows);
     }
 
-    public function askToSelectSite(string $question): int
+    public function askToSelectSite(string $question, callable $filter = null): int
     {
         $choices = collect($this->spinupwp->listSites());
+
+        if (!is_null($filter)) {
+            $choices = $choices->filter(fn ($site) => $filter($site));
+        }
 
         return $this->askToSelect(
             $question,
             $choices->keyBy('id')->map(fn ($site) => $site->domain)->toArray()
-        );
-    }
-
-    public function selectServer(string $action): Collection
-    {
-        $serverId = $this->argument('server_id');
-
-        if (empty($serverId)) {
-            $serverId = $this->askToSelectServer("Which server would you like to $action");
-        }
-
-        $server = $this->spinupwp->getServer((int) $serverId);
-
-        if ($this->forceOrConfirm("Are you sure you want to $action \"{$server->name}\"?")) {
-            return collect([$server]);
-        }
-
-        return collect();
-    }
-
-    public function askToSelectServer(string $question): int
-    {
-        $choices = collect($this->spinupwp->listServers());
-
-        return $this->askToSelect(
-            $question,
-            $choices->keyBy('id')->map(fn ($server) => $server->name)->toArray()
         );
     }
 

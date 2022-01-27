@@ -3,9 +3,12 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\SelectsServer;
 
 class RebootCommand extends BaseCommand
 {
+    use SelectsServer;
+
     protected $signature = 'servers:reboot
                             {server_id? : The server to reboot}
                             {--all : Reboot all servers}
@@ -18,7 +21,7 @@ class RebootCommand extends BaseCommand
     {
         $servers = collect();
 
-        if ((bool) $this->option('all')) {
+        if ($this->option('all')) {
             if ($this->forceOrConfirm('Are you sure you want to reboot all servers?')) {
                 $servers = $this->spinupwp->listServers();
             }

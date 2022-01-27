@@ -3,9 +3,12 @@
 namespace App\Commands\Services;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\SelectsServer;
 
 class MysqlCommand extends BaseCommand
 {
+    use SelectsServer;
+
     protected $signature = 'services:mysql
                             {server_id? : The server id}
                             {--all : Restart MySQL on all servers}
@@ -16,7 +19,7 @@ class MysqlCommand extends BaseCommand
 
     public function action(): int
     {
-        if ((bool) $this->option('all') && $this->forceOrConfirm('Are you sure you want to restart MySQL on all servers?')) {
+        if ($this->option('all') && $this->forceOrConfirm('Are you sure you want to restart MySQL on all servers?')) {
             $servers = $this->spinupwp->listServers();
         } else {
             $servers = $this->selectServer('restart MySQL on');
