@@ -3,6 +3,7 @@
 namespace App\Commands\Concerns;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -116,16 +117,6 @@ trait InteractsWithIO
         );
     }
 
-    public function askToSelectServer(string $question): int
-    {
-        $choices = collect($this->spinupwp->listServers());
-
-        return $this->askToSelect(
-            $question,
-            $choices->keyBy('id')->map(fn ($server) => $server->name)->toArray()
-        );
-    }
-
     /**
      * @param mixed $default
      */
@@ -199,5 +190,44 @@ trait InteractsWithIO
             })->all(),
             'compact',
         );
+    }
+
+    protected function forceOrConfirm(string $confirmation, ?bool $default = true): bool
+    {
+        return (bool) $this->option('force') || $this->confirm($confirmation, $default);
+    }
+
+    public function queueResources(Collection $resources, string $endpoint, string $verb): void
+    {
+        if ($resources->isEmpty()) {
+            return;
+        }
+
+        $resourceName = strtolower(class_basename($resources[0]));
+
+        $events = [];
+
+        $resources->each(function ($resource) use ($resources, $endpoint, &$events, $verb) {
+            try {
+                $eventId = $resource->$endpoint();
+                $events[] = ["{$eventId}", $resource->name];
+            } catch (\Exception $e) {
+                if ($resources->count() === 1) {
+                    $this->error("{$verb} failed on {$resource->name}.");
+                }
+            }
+        });
+
+        if (empty($events)) {
+            $this->error(sprintf(ucfirst('%s failed on all %s.'), $verb, Str::plural($resourceName)));
+            return;
+        }
+
+        $this->successfulStep(ucfirst(Str::plural($resourceName, count($events)) . " queued for $verb."));
+
+        $this->stepTable([
+            'Event ID',
+            ucfirst($resourceName),
+        ], $events);
     }
 }
