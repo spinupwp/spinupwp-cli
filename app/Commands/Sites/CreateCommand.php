@@ -5,6 +5,7 @@ namespace App\Commands\Sites;
 use App\Commands\BaseCommand;
 use App\Commands\Concerns\HasOptionsIO;
 use App\Commands\Concerns\InteractsWithIO;
+use App\Commands\Concerns\SelectsServer;
 use App\Helpers\OptionsHelper;
 use App\OptionsIO\Sites\DbName;
 use App\OptionsIO\Sites\DbPass;
@@ -24,6 +25,7 @@ class CreateCommand extends BaseCommand
 {
     use InteractsWithIO;
     use HasOptionsIO;
+    use SelectsServer;
 
     protected $signature = 'sites:create
                             {installation_method : Type of installation (wp or blank)}
