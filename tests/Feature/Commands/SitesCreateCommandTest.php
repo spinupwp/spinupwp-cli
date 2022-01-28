@@ -43,7 +43,7 @@ test('"sites:create blank" fails with invalid data', function () {
     $this->clientMock->shouldReceive('request')->with('POST', 'sites', [
         'form_params' => $params,
     ])->andReturn(
-      new Response(422, [], json_encode([
+        new Response(422, [], json_encode([
           'message' => 'The given data was invalid.',
           'errors'  => [
               ['field' => 'error message'],
