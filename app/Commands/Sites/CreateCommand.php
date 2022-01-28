@@ -47,8 +47,6 @@ class CreateCommand extends BaseCommand
 
     protected $description = 'Create a site';
 
-    protected string $domain = '';
-
     protected array $availableOptionIO = [
         'domain'             => Domain::class,
         'https_enabled'      => HttpsEnabled::class,
@@ -72,26 +70,9 @@ class CreateCommand extends BaseCommand
             return self::INVALID;
         }
 
-        $userInput = [];
         $server    = $this->selectServer('deploy to')->first();
-        $optionIO  = $this->getAvailableOptionIO($this->argument('installation_method'));
-
-        foreach ($optionIO as $optionKey => $optionClass) {
-            if (empty($this->option($optionKey))) {
-                $default = null;
-                if ($optionKey === 'site_user' || $optionKey === 'db_name' || $optionKey === 'db_user' || $optionKey === 'wp_title') {
-                    $default = $this->domain;
-                }
-
-                $userInput[$optionKey] = $this->resolveOptionIO($optionClass, $default, $this->nonInteractive());
-            }
-
-            if ($optionKey === 'domain') {
-                $this->domain = $userInput[$optionKey] ?? $this->option('domain');
-            }
-        }
-
-        $site = $this->spinupwp->createSite($server->id, array_merge($this->arguments(), $this->options(), $userInput));
+        $userInput = $this->getUserInput();
+        $site      = $this->spinupwp->createSite($server->id, array_merge($this->arguments(), $this->options(), $userInput));
 
         $this->successfulStep("{$site->domain} is {$site->status} (event_id = {$site->eventId()})");
 
@@ -116,5 +97,31 @@ class CreateCommand extends BaseCommand
             default:
                 return $this->availableOptionIO;
         }
+    }
+
+    protected function getUserInput(): array
+    {
+        $domain    = '';
+        $userInput = [];
+        $optionIO  = $this->getAvailableOptionIO($this->argument('installation_method'));
+
+        foreach ($optionIO as $optionKey => $optionClass) {
+            // skip if option already set
+            if (empty($this->option($optionKey))) {
+                $optionClass = resolve($optionClass);
+
+                // these options use the domain to "seed" default values
+                if ($optionKey === 'site_user' || $optionKey === 'db_name' || $optionKey === 'db_user' || $optionKey === 'wp_title') {
+                    $optionClass->default = $domain;
+                }
+
+                $userInput[$optionKey] = $this->getOptionValue($optionClass, $this->nonInteractive());
+            }
+
+            if ($optionKey === 'domain') {
+                $domain = $userInput[$optionKey] ?? $this->option('domain');
+            }
+        }
+        return $userInput;
     }
 }

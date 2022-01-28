@@ -7,33 +7,25 @@ use App\OptionsIO\Option;
 trait HasOptionsIO
 {
     /**
-     * Initializes an options object, outputs prompt for and return user input.
-     *
-     * @param bool|string|array $defaultOverride
+     * @return mixed
      */
-    protected function resolveOptionIO(string $optionClass, $defaultOverride = null, bool $nonInteractive = false): ?string
+    protected function getOptionValue(Option $option, bool $nonInteractive = false)
     {
-        $optionClass = resolve($optionClass);
-
-        if (!is_null($defaultOverride)) {
-            $optionClass->default = $defaultOverride;
-        }
-
         if ($nonInteractive) {
-            return $optionClass->nonInteractiveDefault ?? $optionClass->default;
+            return $option->nonInteractiveDefault ?? $option->default;
         }
 
-        return $this->promptForOption($optionClass);
+        return $this->promptForOption($option);
     }
 
     /**
      * @return mixed
      */
-    protected function promptForOption(Option $optionClass)
+    protected function promptForOption(Option $option)
     {
-        if (in_array('App\OptionsIO\HasChoices', class_uses($optionClass))) {
-            return $this->{$optionClass->promptType}($optionClass->promptValue, $optionClass->choices, $optionClass->default);
+        if (in_array('App\OptionsIO\HasChoices', class_uses($option))) {
+            return $this->{$option->promptType}($option->promptValue, $option->choices, $option->default);
         }
-        return $this->{$optionClass->promptType}($optionClass->promptValue, $optionClass->default);
+        return $this->{$option->promptType}($option->promptValue, $option->default);
     }
 }
