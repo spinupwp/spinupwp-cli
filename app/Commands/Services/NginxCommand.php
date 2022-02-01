@@ -10,7 +10,7 @@ class NginxCommand extends BaseCommand
     use SelectsServer;
 
     protected $signature = 'services:nginx
-                            {server_id? : The server id}
+                            {server_id? : The server to restart Nginx on}
                             {--all : Restart Nginx on all servers}
                             {--f|force : Restart Nginx without prompting for confirmation}
                             {--profile=}';

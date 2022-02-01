@@ -10,7 +10,7 @@ class MysqlCommand extends BaseCommand
     use SelectsServer;
 
     protected $signature = 'services:mysql
-                            {server_id? : The server id}
+                            {server_id? : The server to restart MySQL on}
                             {--all : Restart MySQL on all servers}
                             {--f|force : Restart MySQL without prompting for confirmation}
                             {--profile=}';
