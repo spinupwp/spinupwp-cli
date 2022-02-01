@@ -3,28 +3,17 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\HasOptionsIO;
+use App\Commands\Concerns\HasPrompts;
 use App\Commands\Concerns\InteractsWithIO;
 use App\Commands\Concerns\SelectsServer;
 use App\Helpers\OptionsHelper;
-use App\OptionsIO\Sites\DbName;
-use App\OptionsIO\Sites\DbPass;
-use App\OptionsIO\Sites\DbUser;
-use App\OptionsIO\Sites\Domain;
-use App\OptionsIO\Sites\HttpsEnabled;
-use App\OptionsIO\Sites\PageCacheEnabled;
-use App\OptionsIO\Sites\PhpVersion;
-use App\OptionsIO\Sites\SiteUser;
-use App\OptionsIO\Sites\WpAdminEmail;
-use App\OptionsIO\Sites\WpAdminPass;
-use App\OptionsIO\Sites\WpAdminUser;
-use App\OptionsIO\Sites\WpTitle;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class CreateCommand extends BaseCommand
 {
     use InteractsWithIO;
-    use HasOptionsIO;
+    use HasPrompts;
     use SelectsServer;
 
     protected $signature = 'sites:create
@@ -47,20 +36,7 @@ class CreateCommand extends BaseCommand
 
     protected $description = 'Create a site';
 
-    protected array $availableOptionIO = [
-        'domain'             => Domain::class,
-        'https_enabled'      => HttpsEnabled::class,
-        'site_user'          => SiteUser::class,
-        'db_name'            => DbName::class,
-        'db_user'            => DbUser::class,
-        'db_pass'            => DbPass::class,
-        'wp_title'           => WpTitle::class,
-        'wp_admin_user'      => WpAdminUser::class,
-        'wp_admin_email'     => WpAdminEmail::class,
-        'wp_admin_pass'      => WpAdminPass::class,
-        'php_version'        => PhpVersion::class,
-        'page_cache_enabled' => PageCacheEnabled::class,
-    ];
+    protected ?string $domain = '';
 
     protected function action(): int
     {
@@ -70,58 +46,76 @@ class CreateCommand extends BaseCommand
             return self::INVALID;
         }
 
-        $server    = $this->selectServer('deploy to')->first();
-        $userInput = $this->getUserInput();
-        $site      = $this->spinupwp->createSite($server->id, array_merge($this->arguments(), $this->options(), $userInput));
+        $server       = $this->selectServer('deploy to')->first();
+        $this->domain = $this->option('domain') ?? $this->resolveAnswer(['prompt' => 'Domain Name'], $this->nonInteractive());
+        $userInput    = $this->promptForAnswers($this->nonInteractive());
+
+        $site = $this->spinupwp->createSite($server->id, array_merge($this->arguments(), $this->options(), ['domain' => $this->domain], $userInput));
 
         $this->successfulStep("{$site->domain} is {$site->status} (event_id = {$site->eventId()})");
 
         return self::SUCCESS;
     }
 
-    /**
-     * Use different options depending on site install type.
-     */
-    protected function getAvailableOptionIO(string $type): array
+    protected function getPrompts(): array
     {
-        switch ($type) {
+        $prompts = [
+            'https_enabled' => [
+                'default'               => 1,
+                'nonInteractiveDefault' => 0,
+                'type'                  => 'confirm',
+                'prompt'                => 'Enable HTTPS',
+            ],
+            'site_user' => [
+                'prompt'          => 'Site User',
+                'defaultCallback' => [$this, 'getDomainSlug'],
+            ],
+            'db_name' => [
+                'prompt'          => 'Database name',
+                'defaultCallback' => [$this, 'getDomainSlug'],
+            ],
+            'db_pass' => [
+                'prompt'          => 'Database Password',
+                'defaultCallback' => fn () => Str::random(12),
+            ],
+            'wp_title'       => ['prompt' => 'WordPress Title'],
+            'wp_admin_email' => ['prompt' => 'WordPress admin email address'],
+            'wp_admin_user'  => ['prompt' => 'WordPress admin username'],
+            'wp_admin_pass'  => [
+                'prompt'          => 'WordPress admin password',
+                'defaultCallback' => fn () => Str::random(12),
+            ],
+            'php_version' => [
+                'type'    => 'choice',
+                'prompt'  => 'PHP Version',
+                'default' => '8.0',
+                'choices' => OptionsHelper::PHP_VERSIONS,
+            ],
+            'page_cache_enabled' => [
+                'default'               => 1,
+                'nonInteractiveDefault' => 0,
+                'type'                  => 'confirm',
+                'prompt'                => 'Enable page cache',
+            ],
+        ];
+
+        switch ($this->argument('installation_method')) {
             case 'blank':
-                return Arr::except($this->availableOptionIO, [
+                return Arr::except($prompts, [
                     'db_name', 'db_user', 'db_pass',
                     'wp_title', 'wp_admin_user', 'wp_admin_email', 'wp_admin_pass',
                 ]);
             case 'git':
-                return Arr::except($this->availableOptionIO, [
+                return Arr::except($prompts, [
                     'wp_title', 'wp_admin_user', 'wp_admin_email', 'wp_admin_pass',
                 ]);
             default:
-                return $this->availableOptionIO;
+                return $prompts;
         }
     }
 
-    protected function getUserInput(): array
+    public function getDomainSlug(): string
     {
-        $domain    = '';
-        $userInput = [];
-        $optionIO  = $this->getAvailableOptionIO($this->argument('installation_method'));
-
-        foreach ($optionIO as $optionKey => $optionClass) {
-            // skip if option already set
-            if (empty($this->option($optionKey))) {
-                $optionClass = resolve($optionClass);
-
-                // these options use the domain to "seed" default values
-                if ($optionKey === 'site_user' || $optionKey === 'db_name' || $optionKey === 'db_user' || $optionKey === 'wp_title') {
-                    $optionClass->default = $domain;
-                }
-
-                $userInput[$optionKey] = $this->getOptionValue($optionClass, $this->nonInteractive());
-            }
-
-            if ($optionKey === 'domain') {
-                $domain = $userInput[$optionKey] ?? $this->option('domain');
-            }
-        }
-        return $userInput;
+        return str_replace('.', '', $this->domain);
     }
 }

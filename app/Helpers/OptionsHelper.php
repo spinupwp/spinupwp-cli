@@ -8,7 +8,7 @@ class OptionsHelper
     public const INSTALLATION_METHODS = ['wp', 'blank'];
 
     public const PHP_VERSIONS = [
-        '80' => '8.0',
-        '74' => '7.4',
+        '8.0' => '8.0',
+        '7.4' => '7.4',
     ];
 }

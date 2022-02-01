@@ -79,7 +79,7 @@ test('"sites:create blank" succeeds with correct params', function () {
         ],
     ])));
 
-    $this->artisan('sites:create blank 1 --domain=hellfish.media --https_enabled --page_cache_enabled --php_version="74" -f')
+    $this->artisan('sites:create blank 1 --domain=hellfish.media --https_enabled --page_cache_enabled --php_version="7.4" -f')
         ->assertExitCode(0);
 });
 
