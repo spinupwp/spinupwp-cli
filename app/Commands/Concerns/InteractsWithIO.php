@@ -213,7 +213,7 @@ trait InteractsWithIO
 
         $resources->each(function ($resource) use ($resources, $endpoint, &$events, $verb) {
             try {
-                $eventId = $resource->$endpoint();
+                $eventId = call_user_func(fn () => $resource->$endpoint());
                 $events[] = ["{$eventId}", $resource->name];
             } catch (\Exception $e) {
                 if ($resources->count() === 1) {
