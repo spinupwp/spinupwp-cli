@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 class PromptHelper
 {
-    const DEFAULTS = [
+    public const DEFAULTS = [
         'type'                  => 'ask',
         'prompt'                => '',
         'default'               => null,
