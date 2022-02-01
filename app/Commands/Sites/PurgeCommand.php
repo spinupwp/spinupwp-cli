@@ -13,7 +13,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
 
     protected function action(): int
     {
-        $cacheToPurge = strval($this->argument('cache'));
+        $cacheToPurge = strval($this->option('cache'));
 
         if (empty($cacheToPurge)) {
             $cacheToPurge = (int) $this->askToSelect('Which cache do you want to purge', [
