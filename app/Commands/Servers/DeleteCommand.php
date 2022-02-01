@@ -3,9 +3,12 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\SelectsServer;
 
 class DeleteCommand extends BaseCommand
 {
+    use SelectsServer;
+
     protected $signature = 'servers:delete
                             {server_id? : The server to delete}
                             {--d|delete-on-provider : Delete the server from the server provider (DigitalOcean, etc.)}
