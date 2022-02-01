@@ -44,12 +44,12 @@ class PurgeCommand extends \App\Commands\BaseCommand
 
     protected function purgeCacheOnAllSites(string $cacheToPurge): void
     {
-        $sites      = $this->spinupwp->sites->list();
+        $sites      = $this->spinupwp->sites->list()->toArray();
         $shouldWait = count($sites) > 59;
         $this->purgeCache($sites, $cacheToPurge, $shouldWait);
     }
 
-    protected function purgeCache($sites, string $cacheToPurge, $shouldWait = false): void
+    protected function purgeCache(array $sites, string $cacheToPurge, bool $shouldWait = false): void
     {
         if (empty($sites)) {
             return;

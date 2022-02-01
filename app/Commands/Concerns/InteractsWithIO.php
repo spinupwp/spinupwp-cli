@@ -196,7 +196,7 @@ trait InteractsWithIO
         );
     }
 
-    protected function forceOrConfirm(string $confirmation, ?bool $default = true): bool
+    protected function forceOrConfirm(string $confirmation, bool $default = true): bool
     {
         return (bool) $this->option('force') || $this->confirm($confirmation, $default);
     }
