@@ -36,7 +36,7 @@ class CreateCommand extends BaseCommand
 
     protected $description = 'Create a site';
 
-    protected ?string $domain = '';
+    protected array $userInput;
 
     protected function action(): int
     {
@@ -46,11 +46,18 @@ class CreateCommand extends BaseCommand
             return self::INVALID;
         }
 
-        $server       = $this->selectServer('deploy to')->first();
-        $this->domain = $this->option('domain') ?? $this->resolveAnswer(['prompt' => 'Domain Name'], $this->nonInteractive());
-        $userInput    = $this->promptForAnswers($this->nonInteractive());
+        $server = $this->selectServer('deploy to')->first();
 
-        $site = $this->spinupwp->createSite($server->id, array_merge($this->arguments(), $this->options(), ['domain' => $this->domain], $userInput));
+        $this->userInput = $this->doPrompts([
+            'domain' => [
+                'type'    => 'ask',
+                'prompt'  => 'Domain Name',
+                'default' => !$this->nonInteractive(),
+            ],
+        ], $this->nonInteractive());
+        $this->userInput += $this->doPrompts($this->getPrompts(), $this->nonInteractive());
+
+        $site = $this->spinupwp->createSite($server->id, array_merge($this->arguments(), $this->options(), $this->userInput));
 
         $this->successfulStep("{$site->domain} is {$site->status} (event_id = {$site->eventId()})");
 
@@ -61,29 +68,45 @@ class CreateCommand extends BaseCommand
     {
         $prompts = [
             'https_enabled' => [
-                'default'               => 1,
-                'nonInteractiveDefault' => 0,
-                'type'                  => 'confirm',
-                'prompt'                => 'Enable HTTPS',
+                'type'    => 'confirm',
+                'prompt'  => 'Enable HTTPS',
+                'default' => (int) !$this->nonInteractive(),
             ],
             'site_user' => [
-                'prompt'          => 'Site User',
-                'defaultCallback' => [$this, 'getDomainSlug'],
+                'type'    => 'ask',
+                'prompt'  => 'Site User',
+                'default' => $this->getDomainSlug(),
             ],
             'db_name' => [
-                'prompt'          => 'Database name',
-                'defaultCallback' => [$this, 'getDomainSlug'],
+                'type'    => 'ask',
+                'prompt'  => 'Database name',
+                'default' => $this->getDomainSlug(),
             ],
             'db_pass' => [
-                'prompt'          => 'Database Password',
-                'defaultCallback' => fn () => Str::random(12),
+                'type'    => 'ask',
+                'prompt'  => 'Database Password',
+                'default' => Str::random(12),
+
             ],
-            'wp_title'       => ['prompt' => 'WordPress Title'],
-            'wp_admin_email' => ['prompt' => 'WordPress admin email address'],
-            'wp_admin_user'  => ['prompt' => 'WordPress admin username'],
-            'wp_admin_pass'  => [
-                'prompt'          => 'WordPress admin password',
-                'defaultCallback' => fn () => Str::random(12),
+            'wp_title' => [
+                'type'    => 'ask',
+                'prompt'  => 'WordPress Title',
+                'default' => null,
+            ],
+            'wp_admin_email' => [
+                'type'    => 'ask',
+                'prompt'  => 'WordPress admin email address',
+                'default' => null,
+            ],
+            'wp_admin_user' => [
+                'type'    => 'ask',
+                'prompt'  => 'WordPress admin username',
+                'default' => null,
+            ],
+            'wp_admin_pass' => [
+                'type'    => 'ask',
+                'prompt'  => 'WordPress admin password',
+                'default' => Str::random(12),
             ],
             'php_version' => [
                 'type'    => 'choice',
@@ -92,10 +115,9 @@ class CreateCommand extends BaseCommand
                 'choices' => OptionsHelper::PHP_VERSIONS,
             ],
             'page_cache_enabled' => [
-                'default'               => 1,
-                'nonInteractiveDefault' => 0,
-                'type'                  => 'confirm',
-                'prompt'                => 'Enable page cache',
+                'type'    => 'confirm',
+                'prompt'  => 'Enable page cache',
+                'default' => (int) !$this->nonInteractive(),
             ],
         ];
 
@@ -105,10 +127,6 @@ class CreateCommand extends BaseCommand
                     'db_name', 'db_user', 'db_pass',
                     'wp_title', 'wp_admin_user', 'wp_admin_email', 'wp_admin_pass',
                 ]);
-            case 'git':
-                return Arr::except($prompts, [
-                    'wp_title', 'wp_admin_user', 'wp_admin_email', 'wp_admin_pass',
-                ]);
             default:
                 return $prompts;
         }
@@ -116,6 +134,6 @@ class CreateCommand extends BaseCommand
 
     public function getDomainSlug(): string
     {
-        return str_replace('.', '', $this->domain);
+        return str_replace('.', '', $this->userInput['domain']);
     }
 }

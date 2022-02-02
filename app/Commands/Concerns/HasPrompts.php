@@ -2,51 +2,36 @@
 
 namespace App\Commands\Concerns;
 
-use App\Helpers\PromptHelper;
-
 trait HasPrompts
 {
-    protected array $prompts = [];
+    protected array $questions = [];
 
     /**
+     * @param array $prompt
      * @return mixed
      */
-    protected function resolveAnswer(array $promptConfig, bool $nonInteractive = false)
-    {
-        $prompt  = PromptHelper::config($promptConfig);
-        $default = PromptHelper::default($prompt);
-
-        if ($nonInteractive) {
-            return $promptConfig['nonInteractiveDefault'] ?? $default ?? null;
-        }
-
-        return $this->prompt($prompt, $default);
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function prompt(array $prompt, $default)
+    protected function doPrompt(array $prompt)
     {
         if ($prompt['type'] === 'choice') {
-            return $this->{$prompt['type']}($prompt['prompt'], $prompt['choices'], $default);
+            return $this->{$prompt['type']}($prompt['prompt'], $prompt['choices'], $prompt['default']);
         }
-        return $this->{$prompt['type']}($prompt['prompt'], $default);
+        return $this->{$prompt['type']}($prompt['prompt'], $prompt['default']);
     }
 
-    protected function promptForAnswers(bool $nonInteractive = false, string $type = 'option'): array
+    protected function doPrompts(array $prompts, bool $nonInteractive = false, string $type = 'option'): array
     {
         $userInput = [];
 
-        foreach ($this->getPrompts() as $paramName => $config) {
-            $userInput[$paramName] = $this->$type($paramName) ?? $this->resolveAnswer($config, $nonInteractive);
+        foreach ($prompts as $paramName => $prompt) {
+            $cliInput = $this->$type($paramName);
+
+            if (!empty($cliInput) || $nonInteractive) {
+                $userInput[$paramName] = $cliInput ?? $prompt['default'];
+            } else {
+                $userInput[$paramName] = $this->doPrompt($prompt);
+            }
         }
 
         return $userInput;
-    }
-
-    protected function getPrompts(): array
-    {
-        return $this->prompts;
     }
 }

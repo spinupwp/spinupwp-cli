@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Helpers\OptionsHelper;
-use App\OptionsIO\Sites\PhpVersion;
 use DeliciousBrains\SpinupWp\Endpoints\Event;
 use DeliciousBrains\SpinupWp\Endpoints\Server;
 use DeliciousBrains\SpinupWp\Endpoints\Site;
@@ -11,7 +10,6 @@ use DeliciousBrains\SpinupWp\Resources\Server as ServerResource;
 use DeliciousBrains\SpinupWp\Resources\Site as SiteResource;
 use DeliciousBrains\SpinupWp\SpinupWp;
 use GuzzleHttp\Client;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 /**
