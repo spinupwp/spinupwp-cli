@@ -74,7 +74,7 @@ class CreateCommand extends BaseCommand
             ],
             'site_user' => [
                 'type'    => 'ask',
-                'prompt'  => 'Site User',
+                'prompt'  => 'Site user',
                 'default' => $this->getDomainSlug(),
             ],
             'db_name' => [
@@ -82,15 +82,20 @@ class CreateCommand extends BaseCommand
                 'prompt'  => 'Database name',
                 'default' => $this->getDomainSlug(),
             ],
+            'db_user' => [
+                'type'    => 'ask',
+                'prompt'  => 'Database username',
+                'default' => $this->getDomainSlug(),
+            ],
             'db_pass' => [
                 'type'    => 'ask',
-                'prompt'  => 'Database Password',
+                'prompt'  => 'Database password',
                 'default' => Str::random(12),
 
             ],
             'wp_title' => [
                 'type'    => 'ask',
-                'prompt'  => 'WordPress Title',
+                'prompt'  => 'WordPress title',
                 'default' => null,
             ],
             'wp_admin_email' => [
@@ -110,7 +115,7 @@ class CreateCommand extends BaseCommand
             ],
             'php_version' => [
                 'type'    => 'choice',
-                'prompt'  => 'PHP Version',
+                'prompt'  => 'PHP version',
                 'default' => '8.0',
                 'choices' => OptionsHelper::PHP_VERSIONS,
             ],
