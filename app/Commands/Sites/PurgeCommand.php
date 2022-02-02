@@ -13,7 +13,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
 
     protected function action(): int
     {
-        $cacheToPurge = $this->option('cache');
+        $cacheToPurge = strval($this->option('cache'));
 
         if (empty($cacheToPurge)) {
             $cacheToPurge = (int) $this->askToSelect('Which cache do you want to purge', [
@@ -35,7 +35,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
             $siteId = $this->askToSelectSite('Which site do you want to purge the page cache for');
         }
 
-        $site = $this->spinupwp->sites->get($siteId);
+        $site = $this->spinupwp->sites->get(intval($siteId));
 
         $this->purgeCache([$site], $cacheToPurge);
 
@@ -44,12 +44,12 @@ class PurgeCommand extends \App\Commands\BaseCommand
 
     protected function purgeCacheOnAllSites(string $cacheToPurge): void
     {
-        $sites      = $this->spinupwp->sites->list();
+        $sites      = $this->spinupwp->sites->list()->toArray();
         $shouldWait = count($sites) > 59;
         $this->purgeCache($sites, $cacheToPurge, $shouldWait);
     }
 
-    protected function purgeCache($sites, string $cacheToPurge, $shouldWait = false): void
+    protected function purgeCache(array $sites, string $cacheToPurge, bool $shouldWait = false): void
     {
         if (empty($sites)) {
             return;
