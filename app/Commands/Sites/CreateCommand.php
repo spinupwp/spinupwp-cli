@@ -52,7 +52,7 @@ class CreateCommand extends BaseCommand
             'domain' => [
                 'type'    => 'ask',
                 'prompt'  => 'Domain Name',
-                'default' => !$this->nonInteractive(),
+                'default' => null,
             ],
         ], $this->nonInteractive());
         $this->userInput += $this->doPrompts($this->getPrompts(), $this->nonInteractive());
