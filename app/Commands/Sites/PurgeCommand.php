@@ -4,19 +4,19 @@ namespace App\Commands\Sites;
 
 class PurgeCommand extends \App\Commands\BaseCommand
 {
-    protected $signature = 'sites:purge {site_id? : The site ID}
+    protected $signature = 'sites:purge {site_id? : The site to purge}
                                         {--cache= : The cache to purge}
                                         {--all : Purge cache on all sites}
                                         {--profile=}';
 
-    protected $description = 'Purge the page cache for a site';
+    protected $description = 'Purge the page or object cache for a site';
 
     protected function action(): int
     {
-        $cacheToPurge = $this->option('cache');
+        $cacheToPurge = strval($this->option('cache'));
 
         if (empty($cacheToPurge)) {
-            $cacheToPurge = (int) $this->askToSelect('Which cache do you want to purge?', [
+            $cacheToPurge = (int) $this->askToSelect('Which cache do you want to purge', [
                 '1' => 'Page cache',
                 '2' => 'Object cache',
             ], '1');
@@ -32,10 +32,10 @@ class PurgeCommand extends \App\Commands\BaseCommand
         $siteId = $this->argument('site_id');
 
         if (empty($siteId)) {
-            $siteId = $this->askToSelectSite('Which site do you want to purge the page cache for?');
+            $siteId = $this->askToSelectSite('Which site do you want to purge the page cache for');
         }
 
-        $site = $this->spinupwp->sites->get($siteId);
+        $site = $this->spinupwp->sites->get(intval($siteId));
 
         $this->purgeCache([$site], $cacheToPurge);
 
@@ -44,12 +44,12 @@ class PurgeCommand extends \App\Commands\BaseCommand
 
     protected function purgeCacheOnAllSites(string $cacheToPurge): void
     {
-        $sites      = $this->spinupwp->sites->list();
+        $sites      = $this->spinupwp->sites->list()->toArray();
         $shouldWait = count($sites) > 59;
         $this->purgeCache($sites, $cacheToPurge, $shouldWait);
     }
 
-    protected function purgeCache($sites, string $cacheToPurge, $shouldWait = false): void
+    protected function purgeCache(array $sites, string $cacheToPurge, bool $shouldWait = false): void
     {
         if (empty($sites)) {
             return;

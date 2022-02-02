@@ -18,7 +18,7 @@ class GitDeployCommand extends BaseCommand
         $siteId = $this->argument('site_id');
 
         if (empty($siteId)) {
-            $siteId = $this->askToSelectSite('Which site would you like to deploy?', fn ($site) => $site->git['enabled']);
+            $siteId = $this->askToSelectSite('Which site would you like to deploy', fn ($site) => $site->git['enabled']);
         }
 
         $site = $this->spinupwp->sites->get((int) $siteId);

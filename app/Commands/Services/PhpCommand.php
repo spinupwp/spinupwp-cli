@@ -10,7 +10,7 @@ class PhpCommand extends BaseCommand
     use SelectsServer;
 
     protected $signature = 'services:php
-                            {server_id? : The server id}
+                            {server_id? : The server to restart PHP on}
                             {--all : Restart PHP on all servers}
                             {--f|force : Restart PHP without prompting for confirmation}
                             {--profile=}';

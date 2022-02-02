@@ -49,7 +49,7 @@ test('site git deploy command', function () {
     );
 
     $this->artisan('sites:deploy')
-        ->expectsQuestion('Which site would you like to deploy?', '1')
+        ->expectsQuestion('Which site would you like to deploy', '1')
         ->expectsOutput('==> Site queued for deployment.')
         ->assertExitCode(0);
 });
