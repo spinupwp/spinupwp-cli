@@ -3,17 +3,17 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\HasPrompts;
-use App\Commands\Concerns\InteractsWithIO;
 use App\Commands\Concerns\SelectsServer;
 use App\Helpers\OptionsHelper;
-use Illuminate\Support\Arr;
+use App\Questions\Ask;
+use App\Questions\Choice;
+use App\Questions\Confirm;
+use App\Questions\HasQuestions;
 use Illuminate\Support\Str;
 
 class CreateCommand extends BaseCommand
 {
-    use InteractsWithIO;
-    use HasPrompts;
+    use HasQuestions;
     use SelectsServer;
 
     protected $signature = 'sites:create
@@ -48,14 +48,11 @@ class CreateCommand extends BaseCommand
 
         $server = $this->selectServer('deploy to')->first();
 
-        $this->userInput = $this->doPrompts([
-            'domain' => [
-                'type'    => 'ask',
-                'prompt'  => 'Domain Name',
-                'default' => null,
-            ],
-        ], $this->nonInteractive());
-        $this->userInput += $this->doPrompts($this->getPrompts(), $this->nonInteractive());
+        $this->userInput['domain'] = Ask::make('Domain')
+            ->nonInteractive($this->nonInteractive())
+            ->resolveAnswer($this);
+
+        $this->userInput += $this->askQuestions($this->nonInteractive());
 
         $site = $this->spinupwp->createSite($server->id, array_merge($this->arguments(), $this->options(), $this->userInput));
 
@@ -64,81 +61,67 @@ class CreateCommand extends BaseCommand
         return self::SUCCESS;
     }
 
-    protected function getPrompts(): array
+    public function getDomainSlug(): string
     {
-        $prompts = [
-            'https_enabled' => [
-                'type'    => 'confirm',
-                'prompt'  => 'Enable HTTPS',
-                'default' => (int) !$this->nonInteractive(),
-            ],
-            'site_user' => [
-                'type'    => 'ask',
-                'prompt'  => 'Site user',
-                'default' => $this->getDomainSlug(),
-            ],
-            'db_name' => [
-                'type'    => 'ask',
-                'prompt'  => 'Database name',
-                'default' => $this->getDomainSlug(),
-            ],
-            'db_user' => [
-                'type'    => 'ask',
-                'prompt'  => 'Database username',
-                'default' => $this->getDomainSlug(),
-            ],
-            'db_pass' => [
-                'type'    => 'ask',
-                'prompt'  => 'Database password',
-                'default' => Str::random(12),
+        return str_replace('.', '', $this->userInput['domain']);
+    }
 
-            ],
-            'wp_title' => [
-                'type'    => 'ask',
-                'prompt'  => 'WordPress title',
-                'default' => null,
-            ],
-            'wp_admin_email' => [
-                'type'    => 'ask',
-                'prompt'  => 'WordPress admin email address',
-                'default' => null,
-            ],
-            'wp_admin_user' => [
-                'type'    => 'ask',
-                'prompt'  => 'WordPress admin username',
-                'default' => null,
-            ],
-            'wp_admin_pass' => [
-                'type'    => 'ask',
-                'prompt'  => 'WordPress admin password',
-                'default' => Str::random(12),
-            ],
-            'php_version' => [
-                'type'    => 'choice',
-                'prompt'  => 'PHP version',
-                'default' => '8.0',
-                'choices' => OptionsHelper::PHP_VERSIONS,
-            ],
-            'page_cache_enabled' => [
-                'type'    => 'confirm',
-                'prompt'  => 'Enable page cache',
-                'default' => (int) !$this->nonInteractive(),
-            ],
+    public function questions(): array
+    {
+        $commonStart = [
+            Confirm::make('Https Enabled')
+                ->withDefault((bool) !$this->nonInteractive()),
+
+            Ask::make('Site User')
+                ->withDefault($this->getDomainSlug()),
+        ];
+
+        $db = [
+            Ask::make('Db Name')
+            ->withDefault($this->getDomainSlug()),
+
+            Ask::make('Db User')
+                ->withDefault($this->getDomainSlug()),
+
+            Ask::make('Db Pass')
+                ->withDefault(Str::random(12)),
+        ];
+
+        $wp = [
+            Ask::make('WordPress Title')
+                ->withFlag('wp_title'),
+
+            Ask::make('WordPress admin email address')
+                ->withFlag('wp_admin_email'),
+
+            Ask::make('WordPress admin username')
+                ->withFlag('wp_admin_user'),
+
+            Ask::make('WordPress admin password')
+                ->withFlag('wp_admin_pass')
+                ->withDefault(Str::random(12)),
+        ];
+
+        $commonEnd = [
+            Choice::make('PHP Version')
+                ->withFlag('php_version')
+                ->withChoices(OptionsHelper::PHP_VERSIONS)
+                ->withDefault('8.0'),
+
+            Confirm::make('Page Cache Enabled')
+                ->withDefault((bool) !$this->nonInteractive()),
         ];
 
         switch ($this->argument('installation_method')) {
             case 'blank':
-                return Arr::except($prompts, [
-                    'db_name', 'db_user', 'db_pass',
-                    'wp_title', 'wp_admin_user', 'wp_admin_email', 'wp_admin_pass',
-                ]);
+                return array_merge($commonStart, $commonEnd);
             default:
-                return $prompts;
+                return array_merge(
+                    $commonStart,
+                    $db,
+                    $wp,
+                    $commonEnd
+                );
         }
-    }
-
-    public function getDomainSlug(): string
-    {
-        return str_replace('.', '', $this->userInput['domain']);
     }
 }
