@@ -64,10 +64,10 @@ abstract class Question
     {
         $this->command = $command;
 
-        $flagAnswer = $this->command->option();
+        $flagInput = $this->command->option($this->flag);
 
-        if ($flagAnswer || $this->nonInteractive) {
-            return $flagAnswer;
+        if ($flagInput || $this->nonInteractive) {
+            return $flagInput ?? $this->default ?? null;
         }
 
         return $this->question();
