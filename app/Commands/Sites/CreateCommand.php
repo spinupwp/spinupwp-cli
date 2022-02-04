@@ -3,7 +3,7 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\SelectsServer;
+use App\Commands\Concerns\HasServerIdParameter;
 use App\Helpers\OptionsHelper;
 use App\Questions\Ask;
 use App\Questions\Choice;
@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 class CreateCommand extends BaseCommand
 {
     use HasQuestions;
-    use SelectsServer;
+    use HasServerIdParameter;
 
     protected $signature = 'sites:create
                             {installation_method : Type of installation (wp or blank)}

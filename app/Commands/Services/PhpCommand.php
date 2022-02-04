@@ -3,11 +3,11 @@
 namespace App\Commands\Services;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\SelectsServer;
+use App\Commands\Concerns\HasServerIdParameter;
 
 class PhpCommand extends BaseCommand
 {
-    use SelectsServer;
+    use HasServerIdParameter;
 
     protected $signature = 'services:php
                             {server_id? : The server to restart PHP on}

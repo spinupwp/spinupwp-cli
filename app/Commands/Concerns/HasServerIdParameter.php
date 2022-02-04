@@ -4,7 +4,7 @@ namespace App\Commands\Concerns;
 
 use Illuminate\Support\Collection;
 
-trait SelectsServer
+trait HasServerIdParameter
 {
     public function selectServer(string $action): Collection
     {

@@ -3,11 +3,11 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\SelectsServer;
+use App\Commands\Concerns\HasServerIdParameter;
 
 class RebootCommand extends BaseCommand
 {
-    use SelectsServer;
+    use HasServerIdParameter;
 
     protected $signature = 'servers:reboot
                             {server_id? : The server to reboot}
