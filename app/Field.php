@@ -42,6 +42,23 @@ class Field
         return $this->name;
     }
 
+    public function withTransformRule(Closure $rule): self
+    {
+        $this->transformRule = $rule;
+
+        return $this;
+    }
+
+    public function shouldTransform(): bool
+    {
+        return !(is_null($this->transformRule));
+    }
+
+    public function transform(Resource $resource)
+    {
+        return ($this->transformRule)($resource->{$this->name});
+    }
+
     public function withIgnoreRule(Closure $ignoreRule): self
     {
         $this->ignoreRule = $ignoreRule;
