@@ -17,6 +17,10 @@ class Field
 
     protected ?Closure $transformRule = null;
 
+    protected bool $booleanField = false;
+
+    protected bool $shouldCapitalize = false;
+
     public function __construct(string $displayName, string $name)
     {
         $this->displayName = $displayName;
@@ -72,7 +76,7 @@ class Field
             return false;
         }
 
-        return $this->ignoreRule($resource->{$this->name});
+        return ($this->ignoreRule)($resource->{$this->name});
     }
 
     public function withAliases(array $aliases): self
@@ -85,5 +89,37 @@ class Field
     {
         $aliases = array_merge([$this->name], $this->aliases);
         return count(array_intersect($aliases, $fieldsFilter)) > 0;
+    }
+
+    public function yesOrNo(): self
+    {
+        $this->booleanField = true;
+        return $this;
+    }
+
+    public function isBoolean(): bool
+    {
+        return $this->booleanField;
+    }
+
+    public function displayYesOrNo(Resource $resource): string
+    {
+        return $resource->{$this->name} ? 'Yes' : 'No';
+    }
+
+    public function withFirstCharUpperCase(): self
+    {
+        $this->shouldCapitalize = true;
+        return $this;
+    }
+
+    public function shouldFirstCharMustBeUpperCase(): bool
+    {
+        return $this->shouldCapitalize;
+    }
+
+    public function displayFirstCharUpperCase(Resource $resource): string
+    {
+        return ucfirst($resource->{$this->name});
     }
 }
