@@ -30,62 +30,45 @@ trait SpecifyFields
 
         $this->applyFilter($fieldsFilter);
 
-        collect($this->fieldsMap)->each(function (Field $field) use ($resource) {
+        collect($this->fieldsMap)->each(function (Field $field) use ($resource, &$fields) {
+            $label = $field->getDisplayLabel($this->displayFormat() === 'table');
             if (!property_exists($resource, $field->getName())) {
                 return;
             }
 
             if ($field->shouldIgnore($resource)) {
-                $fields[$field->getDisplayLabel($this->displayFormat() === 'table')] = '';
+                $fields[$label] = '';
+                return;
+            }
+
+            if (!$field->shouldTransform()) {
+                $fields[$label] = $resource->{$field->getName()};
+                return;
+            }
+
+            if ($field->isBoolean()) {
+                $fields[$label] = $field->displayYesOrNo($resource);
+                return;
+            }
+
+            if ($field->shouldFirstCharMustBeUpperCase()) {
+                $fields[$label] = $field->displayFirstCharUpperCase($resource);
+                return;
+            }
+
+            $value = $field->transform($resource);
+
+            if (!is_array($value)) {
+                $fields[$label] = $value;
+                return;
+            }
+
+            foreach ($value as $key => $_value) {
+                $fields[$key] = $_value;
             }
         });
-
-        // foreach ($this->fieldsMap as $field) {
-        // $property = $this->getFinalResourceProperty($resourceProp);
-
-        // if (!property_exists($resource, $property)) {
-        //     continue;
-        // }
-
-        // if (isset($resourceProp['ignore']) && $resourceProp['ignore']($resource->{$property})) {
-        //     $fields[$this->displayFormat() === 'table' ? $name : $resourceProp['property']] = '';
-        //     continue;
-        // }
-
-        // if (isset($resourceProp['filter'])) {
-        //     $value = $resourceProp['filter']($resource->{$property});
-
-        //     if (is_array($value)) {
-        //         foreach ($value as $key => $_value) {
-        //             $fields[$key] = $_value;
-        //         }
-        //         continue;
-        //     }
-
-        //     $fields[$this->displayFormat() === 'table' ? $name : $resourceProp['property']] = $value;
-        //     continue;
-        // }
-        // $fields[$this->displayFormat() === 'table' ? $name : $resourceProp] = $resource->{$resourceProp};
-        // }
-
+        die(var_dump($fields));
         return $fields;
-    }
-
-    /**
-     * @param mixed $property
-     * @return string
-     */
-    protected function getFinalResourceProperty($property): string
-    {
-        if (is_array($property)) {
-            $property = $property['property'];
-        }
-
-        if (strpos($property, '|') !== false) {
-            return explode('|', $property)[0];
-        }
-
-        return $property;
     }
 
     protected function saveFieldsFilter(bool $saveConfiguration = false): void
@@ -111,12 +94,6 @@ trait SpecifyFields
     protected function applyFilter(array $fieldsFilter): void
     {
         if (!empty($fieldsFilter)) {
-            // $this->fieldsMap = array_filter($this->fieldsMap, function ($field) use ($fieldsFilter) {
-            //     if (is_array($field)) {
-            //         $field = $field['property'];
-            //     }
-            //     return $this->propertyInFilter($field, $fieldsFilter);
-            // });
             $this->fieldsMap = array_filter($this->fieldsMap, fn (Field $field) => $field->isInFilter($fieldsFilter));
         }
     }
