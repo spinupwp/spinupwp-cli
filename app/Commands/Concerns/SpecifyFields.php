@@ -67,7 +67,6 @@ trait SpecifyFields
                 $fields[$key] = $_value;
             }
         });
-        die(var_dump($fields));
         return $fields;
     }
 
