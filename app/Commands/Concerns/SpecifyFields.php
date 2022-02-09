@@ -56,6 +56,11 @@ trait SpecifyFields
                 return;
             }
 
+            if ($field->getEnabledOrDisabled()) {
+                $fields[$label] = $field->displayEnabledOrDisabled($resource);
+                return;
+            }
+
             $value = $field->transform($resource);
 
             if (!is_array($value)) {

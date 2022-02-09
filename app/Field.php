@@ -21,6 +21,8 @@ class Field
 
     protected bool $shouldCapitalize = false;
 
+    protected bool $enabledOrDisabled = false;
+
     public function __construct(string $displayName, string $name)
     {
         $this->displayName = $displayName;
@@ -121,5 +123,21 @@ class Field
     public function displayFirstCharUpperCase(Resource $resource): string
     {
         return ucfirst($resource->{$this->name});
+    }
+
+    public function couldBeEnabledOrDisabled(): self
+    {
+        $this->enabledOrDisabled = true;
+        return $this;
+    }
+
+    public function getEnabledOrDisabled(): bool
+    {
+        return $this->enabledOrDisabled;
+    }
+
+    public function displayEnabledOrDisabled(Resource $resource): string
+    {
+        return $resource->{$this->name} ? 'Enabled' : 'Disabled';
     }
 }
