@@ -75,8 +75,8 @@ abstract class Sites extends BaseCommand
                 ->withAliases(['nginx.uploads_directory_protected'])
                 ->withTransformRule(fn ($value) => $value['uploads_directory_protected'] ? 'Enabled' : 'Disabled'),
             (new Field('XML-RPC Protection', 'nginx'))
-                ->withAliases(['nginx.xml_rpc_protected'])
-                ->withTransformRule(fn ($value) => $value['xml_rpc_protected'] ? 'Enabled' : 'Disabled'),
+                ->withAliases(['nginx.xmlrpc_protected'])
+                ->withTransformRule(fn ($value) => $value['xmlrpc_protected'] ? 'Enabled' : 'Disabled'),
             (new Field('Mulsite Rewrite Rules', 'nginx'))
                 ->withAliases(['nginx.subdirectory_rewrite_in_place'])
                 ->withTransformRule(fn ($value) => $value['subdirectory_rewrite_in_place'] ? 'Enabled' : 'Disabled'),
