@@ -32,17 +32,13 @@ trait SpecifyFields
 
         collect($this->fieldsMap)->each(function (Field $field) use ($resource, &$fields) {
             $label = $field->getDisplayLabel($this->displayFormat() === 'table');
+
             if (!property_exists($resource, $field->getName())) {
                 return;
             }
 
             if ($field->shouldIgnore($resource)) {
                 $fields[$label] = '';
-                return;
-            }
-
-            if (!$field->shouldTransform()) {
-                $fields[$label] = $resource->{$field->getName()};
                 return;
             }
 
@@ -61,6 +57,11 @@ trait SpecifyFields
                 return;
             }
 
+            if (!$field->shouldTransform()) {
+                $fields[$label] = $resource->{$field->getName()};
+                return;
+            }
+
             $value = $field->transform($resource);
 
             if (!is_array($value)) {
@@ -72,6 +73,7 @@ trait SpecifyFields
                 $fields[$key] = $_value;
             }
         });
+
         return $fields;
     }
 
