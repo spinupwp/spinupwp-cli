@@ -16,8 +16,9 @@ class GetCommand extends Servers
 
     public function action(): int
     {
-        $serverId = $this->argument('server_id');
-        $server   = $this->spinupwp->getServer((int) $serverId);
+        $this->largeOutput = true;
+        $serverId          = $this->argument('server_id');
+        $server            = $this->spinupwp->getServer((int) $serverId);
 
         if ($this->shouldSpecifyFields()) {
             $this->saveFieldsFilter();
