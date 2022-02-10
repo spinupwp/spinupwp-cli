@@ -138,6 +138,6 @@ class Field
 
     public function displayEnabledOrDisabled(Resource $resource): string
     {
-        return $resource->{$this->name} ? 'Enabled' : 'Disabled';
+        return $resource->{$this->name}['enabled'] ? 'Enabled' : 'Disabled';
     }
 }
