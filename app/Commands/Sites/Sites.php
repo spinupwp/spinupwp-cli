@@ -33,7 +33,7 @@ abstract class Sites extends BaseCommand
             (new Field('Repository', 'git'))
                 ->withAliases(['git.repo'])
                 ->withIgnoreRule(fn ($value)    => !$value['enabled'])
-                ->withTransformRule(fn ($value) => $value['repository']),
+                ->withTransformRule(fn ($value) => $value['repo']),
             (new Field('Branch', 'git'))
                 ->withAliases(['git.branch'])
                 ->withIgnoreRule(fn ($value)    => !$value['enabled'])
