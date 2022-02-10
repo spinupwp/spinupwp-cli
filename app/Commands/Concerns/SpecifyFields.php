@@ -35,32 +35,7 @@ trait SpecifyFields
                 return;
             }
 
-            if ($field->shouldIgnore($resource)) {
-                $fields[$label] = '';
-                return;
-            }
-
-            if ($field->isBoolean()) {
-                $fields[$label] = $field->displayYesOrNo($resource);
-                return;
-            }
-
-            if ($field->shouldFirstCharMustBeUpperCase()) {
-                $fields[$label] = $field->displayFirstCharUpperCase($resource);
-                return;
-            }
-
-            if ($field->getEnabledOrDisabled()) {
-                $fields[$label] = $field->displayEnabledOrDisabled($resource);
-                return;
-            }
-
-            if (!$field->shouldTransform()) {
-                $fields[$label] = $resource->{$field->getName()};
-                return;
-            }
-
-            $value = $field->transform($resource);
+            $value = $field->getDisplayValue($resource);
 
             if (!is_array($value)) {
                 $fields[$label] = $value;

@@ -140,4 +140,29 @@ class Field
     {
         return $resource->{$this->name}['enabled'] ? 'Enabled' : 'Disabled';
     }
+
+    public function getDisplayValue(Resource $resource)
+    {
+        if ($this->shouldIgnore($resource)) {
+            return '';
+        }
+
+        if ($this->isBoolean()) {
+            return $this->displayYesOrNo($resource);
+        }
+
+        if ($this->shouldFirstCharMustBeUpperCase()) {
+            return $this->displayFirstCharUpperCase($resource);
+        }
+
+        if ($this->getEnabledOrDisabled()) {
+            return $this->displayEnabledOrDisabled($resource);
+        }
+
+        if (!$this->shouldTransform()) {
+            return $resource->{$this->getName()};
+        }
+
+        return $this->transform($resource);
+    }
 }
