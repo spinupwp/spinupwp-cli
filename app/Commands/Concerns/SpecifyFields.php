@@ -17,10 +17,8 @@ trait SpecifyFields
 
         $fields = [];
 
-        $commandFields = $this->config->getCommandConfiguration($this->name, $this->profile())['fields'] ?? null;
-
-        if ($commandFields) {
-            $fieldsFilter = explode(',', str_replace(' ', '', $commandFields));
+        if (empty($fieldsFilter)) {
+            $fieldsFilter = $this->getCommandFieldsConfiguration($this->name, $this->profile());
         }
 
         if ($this->option('fields')) {
@@ -97,7 +95,7 @@ trait SpecifyFields
         $this->config->setCommandConfiguration($this->name, 'fields', '', $this->profile());
     }
 
-    protected function applyFilter(array $fieldsFilter): void
+    protected function applyFilter(?array $fieldsFilter): void
     {
         if (!empty($fieldsFilter)) {
             $this->fieldsMap = array_filter($this->fieldsMap, fn (Field $field) => $field->isInFilter($fieldsFilter));
@@ -108,5 +106,14 @@ trait SpecifyFields
     {
         $commandOptions = $this->config->getCommandConfiguration($this->name, $this->profile());
         return $this->option('fields') || (isset($commandOptions['fields']) && !empty($commandOptions['fields']));
+    }
+
+    private function getCommandFieldsConfiguration(string $command, string $profile): ?array
+    {
+        $commandFields = data_get($this->config->getCommandConfiguration($command, $profile), 'fields');
+        if (!$commandFields) {
+            return null;
+        }
+        return explode(',', str_replace(' ', '', $commandFields));
     }
 }
