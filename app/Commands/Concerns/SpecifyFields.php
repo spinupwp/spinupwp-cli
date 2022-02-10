@@ -17,7 +17,7 @@ trait SpecifyFields
 
         $fields = [];
 
-        $commandFields = $this->config->getCommandConfiguration($this->command, $this->profile())['fields'] ?? null;
+        $commandFields = $this->config->getCommandConfiguration($this->name, $this->profile())['fields'] ?? null;
 
         if ($commandFields) {
             $fieldsFilter = explode(',', str_replace(' ', '', $commandFields));
@@ -79,7 +79,7 @@ trait SpecifyFields
 
     protected function saveFieldsFilter(bool $saveConfiguration = false): void
     {
-        $commandOptions = $this->config->getCommandConfiguration($this->command, $this->profile());
+        $commandOptions = $this->config->getCommandConfiguration($this->name, $this->profile());
 
         if (!empty($commandOptions)) {
             return;
@@ -90,11 +90,11 @@ trait SpecifyFields
         }
 
         if ($saveConfiguration) {
-            $this->config->setCommandConfiguration($this->command, 'fields', strval($this->option('fields')), $this->profile());
+            $this->config->setCommandConfiguration($this->name, 'fields', strval($this->option('fields')), $this->profile());
             return;
         }
 
-        $this->config->setCommandConfiguration($this->command, 'fields', '', $this->profile());
+        $this->config->setCommandConfiguration($this->name, 'fields', '', $this->profile());
     }
 
     protected function applyFilter(array $fieldsFilter): void
@@ -106,7 +106,7 @@ trait SpecifyFields
 
     protected function shouldSpecifyFields(): bool
     {
-        $commandOptions = $this->config->getCommandConfiguration($this->command, $this->profile());
+        $commandOptions = $this->config->getCommandConfiguration($this->name, $this->profile());
         return $this->option('fields') || (isset($commandOptions['fields']) && !empty($commandOptions['fields']));
     }
 }

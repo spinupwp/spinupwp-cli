@@ -27,7 +27,6 @@ abstract class BaseCommand extends Command
 
         $this->config   = $configuration;
         $this->spinupwp = $spinupWp;
-        $this->command  = explode(' ', $this->signature)[0];
     }
 
     public function handle(): int
