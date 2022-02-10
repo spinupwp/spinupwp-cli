@@ -16,8 +16,9 @@ class GetCommand extends Sites
 
     public function action(): int
     {
-        $siteId = $this->argument('site_id');
-        $site   = $this->spinupwp->getSite((int) $siteId);
+        $this->largeOutput = true;
+        $siteId            = $this->argument('site_id');
+        $site              = $this->spinupwp->getSite((int) $siteId);
 
         if ($this->shouldSpecifyFields()) {
             $this->saveFieldsFilter();
