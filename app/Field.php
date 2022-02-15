@@ -60,8 +60,12 @@ class Field
         return !(is_null($this->transformRule));
     }
 
-    public function transform(Resource $resource)
+    public function transform(Resource $resource): mixed
     {
+        if (is_null($this->transformRule)) {
+            return $resource->{$this->name};
+        }
+
         return ($this->transformRule)($resource->{$this->name});
     }
 
@@ -141,7 +145,7 @@ class Field
         return $resource->{$this->name}['enabled'] ? 'Enabled' : 'Disabled';
     }
 
-    public function getDisplayValue(Resource $resource)
+    public function getDisplayValue(Resource $resource): mixed
     {
         if ($this->shouldIgnore($resource)) {
             return '';
