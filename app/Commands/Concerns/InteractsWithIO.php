@@ -205,7 +205,7 @@ trait InteractsWithIO
         return (bool) $this->option('force') || $this->confirm($confirmation, $default);
     }
 
-    public function queueResources(Collection $resources, string $endpoint, string $verb, string $resourcesId = 'name'): void
+    public function queueResources(Collection $resources, string $endpoint, string $verb, string $resourcesId = 'name', bool $shouldWait = false): void
     {
         if ($resources->isEmpty()) {
             return;
@@ -215,12 +215,14 @@ trait InteractsWithIO
 
         $events = [];
 
-        $resources->each(function ($resource) use ($resources, $endpoint, &$events, $verb, $resourcesId) {
+        $resources->each(function ($resource) use ($resources, $endpoint, &$events, $verb, $resourcesId, $shouldWait) {
             try {
+                if ($shouldWait) {
+                    sleep(1);
+                }
                 $eventId = call_user_func(fn () => $resource->$endpoint());
                 $events[] = ["{$eventId}", $resource->{$resourcesId}];
             } catch (\Exception $e) {
-                dd($e);
                 if ($resources->count() === 1) {
                     $this->error("{$verb} failed on {$resource->name}.");
                 }

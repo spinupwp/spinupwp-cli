@@ -69,7 +69,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
             return;
         }
 
-        $shouldWait = $sites->count() > 59;
+        $shouldWait = $sites->count() > 55;
 
         $this->purgeCache($sites, $cacheToPurge, $shouldWait);
     }
@@ -82,6 +82,6 @@ class PurgeCommand extends \App\Commands\BaseCommand
 
         $endpoint = $cacheToPurge === 'page' ? 'purgePageCache' : 'purgeObjectCache';
         $verb     = "purging {$cacheToPurge} cache";
-        $this->queueResources($sites, $endpoint, $verb, 'domain');
+        $this->queueResources($sites, $endpoint, $verb, 'domain', $shouldWait);
     }
 }
