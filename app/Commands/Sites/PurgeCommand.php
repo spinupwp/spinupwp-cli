@@ -76,7 +76,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
 
     protected function purgeCache(Collection $sites, string $cacheToPurge, bool $shouldWait = false): void
     {
-        if (empty($sites)) {
+        if ($sites->isEmpty()) {
             return;
         }
 
