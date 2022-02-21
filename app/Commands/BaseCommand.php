@@ -19,9 +19,7 @@ abstract class BaseCommand extends Command
 
     protected bool $requiresToken = true;
 
-    protected bool $largeOutput = false;
-
-    protected array $columnsMaxWidths = [];
+    protected string $command;
 
     public function __construct(ConfigRepository $configuration, SpinupWpRepository $spinupWp)
     {
@@ -33,6 +31,10 @@ abstract class BaseCommand extends Command
 
     public function handle(): int
     {
+        if (method_exists($this, 'setup')) {
+            $this->setup();
+        }
+
         if ($this->requiresToken && !$this->config->isConfigured()) {
             $this->error("You must first run 'spinupwp configure' in order to set up your API token.");
             return self::FAILURE;

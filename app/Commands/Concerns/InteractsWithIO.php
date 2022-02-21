@@ -10,6 +10,8 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 trait InteractsWithIO
 {
+    protected bool $largeOutput = false;
+
     /**
      * @param mixed $resource
      */
@@ -65,7 +67,11 @@ trait InteractsWithIO
      */
     protected function toJson($resource): void
     {
-        $this->line((string) json_encode($resource->toArray(), JSON_PRETTY_PRINT));
+        if (!is_array($resource)) {
+            $resource = $resource->toArray();
+        }
+
+        $this->line((string) json_encode($resource, JSON_PRETTY_PRINT));
     }
 
     /**
@@ -146,12 +152,6 @@ trait InteractsWithIO
         }
 
         $table->setRows($rows)->setStyle('default');
-
-        if (!empty($this->columnsMaxWidths)) {
-            foreach ($this->columnsMaxWidths as $column) {
-                $table->setColumnMaxWidth($column[0], $column[1]);
-            }
-        }
 
         $table->render();
     }

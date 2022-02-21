@@ -22,9 +22,16 @@ class ConfigRepository
         return file_exists($this->configFilePath());
     }
 
-    public function get(string $key, string $profile = 'default', ?string $default = ''): ?string
+    /**
+     * @param string $key
+     * @param string $profile
+     * @param mixed $default
+     * @return mixed
+     */
+    public function get(string $key, string $profile = 'default', $default = null)
     {
         $this->config = $this->readConfig();
+
         if (empty($this->config)) {
             return $default;
         }
@@ -33,16 +40,16 @@ class ConfigRepository
             return $default;
         }
 
-        $profileConfig = $this->config[$profile];
-
-        if (!isset($profileConfig[$key])) {
-            return $default;
-        }
-
-        return $profileConfig[$key];
+        return Arr::get($this->config[$profile], $key, $default);
     }
 
-    public function set(string $key, string $value, string $profile = 'default'): void
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @param string $profile
+     * @return void
+     */
+    public function set(string $key, $value, string $profile = 'default'): void
     {
         $config = $this->config;
 
@@ -51,6 +58,19 @@ class ConfigRepository
         file_put_contents($this->configFilePath(), json_encode($config, JSON_PRETTY_PRINT));
 
         $this->config = $config;
+    }
+
+    public function getCommandConfiguration(string $command, string $profile = 'default'): array
+    {
+        $command = trim($command);
+        return $this->get("command_options.{$command}", $profile, []);
+    }
+
+    public function setCommandConfiguration(string $command, string $key, string $value, string $profile = 'default'): void
+    {
+        $command = trim($command);
+
+        $this->set("command_options.{$command}.{$key}", $value, $profile);
     }
 
     public function teamExists(string $profile): bool

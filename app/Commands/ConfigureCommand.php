@@ -47,6 +47,7 @@ class ConfigureCommand extends BaseCommand
 
         $this->config->set('api_token', $apiKey, $profile);
         $this->config->set('format', $defaultFormat, $profile);
+        $this->config->set('command_options', [], $profile);
 
         $this->info('Profile configured successfully.');
 

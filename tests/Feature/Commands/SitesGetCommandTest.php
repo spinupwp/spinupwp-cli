@@ -1,5 +1,6 @@
 <?php
 
+use App\Repositories\ConfigRepository as Configuration;
 use GuzzleHttp\Psr7\Response;
 
 $response = [
@@ -91,33 +92,51 @@ test('sites table get command', function () use ($response) {
         ['ID', '1'],
         ['Server ID', '1'],
         ['Domain', 'hellfish.media'],
-        ['Additional Domains', 'www.hellfish.media'],
         ['Site User', 'hellfishmedia'],
         ['PHP Version', '7.4'],
-        ['Public Folder', '/'],
         ['Page Cache', 'Enabled'],
         ['HTTPS', 'Enabled'],
-        ['Database Table Prefix', 'wp_'],
-        ['Git', 'Enabled'],
-        ['Repository', 'git@github.com:deliciousbrains/spinupwp-composer-site.git'],
-        ['Branch', 'main'],
-        ['Deploy Script', 'composer install --optimize-autoload --no-dev'],
-        ['Push-to-deploy', 'Enabled'],
-        ['Deployment URL', 'https://api.spinupwp.app/git/jeJLdKrl63/deploy'],
-        ['WP Core Update', 'Yes'],
-        ['WP Theme Updates', '0'],
-        ['WP Plugin Updates', '3'],
-        ['Scheduled Backups', 'Enabled'],
-        ['File Backups', 'Enabled'],
-        ['Database Backups', 'Enabled'],
-        ['Backup Retention Period', '30 days'],
-        ['Next Backup Time', '2021-01-01T12:00:00.000000Z'],
-        ['Uploads Directory Protection', 'Enabled'],
-        ['XML-RPC Protection', 'Enabled'],
-        ['Multisite Rewrite Rules', 'Disabled'],
-        ['Basic Auth', 'Enabled'],
-        ['Basic Auth Username', 'hellfish'],
-        ['Created At', '2021-01-01T12:00:00.000000Z'],
-        ['Status', 'Deployed'],
     ]);
+});
+
+test('site table get command specifying columns and asks to save it in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+    $this->artisan('sites:get 1 --format=table --fields=domain,git,backups,status')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'yes')
+        ->expectsTable([], [
+            ['Domain', 'hellfish.media'],
+            ['Git', 'Enabled'],
+            ['Repository', 'git@github.com:deliciousbrains/spinupwp-composer-site.git'],
+            ['Branch', 'main'],
+            ['Deploy Script', 'composer install --optimize-autoload --no-dev'],
+            ['Push-to-deploy', 'Enabled'],
+            ['Deployment URL', 'https://api.spinupwp.app/git/jeJLdKrl63/deploy'],
+            ['Scheduled Backups', 'Enabled'],
+            ['File Backups', 'Enabled'],
+            ['Database Backups', 'Enabled'],
+            ['Backup Retention Period', '30 days'],
+            ['Next Backup Time', '2021-01-01T12:00:00.000000Z'],
+            ['Status', 'Deployed'],
+        ]);
+});
+
+test('site table get only columns saved in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+
+    resolve(Configuration::class)->setCommandConfiguration('sites:get', 'fields', 'id,domain');
+
+    $this->artisan('sites:get 1 --format=table')
+        ->expectsTable([], [
+            ['ID', '1'],
+            ['Domain', 'hellfish.media'],
+        ]);
+
+    $this->artisan('sites:get 1')->expectsOutput(json_encode([
+        'id'     => 1,
+        'domain' => 'hellfish.media',
+    ], JSON_PRETTY_PRINT));
 });
