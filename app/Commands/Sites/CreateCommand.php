@@ -53,6 +53,7 @@ class CreateCommand extends BaseCommand
         }
 
         $this->userInput['domain'] = Ask::make('Primary Domain')
+            ->withFlag('domain')
             ->nonInteractive($this->nonInteractive())
             ->resolveAnswer($this);
 
@@ -74,6 +75,7 @@ class CreateCommand extends BaseCommand
     {
         $commonStart = [
             Confirm::make('Enable HTTPS')
+                ->withFlag('https_enabled')
                 ->withDefault((bool) !$this->nonInteractive()),
 
             Ask::make('Site User')
@@ -82,12 +84,15 @@ class CreateCommand extends BaseCommand
 
         $db = [
             Ask::make('Database Name')
+                ->withFlag('db_name')
             ->withDefault($this->getDomainSlug()),
 
             Ask::make('Database Username')
+                ->withFlag('db_user')
                 ->withDefault($this->getDomainSlug()),
 
             Ask::make('Database Password')
+                ->withFlag('db_pass')
                 ->withDefault(Str::random(12)),
         ];
 
@@ -113,6 +118,7 @@ class CreateCommand extends BaseCommand
                 ->withDefault('8.0'),
 
             Confirm::make('Enable Page Cache')
+                ->withFlag('page_cache_enabled')
                 ->withDefault((bool) !$this->nonInteractive()),
         ];
 
