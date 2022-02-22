@@ -52,7 +52,7 @@ class CreateCommand extends BaseCommand
             return self::INVALID;
         }
 
-        $this->userInput['domain'] = Ask::make('Domain')
+        $this->userInput['domain'] = Ask::make('Primary Domain')
             ->nonInteractive($this->nonInteractive())
             ->resolveAnswer($this);
 
@@ -73,7 +73,7 @@ class CreateCommand extends BaseCommand
     public function questions(): array
     {
         $commonStart = [
-            Confirm::make('Https Enabled')
+            Confirm::make('Enable HTTPS')
                 ->withDefault((bool) !$this->nonInteractive()),
 
             Ask::make('Site User')
@@ -81,13 +81,13 @@ class CreateCommand extends BaseCommand
         ];
 
         $db = [
-            Ask::make('Db Name')
+            Ask::make('Database Name')
             ->withDefault($this->getDomainSlug()),
 
-            Ask::make('Db User')
+            Ask::make('Database Username')
                 ->withDefault($this->getDomainSlug()),
 
-            Ask::make('Db Pass')
+            Ask::make('Database Password')
                 ->withDefault(Str::random(12)),
         ];
 
@@ -95,13 +95,13 @@ class CreateCommand extends BaseCommand
             Ask::make('WordPress Title')
                 ->withFlag('wp_title'),
 
-            Ask::make('WordPress admin email address')
+            Ask::make('WordPress Admin Email')
                 ->withFlag('wp_admin_email'),
 
-            Ask::make('WordPress admin username')
+            Ask::make('WordPress Admin Username')
                 ->withFlag('wp_admin_user'),
 
-            Ask::make('WordPress admin password')
+            Ask::make('WordPress Admin Password')
                 ->withFlag('wp_admin_pass')
                 ->withDefault(Str::random(12)),
         ];
@@ -112,7 +112,7 @@ class CreateCommand extends BaseCommand
                 ->withChoices(OptionsHelper::PHP_VERSIONS)
                 ->withDefault('8.0'),
 
-            Confirm::make('Page Cache Enabled')
+            Confirm::make('Enable Page Cache')
                 ->withDefault((bool) !$this->nonInteractive()),
         ];
 
