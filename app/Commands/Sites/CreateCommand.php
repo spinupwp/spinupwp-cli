@@ -48,6 +48,10 @@ class CreateCommand extends BaseCommand
 
         $server = $this->selectServer('deploy to')->first();
 
+        if (is_null($server)) {
+            return self::INVALID;
+        }
+
         $this->userInput['domain'] = Ask::make('Domain')
             ->nonInteractive($this->nonInteractive())
             ->resolveAnswer($this);
