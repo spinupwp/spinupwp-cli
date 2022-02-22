@@ -8,6 +8,7 @@ use App\Repositories\SpinupWpRepository;
 use DeliciousBrains\SpinupWp\Exceptions\ValidationException;
 use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 abstract class BaseCommand extends Command
@@ -23,6 +24,8 @@ abstract class BaseCommand extends Command
     protected bool $largeOutput = false;
 
     protected array $columnsMaxWidths = [];
+
+    protected array $validationLabels = [];
 
     public function __construct(ConfigRepository $configuration, SpinupWpRepository $spinupWp)
     {
@@ -57,7 +60,7 @@ abstract class BaseCommand extends Command
         } catch (ValidationException $e) {
             $errorRows = [];
             foreach ($e->errors()['errors'] as $field => $errors) {
-                $errorRows[] = [$field, implode("\n", $errors)];
+                $errorRows[] = [$this->applyValidationLabel($field), implode("\n", $errors)];
             }
 
             $this->error('Validation errors occurred.');
@@ -91,6 +94,15 @@ abstract class BaseCommand extends Command
         }
 
         return 'default';
+    }
+
+    protected function applyValidationLabel(string $key): string
+    {
+        if (empty($this->validationLabels) || !array_key_exists($key, $this->validationLabels)) {
+            return Str::title(str_replace('_', ' ', $key));
+        }
+
+        return $this->validationLabels[$key];
     }
 
     abstract protected function action(): int;

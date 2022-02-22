@@ -38,6 +38,19 @@ class CreateCommand extends BaseCommand
 
     protected array $userInput;
 
+    protected array $validationLabels = [
+        'domain'                   => 'Primary Domain',
+        'page_cache.enabled'       => 'Enable Page Cache',
+        'https.enabled'            => 'Enable HTTPS',
+        'database.name'            => 'Database Name',
+        'database.username'        => 'Database Username',
+        'database.password'        => 'Database Password',
+        'wordpress.title'          => 'WordPress Title',
+        'wordpress.admin_user'     => 'WordPress Admin Username',
+        'wordpress.admin_email'    => 'WordPress Admin Email',
+        'wordpress.admin_password' => 'WordPress Admin Password',
+    ];
+
     protected function action(): int
     {
         if (!in_array($this->argument('installation_method'), OptionsHelper::INSTALLATION_METHODS, true)) {
