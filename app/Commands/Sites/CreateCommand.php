@@ -59,9 +59,11 @@ class CreateCommand extends BaseCommand
 
         $this->userInput += $this->askQuestions($this->nonInteractive());
 
-        $site = $this->spinupwp->createSite($server->id, array_merge($this->arguments(), $this->options(), $this->userInput));
+        $this->userInput = array_merge($this->arguments(), $this->options(), $this->userInput);
 
-        $this->successfulStep("{$site->domain} is {$site->status} (event_id = {$site->eventId()})");
+        $site = $this->spinupwp->createSite($server->id, $this->userInput);
+
+        $this->displaySuccess($site->eventId());
 
         return self::SUCCESS;
     }
@@ -133,5 +135,34 @@ class CreateCommand extends BaseCommand
                     $commonEnd
                 );
         }
+    }
+
+    protected function displaySuccess($eventId): void
+    {
+        $tableHeadings = [
+            'Event ID',
+            'Site',
+        ];
+
+        $tableRow = [
+            $eventId,
+            $this->userInput['domain'],
+        ];
+
+        if ($this->userInput['installation_method'] === 'wp') {
+            $tableHeadings = array_merge($tableHeadings, [
+                'Database Password',
+                'WordPress Admin Password',
+            ]);
+
+            $tableRow = array_merge($tableRow, [
+                $this->userInput['db_pass'],
+                $this->userInput['wp_admin_pass'],
+            ]);
+        }
+
+        $this->successfulStep('Site queued for creation.');
+
+        $this->stepTable($tableHeadings, [$tableRow]);
     }
 }
