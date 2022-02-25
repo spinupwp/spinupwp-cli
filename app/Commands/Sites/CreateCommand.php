@@ -17,8 +17,8 @@ class CreateCommand extends BaseCommand
     use HasServerIdParameter;
 
     protected $signature = 'sites:create
-                            {installation_method : Type of installation (wp or blank)}
                             {server_id? : Server ID}
+                            {--installation_method= : Type of installation (wp or blank)}
                             {--domain= : Domain name}
                             {--site_user=}
                             {--db_name=}
@@ -53,15 +53,20 @@ class CreateCommand extends BaseCommand
 
     protected function action(): int
     {
-        if (!in_array($this->argument('installation_method'), OptionsHelper::INSTALLATION_METHODS, true)) {
-            $this->error('Invalid site type.');
-            $this->newLine(1);
-            return self::INVALID;
-        }
-
         $server = $this->selectServer('deploy to')->first();
 
         if (is_null($server)) {
+            return self::INVALID;
+        }
+
+        $this->userInput['installation_method'] = Choice::make('Installation Method')
+            ->withChoices(OptionsHelper::INSTALLATION_METHODS)
+            ->nonInteractive($this->nonInteractive())
+            ->resolveAnswer($this);
+
+        if (!in_array($this->userInput['installation_method'], OptionsHelper::INSTALLATION_METHODS, true)) {
+            $this->error('Invalid site type.');
+            $this->newLine(1);
             return self::INVALID;
         }
 
@@ -137,7 +142,7 @@ class CreateCommand extends BaseCommand
                 ->withDefault((bool) !$this->nonInteractive()),
         ];
 
-        switch ($this->argument('installation_method')) {
+        switch ($this->userInput['installation_method']) {
             case 'blank':
                 return array_merge($commonStart, $commonEnd);
             default:

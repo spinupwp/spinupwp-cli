@@ -51,7 +51,7 @@ test('"sites:create blank" fails with invalid data', function () {
       ]))
     );
 
-    $this->artisan('sites:create blank 1 -f')
+    $this->artisan('sites:create 1 --installation_method=blank -f')
         ->expectsOutput('Validation errors occurred.')
         ->assertExitCode(1);
 });
@@ -79,7 +79,7 @@ test('"sites:create blank" succeeds with correct params', function () {
         ],
     ])));
 
-    $this->artisan('sites:create blank 1 --domain=hellfish.media --https_enabled --page_cache_enabled --php_version="7.4" -f')
+    $this->artisan('sites:create 1 --installation_method=blank --domain=hellfish.media --https_enabled --page_cache_enabled --php_version="7.4" -f')
         ->assertExitCode(0);
 });
 
@@ -112,7 +112,7 @@ test('"sites:create wp" fails with invalid data', function () {
         ]))
     );
 
-    $this->artisan('sites:create wp 1 --db_pass=password --wp_admin_pass=password -f')
+    $this->artisan('sites:create 1 --installation_method=wp --db_pass=password --wp_admin_pass=password -f')
         ->expectsOutput('Validation errors occurred.')
         ->assertExitCode(1);
 });
@@ -150,7 +150,8 @@ test('"sites:create wp" succeeds with correct data', function () {
         ]))
     );
 
-    $this->artisan('sites:create wp 1
+    $this->artisan('sites:create 1
+                            --installation_method=wp
                             --domain="hellfish.media"
                             --site_user=test
                             --https_enabled
