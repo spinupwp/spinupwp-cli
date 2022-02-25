@@ -83,7 +83,7 @@ class SpinupWpRepository
         $inputParams = [
             'installation_method' => $inputParams['installation_method'],
             'domain'              => $inputParams['domain'],
-            'php_version'         => OptionsHelper::PHP_VERSIONS[$inputParams['php_version']],
+            'php_version'         => $inputParams['php_version'],
             'site_user'           => $inputParams['site_user'],
             'page_cache'          => [
                 'enabled' => $inputParams['page_cache_enabled'],
