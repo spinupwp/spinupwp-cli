@@ -20,17 +20,17 @@ class CreateCommand extends BaseCommand
                             {server_id? : Server ID}
                             {--installation_method= : Type of installation (wp or blank)}
                             {--domain= : Domain name}
-                            {--site_user=}
-                            {--db_name=}
-                            {--db_user=}
-                            {--db_pass=}
-                            {--wp_title=}
-                            {--wp_admin_user=}
-                            {--wp_admin_email=}
-                            {--wp_admin_pass=}
-                            {--php_version=}
-                            {--page_cache_enabled}
-                            {--https_enabled}
+                            {--site_user= : name for unique system user who will have ownership permission of all the site files}
+                            {--db_name= : name of a database to be created. Must be unique for the server}
+                            {--db_user= : database level username to use when accessing the database}
+                            {--db_pass= : database level password to use when accessing the database}
+                            {--wp_title= : the title of your WordPress site}
+                            {--wp_admin_user= : for a WordPress site, the admin user\'s username}
+                            {--wp_admin_email= : for a WordPress site, the admin user\'s email}
+                            {--wp_admin_pass= : for a Wordpress site, the admin user\'s password}
+                            {--php_version= : PHP version the site will run under}
+                            {--page_cache_enabled : enabling this option will configure Nginx FastCGI caching that is optimized for WordPress}
+                            {--https_enabled : enabling secures your site by serving traffic over HTTPS}
                             {--profile=}
                             {--f|force}';
 
