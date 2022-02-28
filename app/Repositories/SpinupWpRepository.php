@@ -81,26 +81,26 @@ class SpinupWpRepository
     public function createSite(int $serverId, array $inputParams): SiteResource
     {
         $inputParams = [
-            'installation_method' => $inputParams['installation_method'],
+            'installation_method' => $inputParams['installation-method'],
             'domain'              => $inputParams['domain'],
-            'php_version'         => $inputParams['php_version'],
-            'site_user'           => $inputParams['site_user'],
+            'php_version'         => $inputParams['php-version'],
+            'site_user'           => $inputParams['site-user'],
             'page_cache'          => [
-                'enabled' => $inputParams['page_cache_enabled'],
+                'enabled' => $inputParams['page-cache-enabled'],
             ],
             'https' => [
-                'enabled' => $inputParams['https_enabled'],
+                'enabled' => $inputParams['https-enabled'],
             ],
             'database' => [
-                'name'     => $inputParams['db_name'],
-                'username' => $inputParams['db_user'],
-                'password' => $inputParams['db_pass'],
+                'name'     => $inputParams['db-name'],
+                'username' => $inputParams['db-user'],
+                'password' => $inputParams['db-pass'],
             ],
             'wordpress' => [
-                'title'          => $inputParams['wp_title'],
-                'admin_user'     => $inputParams['wp_admin_user'],
-                'admin_email'    => $inputParams['wp_admin_email'],
-                'admin_password' => $inputParams['wp_admin_pass'],
+                'title'          => $inputParams['wp-title'],
+                'admin_user'     => $inputParams['wp-admin-user'],
+                'admin_email'    => $inputParams['wp-admin-email'],
+                'admin_password' => $inputParams['wp-admin-pass'],
             ],
         ];
 

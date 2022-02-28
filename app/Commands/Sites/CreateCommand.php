@@ -18,19 +18,19 @@ class CreateCommand extends BaseCommand
 
     protected $signature = 'sites:create
                             {server_id? : Server ID}
-                            {--installation_method= : Type of installation (wp or blank)}
+                            {--installation-method= : Type of installation (wp or blank)}
                             {--domain= : Domain name}
-                            {--site_user= : name for unique system user who will have ownership permission of all the site files}
-                            {--db_name= : name of a database to be created. Must be unique for the server}
-                            {--db_user= : database level username to use when accessing the database}
-                            {--db_pass= : database level password to use when accessing the database}
-                            {--wp_title= : the title of your WordPress site}
-                            {--wp_admin_user= : for a WordPress site, the admin user\'s username}
-                            {--wp_admin_email= : for a WordPress site, the admin user\'s email}
-                            {--wp_admin_pass= : for a Wordpress site, the admin user\'s password}
-                            {--php_version= : PHP version the site will run under}
-                            {--page_cache_enabled : enabling this option will configure Nginx FastCGI caching that is optimized for WordPress}
-                            {--https_enabled : enabling secures your site by serving traffic over HTTPS}
+                            {--site-user= : name for unique system user who will have ownership permission of all the site files}
+                            {--db-name= : name of a database to be created. Must be unique for the server}
+                            {--db-user= : database level username to use when accessing the database}
+                            {--db-pass= : database level password to use when accessing the database}
+                            {--wp-title= : the title of your WordPress site}
+                            {--wp-admin-user= : for a WordPress site, the admin user\'s username}
+                            {--wp-admin-email= : for a WordPress site, the admin user\'s email}
+                            {--wp-admin-pass= : for a Wordpress site, the admin user\'s password}
+                            {--php-version= : PHP version the site will run under}
+                            {--page-cache-enabled : enabling this option will configure Nginx FastCGI caching that is optimized for WordPress}
+                            {--https-enabled : enabling secures your site by serving traffic over HTTPS}
                             {--profile=}
                             {--f|force}';
 
@@ -59,12 +59,12 @@ class CreateCommand extends BaseCommand
             return self::INVALID;
         }
 
-        $this->userInput['installation_method'] = Choice::make('Installation Method')
+        $this->userInput['installation-method'] = Choice::make('Installation Method')
             ->withChoices(OptionsHelper::INSTALLATION_METHODS)
             ->nonInteractive($this->nonInteractive())
             ->resolveAnswer($this);
 
-        if (!in_array($this->userInput['installation_method'], OptionsHelper::INSTALLATION_METHODS, true)) {
+        if (!in_array($this->userInput['installation-method'], OptionsHelper::INSTALLATION_METHODS, true)) {
             $this->error('Invalid site type.');
             $this->newLine(1);
             return self::INVALID;
@@ -95,7 +95,7 @@ class CreateCommand extends BaseCommand
     {
         $commonStart = [
             Confirm::make('Enable HTTPS')
-                ->withFlag('https_enabled')
+                ->withFlag('https-enabled')
                 ->withDefault((bool) !$this->nonInteractive()),
 
             Ask::make('Site User')
@@ -104,45 +104,45 @@ class CreateCommand extends BaseCommand
 
         $db = [
             Ask::make('Database Name')
-                ->withFlag('db_name')
+                ->withFlag('db-name')
             ->withDefault($this->getDomainSlug()),
 
             Ask::make('Database Username')
-                ->withFlag('db_user')
+                ->withFlag('db-user')
                 ->withDefault($this->getDomainSlug()),
 
             Ask::make('Database Password')
-                ->withFlag('db_pass')
+                ->withFlag('db-pass')
                 ->withDefault(Str::random(12)),
         ];
 
         $wp = [
             Ask::make('WordPress Title')
-                ->withFlag('wp_title'),
+                ->withFlag('wp-title'),
 
             Ask::make('WordPress Admin Email')
-                ->withFlag('wp_admin_email'),
+                ->withFlag('wp-admin-email'),
 
             Ask::make('WordPress Admin Username')
-                ->withFlag('wp_admin_user'),
+                ->withFlag('wp-admin-user'),
 
             Ask::make('WordPress Admin Password')
-                ->withFlag('wp_admin_pass')
+                ->withFlag('wp-admin-pass')
                 ->withDefault(Str::random(12)),
         ];
 
         $commonEnd = [
             Choice::make('PHP Version')
-                ->withFlag('php_version')
+                ->withFlag('php-version')
                 ->withChoices(OptionsHelper::PHP_VERSIONS)
                 ->withDefault('8.0'),
 
             Confirm::make('Enable Page Cache')
-                ->withFlag('page_cache_enabled')
+                ->withFlag('page-cache-enabled')
                 ->withDefault((bool) !$this->nonInteractive()),
         ];
 
-        switch ($this->userInput['installation_method']) {
+        switch ($this->userInput['installation-method']) {
             case 'blank':
                 return array_merge($commonStart, $commonEnd);
             default:
@@ -167,15 +167,15 @@ class CreateCommand extends BaseCommand
             $this->userInput['domain'],
         ];
 
-        if ($this->userInput['installation_method'] === 'wp') {
+        if ($this->userInput['installation-method'] === 'wp') {
             $tableHeadings = array_merge($tableHeadings, [
                 'Database Password',
                 'WordPress Admin Password',
             ]);
 
             $tableRow = array_merge($tableRow, [
-                $this->userInput['db_pass'],
-                $this->userInput['wp_admin_pass'],
+                $this->userInput['db-pass'],
+                $this->userInput['wp-admin-pass'],
             ]);
         }
 

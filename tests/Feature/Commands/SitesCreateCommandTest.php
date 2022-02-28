@@ -51,7 +51,7 @@ test('"sites:create blank" fails with invalid data', function () {
       ]))
     );
 
-    $this->artisan('sites:create 1 --installation_method=blank -f')
+    $this->artisan('sites:create 1 --installation-method=blank -f')
         ->expectsOutput('Validation errors occurred.')
         ->assertExitCode(1);
 });
@@ -79,7 +79,7 @@ test('"sites:create blank" succeeds with correct params', function () {
         ],
     ])));
 
-    $this->artisan('sites:create 1 --installation_method=blank --domain=hellfish.media --https_enabled --page_cache_enabled --php_version="7.4" -f')
+    $this->artisan('sites:create 1 --installation-method=blank --domain=hellfish.media --https-enabled --page-cache-enabled --php-version="7.4" -f')
         ->assertExitCode(0);
 });
 
@@ -112,7 +112,7 @@ test('"sites:create wp" fails with invalid data', function () {
         ]))
     );
 
-    $this->artisan('sites:create 1 --installation_method=wp --db_pass=password --wp_admin_pass=password -f')
+    $this->artisan('sites:create 1 --installation-method=wp --db-pass=password --wp-admin-pass=password -f')
         ->expectsOutput('Validation errors occurred.')
         ->assertExitCode(1);
 });
@@ -151,16 +151,16 @@ test('"sites:create wp" succeeds with correct data', function () {
     );
 
     $this->artisan('sites:create 1
-                            --installation_method=wp
+                            --installation-method=wp
                             --domain="hellfish.media"
-                            --site_user=test
-                            --https_enabled
-                            --db_name=dbname
-                            --db_user=dbuser
-                            --db_pass=password
-                            --wp_title="Site Title"
-                            --wp_admin_user="abe"
-                            --wp_admin_email="flying@hellfish.media"
-                            --wp_admin_pass=password -f')
+                            --site-user=test
+                            --https-enabled
+                            --db-name=dbname
+                            --db-user=dbuser
+                            --db-pass=password
+                            --wp-title="Site Title"
+                            --wp-admin-user="abe"
+                            --wp-admin-email="flying@hellfish.media"
+                            --wp-admin-pass=password -f')
         ->assertExitCode(0);
 });
