@@ -30,11 +30,11 @@ afterEach(function () {
 });
 
 test('purge site page cache', function () {
-    $this->artisan('sites:purge 1 --cache=page')->expectsOutput('==> Site queued for purging page cache.');
+    $this->artisan('sites:purge 1 --cache=page')->expectsOutput('==> Site queued for page cache purge.');
 });
 
 test('purge site object cache', function () {
-    $this->artisan('sites:purge 1 --cache=object')->expectsOutput('==> Site queued for purging object cache.');
+    $this->artisan('sites:purge 1 --cache=object')->expectsOutput('==> Site queued for object cache purge.');
 });
 
 test('purge all sites page cache', function () {
@@ -50,7 +50,7 @@ test('purge all sites page cache', function () {
         ->andReturn(new Response(200, [], json_encode(['event_id' => 101])));
 
     $this->artisan('sites:purge --all --cache=page')
-    ->expectsOutput('==> Sites queued for purging page cache.');
+    ->expectsOutput('==> Sites queued for page cache purge.');
 });
 
 test('purge all sites object cache', function () {
@@ -66,5 +66,5 @@ test('purge all sites object cache', function () {
         ->andReturn(new Response(200, [], json_encode(['event_id' => 101])));
 
     $this->artisan('sites:purge --all --cache=object')
-        ->expectsOutput('==> Sites queued for purging object cache.');
+        ->expectsOutput('==> Sites queued for object cache purge.');
 });
