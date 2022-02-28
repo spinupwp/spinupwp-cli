@@ -43,7 +43,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
         }
 
         if ($siteId === 0) {
-            $this->warn("There are no sites with {$cacheToPurge} cache enabled");
+            $this->warn("There are no sites with {$cacheToPurge} cache enabled.");
             return self::SUCCESS;
         }
 
@@ -65,7 +65,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
         }
 
         if ($sites->isEmpty()) {
-            $this->warn("There are no sites with {$cacheToPurge} cache enabled");
+            $this->warn("There are no sites with {$cacheToPurge} cache enabled.");
             return;
         }
 
@@ -81,7 +81,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
         }
 
         $endpoint = $cacheToPurge === 'page' ? 'purgePageCache' : 'purgeObjectCache';
-        $verb     = "purging {$cacheToPurge} cache";
+        $verb     = "{$cacheToPurge} cache purge";
         $this->queueResources($sites, $endpoint, $verb, 'domain', $shouldWait);
     }
 }
