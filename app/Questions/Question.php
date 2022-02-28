@@ -24,7 +24,7 @@ abstract class Question
     final public function __construct(string $prompt)
     {
         $this->prompt = $prompt;
-        $this->flag   = Str::snake($prompt);
+        $this->flag   = Str::kebab($prompt);
     }
 
     /** @return static */
