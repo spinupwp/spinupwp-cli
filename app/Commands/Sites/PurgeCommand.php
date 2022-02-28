@@ -2,6 +2,8 @@
 
 namespace App\Commands\Sites;
 
+use Illuminate\Support\Collection;
+
 class PurgeCommand extends \App\Commands\BaseCommand
 {
     protected $signature = 'sites:purge {site_id? : The site to purge}
@@ -32,42 +34,54 @@ class PurgeCommand extends \App\Commands\BaseCommand
         $siteId = $this->argument('site_id');
 
         if (empty($siteId)) {
-            $siteId = $this->askToSelectSite('Which site do you want to purge the page cache for');
+            $siteId = $this->askToSelectSite('Which site do you want to purge the page cache for', function ($site) use ($cacheToPurge) {
+                if ($cacheToPurge === 'page') {
+                    return $site->page_cache['enabled'];
+                }
+                return $site->is_wordpress;
+            });
+        }
+
+        if ($siteId === 0) {
+            $this->warn("There are no sites with {$cacheToPurge} cache enabled.");
+            return self::SUCCESS;
         }
 
         $site = $this->spinupwp->sites->get(intval($siteId));
 
-        $this->purgeCache([$site], $cacheToPurge);
+        $this->purgeCache(collect([$site]), $cacheToPurge);
 
         return self::SUCCESS;
     }
 
     protected function purgeCacheOnAllSites(string $cacheToPurge): void
     {
-        $sites      = $this->spinupwp->sites->list()->toArray();
-        $shouldWait = count($sites) > 59;
-        $this->purgeCache($sites, $cacheToPurge, $shouldWait);
-    }
+        $sites = collect($this->spinupwp->sites->list());
+        if ($cacheToPurge === 'page') {
+            $sites = $sites->filter(fn ($site) => $site->page_cache['enabled']);
+        }
+        if ($cacheToPurge === 'object') {
+            $sites = $sites->filter(fn ($site) => $site->is_wordpress);
+        }
 
-    protected function purgeCache(array $sites, string $cacheToPurge, bool $shouldWait = false): void
-    {
-        if (empty($sites)) {
+        if ($sites->isEmpty()) {
+            $this->warn("There are no sites with {$cacheToPurge} cache enabled.");
             return;
         }
 
-        foreach ($sites as $site) {
-            if ($cacheToPurge === 'page' && !$site->page_cache['enabled']) {
-                continue;
-            }
+        $shouldWait = $sites->count() > 55;
 
-            $cache    = $cacheToPurge === 'page' ? 'page' : 'object';
-            $response = $cacheToPurge === 'page' ? $site->purgePageCache() : $site->purgeObjectCache();
+        $this->purgeCache($sites, $cacheToPurge, $shouldWait);
+    }
 
-            $this->info("Purging {$cache} cache for site {$site->domain}. Event ID: {$response}");
-
-            if ($shouldWait) {
-                sleep(1);
-            }
+    protected function purgeCache(Collection $sites, string $cacheToPurge, bool $shouldWait = false): void
+    {
+        if ($sites->isEmpty()) {
+            return;
         }
+
+        $endpoint = $cacheToPurge === 'page' ? 'purgePageCache' : 'purgeObjectCache';
+        $verb     = "{$cacheToPurge} cache purge";
+        $this->queueResources($sites, $endpoint, $verb, 'domain', $shouldWait);
     }
 }
