@@ -59,13 +59,14 @@ class CreateCommand extends BaseCommand
             return self::INVALID;
         }
 
-        $this->userInput['installation-method'] = Choice::make('Installation Method')
+        $this->userInput['installation-method'] = Choice::make('What files would you like SpinupWP to install?')
+            ->withFlag('installation-method')
             ->withChoices(OptionsHelper::INSTALLATION_METHODS)
             ->nonInteractive($this->nonInteractive())
             ->resolveAnswer($this);
 
-        if (!in_array($this->userInput['installation-method'], OptionsHelper::INSTALLATION_METHODS, true)) {
-            $this->error('Invalid site type.');
+        if (!array_key_exists($this->userInput['installation-method'], OptionsHelper::INSTALLATION_METHODS)) {
+            $this->error('Invalid installation method.');
             $this->newLine(1);
             return self::INVALID;
         }
