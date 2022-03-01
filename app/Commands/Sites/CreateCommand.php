@@ -20,17 +20,17 @@ class CreateCommand extends BaseCommand
                             {server_id? : Server ID}
                             {--installation-method= : Type of installation (wp or blank)}
                             {--domain= : Domain name}
-                            {--site-user= : name for unique system user who will have ownership permission of all the site files}
-                            {--db-name= : name of a database to be created. Must be unique for the server}
-                            {--db-user= : database level username to use when accessing the database}
-                            {--db-pass= : database level password to use when accessing the database}
-                            {--wp-title= : the title of your WordPress site}
-                            {--wp-admin-user= : for a WordPress site, the admin user\'s username}
-                            {--wp-admin-email= : for a WordPress site, the admin user\'s email}
-                            {--wp-admin-pass= : for a Wordpress site, the admin user\'s password}
+                            {--site-user= : Name for unique system user who will have ownership permission of all the site files}
+                            {--db-name= : Name of a database to be created. Must be unique for the server}
+                            {--db-user= : Database username to use when accessing the database}
+                            {--db-pass= : Database password to use when accessing the database}
+                            {--wp-title= : The title of your WordPress site}
+                            {--wp-admin-user= : For a WordPress site, the admin user\'s username}
+                            {--wp-admin-email= : For a WordPress site, the admin user\'s email}
+                            {--wp-admin-pass= : For a Wordpress site, the admin user\'s password}
                             {--php-version= : PHP version the site will run under}
-                            {--page-cache-enabled : enabling this option will configure Nginx FastCGI caching that is optimized for WordPress}
-                            {--https-enabled : enabling secures your site by serving traffic over HTTPS}
+                            {--page-cache-enabled : Enabling this option will configure page caching that is optimized for WordPress}
+                            {--https-enabled : Enabling secures your site by serving traffic over HTTPS}
                             {--profile=}
                             {--f|force}';
 
