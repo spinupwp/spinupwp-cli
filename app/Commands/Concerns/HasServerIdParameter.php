@@ -4,13 +4,13 @@ namespace App\Commands\Concerns;
 
 use Illuminate\Support\Collection;
 
-trait SelectsServer
+trait HasServerIdParameter
 {
     public function selectServer(string $action): Collection
     {
         $serverId = $this->argument('server_id');
 
-        if (empty($serverId)) {
+        if (empty($serverId) && !$this->nonInteractive()) {
             $serverId = $this->askToSelectServer("Which server would you like to $action");
         }
 

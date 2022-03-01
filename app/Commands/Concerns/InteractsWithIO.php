@@ -241,4 +241,9 @@ trait InteractsWithIO
             ucfirst($resourceName),
         ], $events);
     }
+
+    protected function nonInteractive(): bool
+    {
+        return (bool) $this->option('force');
+    }
 }
