@@ -62,6 +62,7 @@ class CreateCommand extends BaseCommand
         $this->userInput['installation-method'] = Choice::make('What files would you like SpinupWP to install?')
             ->withFlag('installation-method')
             ->withChoices(OptionsHelper::INSTALLATION_METHODS)
+            ->withDefault(array_key_first(OptionsHelper::INSTALLATION_METHODS))
             ->nonInteractive($this->nonInteractive())
             ->resolveAnswer($this);
 
