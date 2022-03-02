@@ -10,7 +10,7 @@ To get started, require the package globally via [Composer](https://getcomposer.
 ```bash
 composer global require deliciousbrains/spinupwp-cli
 ```
-In addition, you should make sure the `~/.composer/vendor/bin` directory is in your system's "PATH".
+In addition, you should make sure the `/vendor/bin` directory in your global Composer home directory is in your system's "PATH". Depending on your operating system this could be either `~/.composer/` or `~/.config/composer/`. You can use the `composer config --global home` command to check this location.
 
 ## Usage
 Installing the SpinupWP CLI provides access to the `spinupwp` command.
