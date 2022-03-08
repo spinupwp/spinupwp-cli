@@ -8,9 +8,9 @@ class ListCommand extends Sites
 {
     protected $signature = 'sites:list
                             {server_id? : Only list sites belonging to this server}
-                            {--format=}
-                            {--profile=}
-                            {--fields=}';
+                            {--fields= : The fields to output}
+                            {--format= : The output format (json or table)}
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Retrieves a list of sites';
 

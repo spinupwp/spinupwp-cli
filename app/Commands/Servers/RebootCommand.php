@@ -13,7 +13,7 @@ class RebootCommand extends BaseCommand
                             {server_id? : The server to reboot}
                             {--all : Reboot all servers}
                             {--f|force : Reboot the server without prompting for confirmation}
-                            {--profile=}';
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Reboot a server';
 

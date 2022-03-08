@@ -7,7 +7,7 @@ beforeEach(function () {
 });
 
 test('isConfigured method', function () {
-    $config = resolve(ConfigRepository::class);
+    $config       = resolve(ConfigRepository::class);
     $isConfigured = $config->isConfigured();
     expect($isConfigured)->toBeFalse();
     setTestConfigFile();

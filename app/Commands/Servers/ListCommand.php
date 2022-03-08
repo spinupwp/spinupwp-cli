@@ -7,9 +7,9 @@ use App\Commands\Servers\Servers;
 class ListCommand extends Servers
 {
     protected $signature = 'servers:list
-                            {--format=}
-                            {--profile=}
-                            {--fields=}';
+                            {--fields= : The fields to output}
+                            {--format= : The output format (json or table)}
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'List all servers';
 
