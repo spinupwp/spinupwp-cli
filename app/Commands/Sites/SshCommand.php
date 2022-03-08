@@ -13,7 +13,7 @@ class SshCommand extends BaseCommand
                             {site_id? : The site to connect to}
                             {--f|files : Navigate to the files directory}
                             {--l|logs : Navigate to the logs directory}
-                            {--profile=}';
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Start an SSH session as the site user';
 

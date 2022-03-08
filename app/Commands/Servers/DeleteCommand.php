@@ -13,7 +13,7 @@ class DeleteCommand extends BaseCommand
                             {server_id? : The server to delete}
                             {--d|delete-on-provider : Delete the server from the server provider (DigitalOcean, etc.)}
                             {--f|force : Delete the server without prompting for confirmation}
-                            {--profile=}';
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Delete a server';
 

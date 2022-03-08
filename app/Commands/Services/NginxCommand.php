@@ -13,7 +13,7 @@ class NginxCommand extends BaseCommand
                             {server_id? : The server to restart Nginx on}
                             {--all : Restart Nginx on all servers}
                             {--f|force : Restart Nginx without prompting for confirmation}
-                            {--profile=}';
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Restart Nginx';
 

@@ -9,7 +9,7 @@ class PurgeCommand extends \App\Commands\BaseCommand
     protected $signature = 'sites:purge {site_id? : The site to purge}
                                         {--cache= : The cache to purge}
                                         {--all : Purge cache on all sites}
-                                        {--profile=}';
+                                        {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Purge the page or object cache for a site';
 

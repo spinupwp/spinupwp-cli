@@ -8,7 +8,7 @@ class ListCommand extends Servers
 {
     protected $signature = 'servers:list
                             {--format= : The output format (json or table)}
-                            {--profile=}
+                            {--profile= : The SpinupWP configuration profile to use}
                             {--fields= : The fields to output}';
 
     protected $description = 'List all servers';

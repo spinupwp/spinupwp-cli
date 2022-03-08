@@ -13,7 +13,7 @@ class MysqlCommand extends BaseCommand
                             {server_id? : The server to restart MySQL on}
                             {--all : Restart MySQL on all servers}
                             {--f|force : Restart MySQL without prompting for confirmation}
-                            {--profile=}';
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Restart MySQL';
 

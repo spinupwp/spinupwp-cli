@@ -9,7 +9,7 @@ class GetCommand extends Sites
     protected $signature = 'sites:get
                             {site_id : The site to output}
                             {--format= : The output format (json or table)}
-                            {--profile=}
+                            {--profile= : The SpinupWP configuration profile to use}
                             {--fields= : The fields to output}';
 
     protected $description = 'Get a site';
