@@ -8,7 +8,7 @@ class ListCommand extends Sites
 {
     protected $signature = 'sites:list
                             {server_id? : Only list sites belonging to this server}
-                            {--format=}
+                            {--format= : The output format (json or table)}
                             {--profile=}
                             {--fields=}';
 

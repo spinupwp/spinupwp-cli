@@ -7,7 +7,7 @@ use App\Commands\Servers\Servers;
 class ListCommand extends Servers
 {
     protected $signature = 'servers:list
-                            {--format=}
+                            {--format= : The output format (json or table)}
                             {--profile=}
                             {--fields=}';
 

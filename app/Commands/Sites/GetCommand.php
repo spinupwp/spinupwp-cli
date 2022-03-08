@@ -8,7 +8,7 @@ class GetCommand extends Sites
 {
     protected $signature = 'sites:get
                             {site_id : The site to output}
-                            {--format=}
+                            {--format= : The output format (json or table)}
                             {--profile=}
                             {--fields=}';
 

@@ -8,7 +8,7 @@ class GetCommand extends Servers
 {
     protected $signature = 'servers:get
                             {server_id : The server to output}
-                            {--format=}
+                            {--format= : The output format (json or table)}
                             {--profile=}
                             {--fields=}';
 
