@@ -51,6 +51,7 @@ spinupwp servers:reboot --all
 # Start an SSH session
 spinupwp servers:ssh <server_id> <user>
 ```
+You can pass any properties of the [Server Schema](https://api.spinupwp.com/?shell#tocS_Server) to the `--fields` flag.
 
 ### Services
 ```bash
@@ -105,6 +106,7 @@ spinupwp sites:purge --all --cache=object
 # Start an SSH session as the site user
 spinupwp sites:ssh <site_id>
 ```
+You can pass any properties of the [Site Schema](https://api.spinupwp.com/?shell#tocS_Site) to the `--fields` flag.
 
 ## Upgrade
 To update the SpinupWP CLI to the latest version, run:
