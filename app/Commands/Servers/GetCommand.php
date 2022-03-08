@@ -10,7 +10,7 @@ class GetCommand extends Servers
                             {server_id : The server to output}
                             {--format= : The output format (json or table)}
                             {--profile=}
-                            {--fields=}';
+                            {--fields= : The fields to output}';
 
     protected $description = 'Get a server';
 

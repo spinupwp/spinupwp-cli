@@ -10,7 +10,7 @@ class ListCommand extends Sites
                             {server_id? : Only list sites belonging to this server}
                             {--format= : The output format (json or table)}
                             {--profile=}
-                            {--fields=}';
+                            {--fields= : The fields to output}';
 
     protected $description = 'Retrieves a list of sites';
 

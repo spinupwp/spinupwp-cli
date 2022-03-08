@@ -9,7 +9,7 @@ class ListCommand extends Servers
     protected $signature = 'servers:list
                             {--format= : The output format (json or table)}
                             {--profile=}
-                            {--fields=}';
+                            {--fields= : The fields to output}';
 
     protected $description = 'List all servers';
 
