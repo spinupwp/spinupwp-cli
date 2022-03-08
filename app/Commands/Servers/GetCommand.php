@@ -8,9 +8,9 @@ class GetCommand extends Servers
 {
     protected $signature = 'servers:get
                             {server_id : The server to output}
+                            {--fields= : The fields to output}
                             {--format= : The output format (json or table)}
-                            {--profile= : The SpinupWP configuration profile to use}
-                            {--fields= : The fields to output}';
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Get a server';
 

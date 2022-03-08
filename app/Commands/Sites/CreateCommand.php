@@ -31,8 +31,8 @@ class CreateCommand extends BaseCommand
                             {--php-version= : PHP version the site will run under}
                             {--page-cache-enabled : Enabling this option will configure page caching that is optimized for WordPress}
                             {--https-enabled : Enabling secures your site by serving traffic over HTTPS}
-                            {--profile= : The SpinupWP configuration profile to use}
-                            {--f|force}';
+                            {--f|force : Create the site without prompting for confirmation}
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Create a site';
 
