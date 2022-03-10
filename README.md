@@ -52,6 +52,7 @@ spinupwp servers:reboot --all
 spinupwp servers:ssh <server_id> <user>
 ```
 You can pass any properties of the [Server Schema](https://api.spinupwp.com/?shell#tocS_Server) to the `--fields` flag.
+Nested properties should use dot notation, for example, `database.server`.
 
 ### Services
 ```bash
@@ -107,6 +108,7 @@ spinupwp sites:purge --all --cache=object
 spinupwp sites:ssh <site_id>
 ```
 You can pass any properties of the [Site Schema](https://api.spinupwp.com/?shell#tocS_Site) to the `--fields` flag.
+Nested properties should use dot notation, for example, `backups.next_run_time` or `git.branch`.
 
 ## Upgrade
 To update the SpinupWP CLI to the latest version, run:
