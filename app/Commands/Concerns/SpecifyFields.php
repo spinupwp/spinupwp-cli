@@ -70,6 +70,15 @@ trait SpecifyFields
         $this->config->setCommandConfiguration($this->name, 'fields', '', $this->profile());
     }
 
+    private function getCommandFieldsConfiguration(string $command, string $profile): ?array
+    {
+        $commandFields = data_get($this->config->getCommandConfiguration($command, $profile), 'fields');
+        if (!$commandFields) {
+            return null;
+        }
+        return explode(',', str_replace(' ', '', $commandFields));
+    }
+
     protected function applyFilter(?array $fieldsFilter): void
     {
         if (!empty($fieldsFilter)) {

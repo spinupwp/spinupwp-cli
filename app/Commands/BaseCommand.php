@@ -107,14 +107,5 @@ abstract class BaseCommand extends Command
         return $this->validationLabels[$key];
     }
 
-    public function getCommandFieldsConfiguration(string $command, string $profile): ?array
-    {
-        $commandFields = data_get($this->config->getCommandConfiguration($command, $profile), 'fields');
-        if (!$commandFields) {
-            return null;
-        }
-        return explode(',', str_replace(' ', '', $commandFields));
-    }
-
     abstract protected function action(): int;
 }
