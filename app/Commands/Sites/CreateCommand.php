@@ -87,7 +87,7 @@ class CreateCommand extends BaseCommand
             $this->saveDefaults();
         }
 
-        $this->displaySuccess($site->eventId());
+        $this->displaySuccess(intval($site->eventId()));
 
         return self::SUCCESS;
     }
@@ -163,10 +163,10 @@ class CreateCommand extends BaseCommand
         }
     }
 
-    /* @return mixed */
+    /** @return mixed */
     protected function getDefaultsFromConfiguration(string $question)
     {
-        $commandConfiguration = $this->config->getCommandConfiguration('sites:create', $this->profile(), $question);
+        $commandConfiguration = $this->config->getCommandConfiguration('sites:create', $this->profile());
         if (!is_array($commandConfiguration)) {
             return null;
         }
@@ -179,7 +179,7 @@ class CreateCommand extends BaseCommand
         $this->config->setCommandConfiguration('sites:create', 'wp-admin-email', $this->userInput['wp-admin-email'], $this->profile());
     }
 
-    protected function displaySuccess($eventId): void
+    protected function displaySuccess(int $eventId): void
     {
         $tableHeadings = [
             'Event ID',
