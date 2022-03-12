@@ -83,6 +83,10 @@ class CreateCommand extends BaseCommand
 
         $site = $this->spinupwp->createSite($server->id, $this->userInput);
 
+        if ($this->userInput['installation-method'] === 'wp') {
+            $this->saveDefaults();
+        }
+
         $this->displaySuccess($site->eventId());
 
         return self::SUCCESS;
@@ -123,10 +127,12 @@ class CreateCommand extends BaseCommand
                 ->withFlag('wp-title'),
 
             Ask::make('WordPress Admin Email')
-                ->withFlag('wp-admin-email'),
+                ->withFlag('wp-admin-email')
+                ->withDefault($this->getDefaultsFromConfiguration('wp-admin-email')),
 
             Ask::make('WordPress Admin Username')
-                ->withFlag('wp-admin-user'),
+                ->withFlag('wp-admin-user')
+                ->withDefault($this->getDefaultsFromConfiguration('wp-admin-user')),
 
             Ask::make('WordPress Admin Password')
                 ->withFlag('wp-admin-pass')
@@ -155,6 +161,22 @@ class CreateCommand extends BaseCommand
                     $commonEnd
                 );
         }
+    }
+
+    /* @return mixed */
+    protected function getDefaultsFromConfiguration(string $question)
+    {
+        $commandConfiguration = $this->config->getCommandConfiguration('sites:create', $this->profile(), $question);
+        if (!is_array($commandConfiguration)) {
+            return null;
+        }
+        return data_get($commandConfiguration, $question);
+    }
+
+    protected function saveDefaults(): void
+    {
+        $this->config->setCommandConfiguration('sites:create', 'wp-admin-user', $this->userInput['wp-admin-user'], $this->profile());
+        $this->config->setCommandConfiguration('sites:create', 'wp-admin-email', $this->userInput['wp-admin-email'], $this->profile());
     }
 
     protected function displaySuccess($eventId): void
