@@ -110,6 +110,18 @@ spinupwp sites:ssh <site_id>
 You can pass any properties of the [Site Schema](https://api.spinupwp.com/?shell#tocS_Site) to the `--fields` flag.
 Nested properties should use dot notation, for example, `backups.next_run_time` or `git.branch`.
 
+```bash
+# Create a site using field flags instead of interactive prompts
+spinupwp sites:create <server_id> --installation-method="<installation_method>" --domain="<domain>" --https-enabled --site-user="<site_user>" --db-name="<database_name>" --db-user="<database_user>" --db-pass="<database_password>" --wp-title="<wordpress_site_title>" --wp-admin-email="<wordpress_admin_user_email>" --wp-admin-user="<wordpress_admin_user_username>" --wp-admin-pass="<wordpress_admin_user_password>" --php-version="<php_version>" --page-cache-enabled
+```
+
+A full reference of the available flags is available anytime.
+
+```bash
+# Display available Arguments and Options for site:create 
+spinupwp sites:create --help
+```
+
 ## Upgrade
 To update the SpinupWP CLI to the latest version, run:
 ```bash
