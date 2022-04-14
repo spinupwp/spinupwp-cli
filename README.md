@@ -112,7 +112,11 @@ Nested properties should use dot notation, for example, `backups.next_run_time` 
 
 ```bash
 # Create a site using field flags instead of interactive prompts
-spinupwp sites:create <server_id> --installation-method="<installation_method>" --domain="<domain>" --https-enabled --site-user="<site_user>" --db-name="<database_name>" --db-user="<database_user>" --db-pass="<database_password>" --wp-title="<wordpress_site_title>" --wp-admin-email="<wordpress_admin_user_email>" --wp-admin-user="<wordpress_admin_user_username>" --wp-admin-pass="<wordpress_admin_user_password>" --php-version="<php_version>" --page-cache-enabled
+spinupwp sites:create <server_id> --installation-method="<installation_method>" \
+  --domain="<domain>" --https-enabled --site-user="<site_user>" --db-name="<database_name>" \
+  --db-user="<database_user>" --db-pass="<database_password>" --wp-title="<wordpress_site_title>" \
+  --wp-admin-email="<wordpress_admin_user_email>" --wp-admin-user="<wordpress_admin_user_username>" \
+  --wp-admin-pass="<wordpress_admin_user_password>" --php-version="<php_version>" --page-cache-enabled
 ```
 
 A full reference of the available flags is available anytime.
