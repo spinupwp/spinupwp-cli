@@ -3,17 +3,17 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\SelectsServer;
+use App\Commands\Concerns\HasServerIdParameter;
 
 class DeleteCommand extends BaseCommand
 {
-    use SelectsServer;
+    use HasServerIdParameter;
 
     protected $signature = 'servers:delete
                             {server_id? : The server to delete}
                             {--d|delete-on-provider : Delete the server from the server provider (DigitalOcean, etc.)}
                             {--f|force : Delete the server without prompting for confirmation}
-                            {--profile=}';
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Delete a server';
 

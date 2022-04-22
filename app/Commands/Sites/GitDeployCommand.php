@@ -9,7 +9,7 @@ class GitDeployCommand extends BaseCommand
 {
     protected $signature = 'sites:deploy
                             {site_id? : The site to deploy}
-                            {--profile=}';
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Run a Git deployment';
 

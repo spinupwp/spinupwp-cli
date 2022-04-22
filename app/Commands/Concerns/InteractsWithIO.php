@@ -10,6 +10,8 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 trait InteractsWithIO
 {
+    protected bool $largeOutput = false;
+
     /**
      * @param mixed $resource
      */
@@ -65,7 +67,11 @@ trait InteractsWithIO
      */
     protected function toJson($resource): void
     {
-        $this->line((string) json_encode($resource->toArray(), JSON_PRETTY_PRINT));
+        if (!is_array($resource)) {
+            $resource = $resource->toArray();
+        }
+
+        $this->line((string) json_encode($resource, JSON_PRETTY_PRINT));
     }
 
     /**
@@ -115,6 +121,10 @@ trait InteractsWithIO
             $choices = $choices->filter(fn ($site) => $filter($site));
         }
 
+        if ($choices->isEmpty()) {
+            return 0;
+        }
+
         return $this->askToSelect(
             $question,
             $choices->keyBy('id')->map(fn ($site) => $site->domain)->toArray()
@@ -146,12 +156,6 @@ trait InteractsWithIO
         }
 
         $table->setRows($rows)->setStyle('default');
-
-        if (!empty($this->columnsMaxWidths)) {
-            foreach ($this->columnsMaxWidths as $column) {
-                $table->setColumnMaxWidth($column[0], $column[1]);
-            }
-        }
 
         $table->render();
     }
@@ -201,20 +205,23 @@ trait InteractsWithIO
         return (bool) $this->option('force') || $this->confirm($confirmation, $default);
     }
 
-    public function queueResources(Collection $resources, string $endpoint, string $verb): void
+    public function queueResources(Collection $resources, string $endpoint, string $verb, string $resourcesId = 'name', bool $shouldWait = false): void
     {
         if ($resources->isEmpty()) {
             return;
         }
 
-        $resourceName = strtolower(class_basename($resources[0]));
+        $resourceName = strtolower(class_basename($resources->first()));
 
         $events = [];
 
-        $resources->each(function ($resource) use ($resources, $endpoint, &$events, $verb) {
+        $resources->each(function ($resource) use ($resources, $endpoint, &$events, $verb, $resourcesId, $shouldWait) {
             try {
+                if ($shouldWait) {
+                    sleep(1);
+                }
                 $eventId = call_user_func(fn () => $resource->$endpoint());
-                $events[] = ["{$eventId}", $resource->name];
+                $events[] = ["{$eventId}", $resource->{$resourcesId}];
             } catch (\Exception $e) {
                 if ($resources->count() === 1) {
                     $this->error("{$verb} failed on {$resource->name}.");
@@ -233,5 +240,10 @@ trait InteractsWithIO
             'Event ID',
             ucfirst($resourceName),
         ], $events);
+    }
+
+    protected function nonInteractive(): bool
+    {
+        return (bool) $this->option('force');
     }
 }

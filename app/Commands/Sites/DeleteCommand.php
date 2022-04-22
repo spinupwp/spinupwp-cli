@@ -11,7 +11,7 @@ class DeleteCommand extends BaseCommand
                             {--d|delete-database : Delete the site's associated database}
                             {--b|delete-backups : Delete the site's associated backups}
                             {--f|force : Delete the site without prompting for confirmation}
-                            {--profile=}";
+                            {--profile= : The SpinupWP configuration profile to use}";
 
     protected $description = 'Delete a site';
 

@@ -2,50 +2,38 @@
 
 namespace App\Commands\Servers;
 
-use App\Commands\BaseCommand;
+use App\Commands\Servers\Servers;
 
-class GetCommand extends BaseCommand
+class GetCommand extends Servers
 {
     protected $signature = 'servers:get
                             {server_id : The server to output}
-                            {--format=}
-                            {--profile=}';
+                            {--fields= : The fields to output}
+                            {--format= : The output format (json or table)}
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Get a server';
 
-    protected bool $largeOutput = true;
-
     public function action(): int
     {
-        $this->columnsMaxWidths[] = [1, 50];
+        $this->largeOutput = true;
+        $serverId          = $this->argument('server_id');
+        $server            = $this->spinupwp->getServer((int) $serverId);
 
-        $serverId = $this->argument('server_id');
-        $server   = $this->spinupwp->getServer((int) $serverId);
+        if ($this->shouldSpecifyFields()) {
+            $this->saveFieldsFilter();
+            $this->format($this->specifyFields($server));
+            return self::SUCCESS;
+        }
 
         if ($this->displayFormat() === 'table') {
-            $server = [
-                'ID'                => $server->id,
-                'Name'              => $server->name,
-                'Provider Name'     => $server->provider_name,
-                'IP Address'        => $server->ip_address,
-                'SSH Port'          => $server->ssh_port,
-                'Ubuntu'            => $server->ubuntu_version,
-                'Timezone'          => $server->timezone,
-                'Region'            => $server->region,
-                'Size'              => $server->size,
-                'Disk Space'        => $this->formatBytes($server->disk_space['used']) . ' of ' . $this->formatBytes($server->disk_space['total'], 0) . ' used',
-                'Database Server'   => $server->database['server'],
-                'Database Host'     => $server->database['host'],
-                'Database Port'     => $server->database['port'],
-                'SSH Public Key'    => $server->ssh_publickey,
-                'Git Public Key'    => $server->git_publickey,
-                'Connection Status' => ucfirst($server->connection_status),
-                'Reboot Required'   => $server->reboot_required ? 'Yes' : 'No',
-                'Upgrade Required'  => $server->upgrade_required ? 'Yes' : 'No',
-                'Install Notes'     => $server->install_notes ?? '',
-                'Created At'        => $server->created_at,
-                'Status'            => ucfirst($server->status),
-            ];
+            $server = $this->specifyFields($server, [
+                'id',
+                'name',
+                'ip_address',
+                'ubuntu_version',
+                'database.server',
+            ]);
         }
 
         $this->format($server);

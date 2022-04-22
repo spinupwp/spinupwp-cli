@@ -3,17 +3,17 @@
 namespace App\Commands\Services;
 
 use App\Commands\BaseCommand;
-use App\Commands\Concerns\SelectsServer;
+use App\Commands\Concerns\HasServerIdParameter;
 
 class NginxCommand extends BaseCommand
 {
-    use SelectsServer;
+    use HasServerIdParameter;
 
     protected $signature = 'services:nginx
                             {server_id? : The server to restart Nginx on}
                             {--all : Restart Nginx on all servers}
                             {--f|force : Restart Nginx without prompting for confirmation}
-                            {--profile=}';
+                            {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Restart Nginx';
 

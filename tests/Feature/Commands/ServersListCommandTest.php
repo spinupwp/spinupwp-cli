@@ -1,5 +1,6 @@
 <?php
 
+use App\Repositories\ConfigRepository as Configuration;
 use GuzzleHttp\Psr7\Response;
 
 $response = [
@@ -63,7 +64,7 @@ test('servers table list command', function () use ($response) {
         new Response(200, [], listResponseJson($response))
     );
     $this->artisan('servers:list --format table')->expectsTable(
-        ['ID', 'Name', 'IP Address', 'Ubuntu', 'Database'],
+        ['ID', 'Name', 'IP Address', 'Ubuntu', 'Database Server'],
         [
             [
                 '1',
@@ -81,6 +82,62 @@ test('servers table list command', function () use ($response) {
             ],
         ]
     );
+});
+
+test('servers table list with specified columns command and asks to save it in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'servers?page=1&limit=100', [])->andReturn(
+        new Response(200, [], listResponseJson($response))
+    );
+    $this->artisan('servers:list --format=table --fields=id,name,ip_address')->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'yes')->expectsTable(
+        ['ID', 'Name', 'IP Address'],
+        [
+            [
+                '1',
+                'hellfish-media',
+                '127.0.0.1',
+            ],
+            [
+                '2',
+                'staging.hellfish-media',
+                '127.0.0.1',
+            ],
+        ]
+    );
+
+    $this->assertEquals('id,name,ip_address', resolve(Configuration::class)->getCommandConfiguration('servers:list')['fields']);
+});
+
+test('servers table list only columns saved in the config', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'servers?page=1&limit=100', [])->andReturn(
+        new Response(200, [], listResponseJson($response))
+    );
+
+    resolve(Configuration::class)->setCommandConfiguration('servers:list', 'fields', 'id,name');
+
+    $this->artisan('servers:list --format=table')->expectsTable(
+        ['ID', 'Name'],
+        [
+            [
+                '1',
+                'hellfish-media',
+            ],
+            [
+                '2',
+                'staging.hellfish-media',
+            ],
+        ]
+    );
+
+    $this->artisan('servers:list --format=json')->expectsOutput(json_encode([
+        [
+            'id'   => 1,
+            'name' => 'hellfish-media',
+        ],
+        [
+            'id'   => 2,
+            'name' => 'staging.hellfish-media',
+        ],
+    ], JSON_PRETTY_PRINT));
 });
 
 test('empty servers list', function () {

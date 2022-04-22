@@ -5,8 +5,10 @@ namespace App\Commands;
 use App\Commands\Concerns\InteractsWithIO;
 use App\Repositories\ConfigRepository;
 use App\Repositories\SpinupWpRepository;
+use DeliciousBrains\SpinupWp\Exceptions\ValidationException;
 use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 abstract class BaseCommand extends Command
@@ -19,9 +21,9 @@ abstract class BaseCommand extends Command
 
     protected bool $requiresToken = true;
 
-    protected bool $largeOutput = false;
+    protected string $command;
 
-    protected array $columnsMaxWidths = [];
+    protected array $validationLabels = [];
 
     public function __construct(ConfigRepository $configuration, SpinupWpRepository $spinupWp)
     {
@@ -33,6 +35,10 @@ abstract class BaseCommand extends Command
 
     public function handle(): int
     {
+        if (method_exists($this, 'setup')) {
+            $this->setup();
+        }
+
         if ($this->requiresToken && !$this->config->isConfigured()) {
             $this->error("You must first run 'spinupwp configure' in order to set up your API token.");
             return self::FAILURE;
@@ -53,6 +59,19 @@ abstract class BaseCommand extends Command
             }
 
             return $this->action();
+        } catch (ValidationException $e) {
+            $errorRows = [];
+            foreach ($e->errors()['errors'] as $field => $errors) {
+                $errorRows[] = [$this->applyValidationLabel($field), implode("\n", $errors)];
+            }
+
+            $this->error('Validation errors occurred.');
+            $this->stepTable([
+                'Field',
+                'Error Message',
+            ], $errorRows);
+
+            return self::FAILURE;
         } catch (Exception $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
@@ -77,6 +96,15 @@ abstract class BaseCommand extends Command
         }
 
         return 'default';
+    }
+
+    protected function applyValidationLabel(string $key): string
+    {
+        if (empty($this->validationLabels) || !array_key_exists($key, $this->validationLabels)) {
+            return Str::title(str_replace('_', ' ', $key));
+        }
+
+        return $this->validationLabels[$key];
     }
 
     abstract protected function action(): int;
