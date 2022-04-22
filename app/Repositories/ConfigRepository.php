@@ -112,4 +112,13 @@ class ConfigRepository
 
         return $sshPath . '%h-%p-%r';
     }
+
+    public function isDevOrTesting(string $profile = 'default'): bool
+    {
+        if ((bool) $this->get('env', $profile, false)) {
+            return true;
+        }
+
+        return isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'testing';
+    }
 }
