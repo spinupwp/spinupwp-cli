@@ -3,9 +3,12 @@
 namespace App\Commands\DigitalOcean;
 
 use App\Commands\BaseCommand;
+use Illuminate\Support\Str;
 
 class ConnectCommand extends BaseCommand
 {
+    private const DEFAULT_MYSQL_PWD_FILE = '/root/mysqlpwd';
+
     protected $signature = 'digitalocean:connect {--profile=}';
 
     protected $description = 'Connect a DigitalOcean 1-click SpinupWP app';
@@ -35,7 +38,7 @@ class ConnectCommand extends BaseCommand
         $mysqlPassword = '';
 
         if ($this->confirm('Do you want to generate a random password?', true)) {
-            $mysqlPassword = $this->generatePassword();
+            $mysqlPassword = Str::random(24);
         }
 
         while (empty($mysqlPassword)) {
@@ -52,35 +55,39 @@ class ConnectCommand extends BaseCommand
 
         $this->line('Changing MySQL root password');
 
-        $defaultRootPassword = file_get_contents('/root/mysqlpwd');
+        $defaultRootPassword = $this->readDefaultRootPassword();
 
         if (empty($defaultRootPassword)) {
             throw new \Exception('Cannot change MySQL root password.');
         }
 
-        exec('mysql -u root -p' . $defaultRootPassword . ' -e \'ALTER USER "root"@"localhost" IDENTIFIED BY "' . $mysqlPassword . '"\'', $output, $exitCode);
+        $changeMySqlPasswordCommand = 'mysql -u root -p' . $defaultRootPassword . ' -e \'ALTER USER "root"@"localhost" IDENTIFIED BY "' . $mysqlPassword . '"\'';
 
-        if ($exitCode !== 0) {
-            $this->error(implode("\n", $output));
-            throw new \Exception('Cannot change MySQL root password.');
+        if (!$this->config->isDevOrTesting()) {
+            exec($changeMySqlPasswordCommand, $output, $exitCode);
+            if ($exitCode !== 0) {
+                $this->error(implode("\n", $output));
+                throw new \Exception('Cannot change MySQL root password.');
+            }
         }
 
         $this->info('MySQL root password changed.');
     }
 
-    protected function generatePassword()
+    protected function readDefaultRootPassword(): string
     {
-        $string = '';
-        $length = 24; // same length as in SU app.
+        $path = $this->config->isDevOrTesting()
+            ? base_path('tests')
+            : self::DEFAULT_MYSQL_PWD_FILE;
 
-        while (($len = strlen($string)) < $length) {
-            $size = $length - $len;
+        $path .= '/mysqlpwd';
 
-            $bytes = random_bytes($size);
+        $defaultRootPassword = file_get_contents($path);
 
-            $string .= substr(str_replace(['/', '+', '='], '', base64_encode($bytes)), 0, $size);
+        if (empty($defaultRootPassword)) {
+            throw new \Exception('Cannot change MySQL root password.');
         }
 
-        return $string;
+        return $defaultRootPassword;
     }
 }
