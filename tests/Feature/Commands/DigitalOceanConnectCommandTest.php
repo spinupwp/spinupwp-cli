@@ -21,5 +21,7 @@ test('digitalocean connect command', function () {
         ->expectsOutput("Make sure to note this password down somewhere (or save it in a Password Manager) as we won't show it again.")
         ->expectsQuestion('Press Enter to continue', true)
         ->expectsOutput('Changing MySQL root password')
-        ->expectsOutput('MySQL root password changed.');
+        ->expectsOutput('MySQL root password changed.')
+        ->expectsOutput('Connecting to spinupwp.app')
+        ->expectsOutput('To connect your server to your SpinupWP account, please visit https://spinupwp.app/connect-image/abc-123 and cconfirm your server connection. Please Enter when done');
 });

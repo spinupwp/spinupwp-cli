@@ -3,6 +3,7 @@
 namespace App\Commands\DigitalOcean;
 
 use App\Commands\BaseCommand;
+use GuzzleHttp\Client as Http;
 use Illuminate\Support\Str;
 
 class ConnectCommand extends BaseCommand
@@ -30,6 +31,39 @@ class ConnectCommand extends BaseCommand
         }
 
         return self::SUCCESS;
+    }
+
+    protected function requestConnection(): void
+    {
+        $this->line('Connecting to spinupwp.app');
+        $data = $this->prepareConnectionData();
+    }
+
+    protected function prepareConnectionData(): array
+    {
+        if ($this->config->isDevOrTesting()) {
+            return [
+                'ip_address' => '127.0.0.1',
+                'name'       => 'server-1',
+                'provider'   => 'DigitalOcean',
+                'timezone'   => 'America/Mexico_City',
+                'database'   => 'mysql-8',
+                'ssh_port'   => 22,
+            ];
+        }
+
+        exec('cat /etc/hostname', $hostname);
+        exec('cat /etc/timezone', $timezone);
+        exec('ip addr show | grep -E -o "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" | grep -E -o "([0-9]{3}[\.]){3}[0-9]{3}" | grep -P -v "^([0-9]{3}[\.]){3}255"', $ip);
+
+        return [
+            'ip_address' => $ip,
+            'name'       => $hostname,
+            'provider'   => 'DigitalOcean',
+            'timezone'   => $timezone,
+            'database'   => 'mysql-8', //TODO: get from config,
+            'ssh_port'   => 22,
+        ];
     }
 
     protected function changeMySqlPassword(): void
