@@ -81,11 +81,19 @@ class CreateCommand extends BaseCommand
 
         $this->userInput = array_merge($this->arguments(), $this->options(), $this->userInput);
 
-        $site = $this->spinupwp->createSite($server->id, $this->userInput);
-
         if ($this->userInput['installation-method'] === 'wp') {
-            $this->saveDefaults();
+            $saveDefaults = [
+                'save-admin-email'    => data_get($this->userInput, 'save-admin-email', false),
+                'save-admin-username' => data_get($this->userInput, 'save-admin-username', false),
+            ];
+
+            unset($this->userInput['save-admin-email']);
+            unset($this->userInput['save-admin-username']);
+
+            $this->saveDefaults($saveDefaults);
         }
+
+        $site = $this->spinupwp->createSite($server->id, $this->userInput);
 
         $this->displaySuccess(intval($site->eventId()));
 
@@ -111,7 +119,7 @@ class CreateCommand extends BaseCommand
         $db = [
             Ask::make('Database Name')
                 ->withFlag('db-name')
-            ->withDefault($this->getDomainSlug()),
+                ->withDefault($this->getDomainSlug()),
 
             Ask::make('Database Username')
                 ->withFlag('db-user')
@@ -130,9 +138,21 @@ class CreateCommand extends BaseCommand
                 ->withFlag('wp-admin-email')
                 ->withDefault($this->getDefaultsFromConfiguration('wp-admin-email')),
 
+            Confirm::make('Do you want to save this Admin Email as the default for WordPress sites?')
+                ->withFlag('')
+                ->withKey('save-admin-email')
+                ->withDefault(false)
+                ->unless(fn () => $this->getDefaultsFromConfiguration('wp-admin-email')),
+
             Ask::make('WordPress Admin Username')
                 ->withFlag('wp-admin-user')
                 ->withDefault($this->getDefaultsFromConfiguration('wp-admin-user')),
+
+            Confirm::make('Do you want to save this Admin Username as the default for WordPress sites?')
+                ->withFlag('')
+                ->withKey('save-admin-username')
+                ->withDefault(false)
+                ->unless(fn () => $this->getDefaultsFromConfiguration('wp-admin-user')),
 
             Ask::make('WordPress Admin Password')
                 ->withFlag('wp-admin-pass')
@@ -173,10 +193,15 @@ class CreateCommand extends BaseCommand
         return data_get($commandConfiguration, $question);
     }
 
-    protected function saveDefaults(): void
+    protected function saveDefaults(array $options): void
     {
-        $this->config->setCommandConfiguration('sites:create', 'wp-admin-user', $this->userInput['wp-admin-user'], $this->profile());
-        $this->config->setCommandConfiguration('sites:create', 'wp-admin-email', $this->userInput['wp-admin-email'], $this->profile());
+        if ($options['save-admin-email']) {
+            $this->config->setCommandConfiguration('sites:create', 'wp-admin-email', $this->userInput['wp-admin-email'], $this->profile());
+        }
+
+        if ($options['save-admin-username']) {
+            $this->config->setCommandConfiguration('sites:create', 'wp-admin-user', $this->userInput['wp-admin-user'], $this->profile());
+        }
     }
 
     protected function displaySuccess(int $eventId): void
