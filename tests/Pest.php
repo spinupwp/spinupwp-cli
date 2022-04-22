@@ -20,7 +20,7 @@ use Tests\CreatesApplication;
 uses(TestCase::class, CreatesApplication::class)
     ->beforeEach(function () {
         $this->clientMock = Mockery::mock(Client::class);
-        $this->spinupwp   = resolve(SpinupWpRepository::class)->setClient($this->clientMock)->setApiKey('123');
+        $this->spinupwp = resolve(SpinupWpRepository::class)->setClient($this->clientMock)->setApiKey('123');
         config()->set('app.ssh_timeout', -1);
     })
     ->in('Feature', 'Unit');
@@ -81,4 +81,18 @@ function listResponseJson(array $data): string
             'count'    => count($data),
         ],
     ]);
+}
+
+function setTestMysqlPwdFile()
+{
+    file_put_contents(base_path('tests') . '/mysqlpwd', 'mypassword123');
+}
+
+function deleteTestMysqlPwdFile()
+{
+    $mysqlPwdFile = base_path('tests') . '/mysqlpwd';
+    if (!file_exists($mysqlPwdFile)) {
+        return;
+    }
+    unlink($mysqlPwdFile);
 }
