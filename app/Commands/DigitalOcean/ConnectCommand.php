@@ -3,7 +3,6 @@
 namespace App\Commands\DigitalOcean;
 
 use App\Commands\BaseCommand;
-use GuzzleHttp\Client as Http;
 use Illuminate\Support\Str;
 
 class ConnectCommand extends BaseCommand
@@ -25,6 +24,7 @@ class ConnectCommand extends BaseCommand
 
         try {
             $this->changeMySqlPassword();
+            $this->requestConnection();
         } catch (\Exception $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
@@ -37,14 +37,25 @@ class ConnectCommand extends BaseCommand
     {
         $this->line('Connecting to spinupwp.app');
         $data = $this->prepareConnectionData();
+
+        $client = app()->make('GuzzleHttp\Client');
+
+        $response = $client->request('POST', 'http://spinupwp.test/api/image-connections/', [
+            'form_params' => $data,
+            'headers'     => [
+                'Accept' => 'application/json',
+            ],
+        ]);
+
+        ray($response->getBody()->getContents());
     }
 
     protected function prepareConnectionData(): array
     {
         if ($this->config->isDevOrTesting()) {
             return [
-                'ip_address' => '127.0.0.1',
-                'name'       => 'server-1',
+                'ip_address' => '143.198.155.210',
+                'name'       => 'daniel-do-test-1',
                 'provider'   => 'DigitalOcean',
                 'timezone'   => 'America/Mexico_City',
                 'database'   => 'mysql-8',
@@ -114,7 +125,7 @@ class ConnectCommand extends BaseCommand
             ? base_path('tests')
             : self::DEFAULT_MYSQL_PWD_FILE;
 
-        $path .= '/mysqlpwd';
+        $path .= '/.mysqlpwd';
 
         $defaultRootPassword = file_get_contents($path);
 
