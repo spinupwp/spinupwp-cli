@@ -17,9 +17,13 @@ abstract class Question
 
     public string $flag = '';
 
+    public string $key = '';
+
     protected bool $nonInteractive = false;
 
     protected string $prompt = '';
+
+    public bool $skip = false;
 
     final public function __construct(string $prompt)
     {
@@ -51,6 +55,12 @@ abstract class Question
         return $this;
     }
 
+    public function withKey(string $key): self
+    {
+        $this->key = $key;
+        return $this;
+    }
+
     /** @return static */
     public function nonInteractive(bool $nonInteractive = true): self
     {
@@ -64,13 +74,20 @@ abstract class Question
     {
         $this->command = $command;
 
-        $flagInput = $this->command->option($this->flag);
+        $flagInput = !empty($this->flag) ? $this->command->option($this->flag) : null;
 
         if ($flagInput || $this->nonInteractive) {
             return $flagInput ?? $this->default ?? null;
         }
 
         return $this->question();
+    }
+
+    public function unless(callable $callback): self
+    {
+        $this->skip = (bool) $callback();
+
+        return $this;
     }
 
     /** @return mixed */
