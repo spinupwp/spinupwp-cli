@@ -4,7 +4,7 @@
     "keywords": ["spinupwp", "cli"],
     "license": "MIT",
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^7.4|^8.0|^8.1",
         "deliciousbrains/spinupwp-php-sdk": "^0.5.1"
     },
     "require-dev": {
