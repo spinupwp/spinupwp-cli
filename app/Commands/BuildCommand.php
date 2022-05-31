@@ -25,7 +25,7 @@ use Symfony\Component\Process\Process;
 final class BuildCommand extends Command
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected $signature = 'app2:build
                             {name? : The build name}
@@ -33,7 +33,7 @@ final class BuildCommand extends Command
                             {--timeout=300 : The timeout in seconds or 0 to disable}';
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected $description = 'Build a single file executable';
 
@@ -59,7 +59,7 @@ final class BuildCommand extends Command
     private $originalOutput;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function handle()
     {
@@ -73,7 +73,7 @@ final class BuildCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
@@ -83,7 +83,7 @@ final class BuildCommand extends Command
     /**
      * Builds the application into a single file.
      */
-    private function build(string $name): BuildCommand
+    private function build(string $name): self
     {
         /*
          * We prepare the application for a build, moving it to production. Then,
@@ -101,9 +101,9 @@ final class BuildCommand extends Command
         return $this;
     }
 
-    private function compile(string $name): BuildCommand
+    private function compile(string $name): self
     {
-        if (! File::exists($this->app->buildsPath())) {
+        if (!File::exists($this->app->buildsPath())) {
             File::makeDirectory($this->app->buildsPath());
         }
 
@@ -114,8 +114,8 @@ final class BuildCommand extends Command
         }
 
         $process = new Process(
-            [$boxBinary, 'compile', '--working-dir='.base_path(), '--config='.base_path('box.json')] + $this->getExtraBoxOptions(),
-            dirname(__DIR__, 2).'/bin',
+            [$boxBinary, 'compile', '--working-dir=' . base_path(), '--config=' . base_path('box.json')] + $this->getExtraBoxOptions(),
+            dirname(__DIR__, 2) . '/bin',
             null,
             null,
             $this->getTimeout()
@@ -125,7 +125,8 @@ final class BuildCommand extends Command
 
         $progressBar = tap(
             new ProgressBar(
-                $this->output->getVerbosity() > OutputInterface::VERBOSITY_NORMAL ? new NullOutput() : $section, 25
+                $this->output->getVerbosity() > OutputInterface::VERBOSITY_NORMAL ? new NullOutput() : $section,
+                25
             )
         )->setProgressCharacter("\xF0\x9F\x8D\xBA");
 
@@ -145,37 +146,37 @@ final class BuildCommand extends Command
 
         $this->output->newLine();
 
-        File::move($this->app->basePath($this->getBinary()).'.phar', $this->app->buildsPath($name));
+        File::move($this->app->basePath($this->getBinary()) . '.phar', $this->app->buildsPath($name));
 
         return $this;
     }
 
-    private function prepare(): BuildCommand
+    private function prepare(): self
     {
-        $configFile = $this->app->configPath('app.php');
+        $configFile     = $this->app->configPath('app.php');
         static::$config = File::get($configFile);
 
         $config = include $configFile;
 
-        $config['env'] = 'production';
-        $version = $this->option('build-version') ?: $this->ask('Build version?', $config['version']);
+        $config['env']     = 'production';
+        $version           = $this->option('build-version') ?: $this->ask('Build version?', $config['version']);
         $config['version'] = $version;
 
-        $boxFile = $this->app->basePath('box.json');
+        $boxFile     = $this->app->basePath('box.json');
         static::$box = File::get($boxFile);
 
         $this->task(
             '   1. Moving application to <fg=yellow>production mode</>',
             function () use ($configFile, $config) {
-                File::put($configFile, '<?php return '.var_export($config, true).';'.PHP_EOL);
+                File::put($configFile, '<?php return ' . var_export($config, true) . ';' . PHP_EOL);
             }
         );
 
-        $boxContents = json_decode(static::$box, true);
+        $boxContents         = json_decode(static::$box, true);
         $boxContents['main'] = $this->getBinary();
 
         // Exclude Box binaries in output Phar
-        $boxContents['blacklist'] = isset($boxContents['blacklist']) && is_array($boxContents['blacklist']) ? $boxContents['blacklist'] : [];
+        $boxContents['blacklist']   = isset($boxContents['blacklist']) && is_array($boxContents['blacklist']) ? $boxContents['blacklist'] : [];
         $boxContents['blacklist'][] = 'bin/box';
         $boxContents['blacklist'][] = 'bin/box.bat';
         $boxContents['blacklist'][] = 'bin/box73';
@@ -183,12 +184,12 @@ final class BuildCommand extends Command
 
         File::put($boxFile, json_encode($boxContents));
 
-        File::put($configFile, '<?php return '.var_export($config, true).';'.PHP_EOL);
+        File::put($configFile, '<?php return ' . var_export($config, true) . ';' . PHP_EOL);
 
         return $this;
     }
 
-    private function clear(): BuildCommand
+    private function clear(): self
     {
         File::put($this->app->configPath('app.php'), static::$config);
 
@@ -219,7 +220,7 @@ final class BuildCommand extends Command
      */
     private function getTimeout(): ?float
     {
-        if (! is_numeric($this->option('timeout'))) {
+        if (!is_numeric($this->option('timeout'))) {
             throw new \InvalidArgumentException('The timeout value must be a number.');
         }
 
