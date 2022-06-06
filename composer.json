@@ -1,5 +1,5 @@
 {
-    "name": "deliciousbrains/spinupwp-cli",
+    "name": "spinupwp/spinupwp-cli",
     "description": "The SpinupWP CLI",
     "keywords": ["spinupwp", "cli"],
     "license": "MIT",
