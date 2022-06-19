@@ -3,17 +3,24 @@
 namespace App\Commands\DigitalOcean;
 
 use App\Commands\BaseCommand;
+use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 
 class ConnectCommand extends BaseCommand
 {
-    private const DEFAULT_MYSQL_PWD_FILE = '/root/mysqlpwd';
+    private const DEFAULT_MYSQL_PWD_FILE = '/root';
 
     protected $signature = 'digitalocean:connect {--profile=}';
 
     protected $description = 'Connect a DigitalOcean 1-click SpinupWP app';
 
     protected bool $requiresToken = false;
+
+    protected Client $client;
+
+    protected string $connectionToken = '';
+
+    protected string $publicKey = '';
 
     protected function action(): int
     {
@@ -23,6 +30,7 @@ class ConnectCommand extends BaseCommand
         }
 
         try {
+            $this->client = app()->make('GuzzleHttp\Client');
             $this->changeMySqlPassword();
             $this->requestConnection();
         } catch (\Exception $e) {
@@ -38,16 +46,71 @@ class ConnectCommand extends BaseCommand
         $this->line('Connecting to spinupwp.app');
         $data = $this->prepareConnectionData();
 
-        $client = app()->make('GuzzleHttp\Client');
-
-        $response = $client->request('POST', 'http://spinupwp.test/api/image-connections/', [
+        $response = $this->client->request('POST', 'http://spinupwp.test/api/image-connections/', [
             'form_params' => $data,
             'headers'     => [
                 'Accept' => 'application/json',
             ],
         ]);
 
+        $this->connectionToken = json_decode($response->getBody()->getContents(), true)['token'];
+
+        if (!$this->connectionToken) {
+            throw new \Exception('Something went wrong. Please try again later.');
+        }
+
+        $this->line("Visit http://spinupwp.test/connect-image/{$this->connectionToken} to connect your new server to your SpinupWP account and then return to this and press Enter");
+
+        while ($this->publicKey === '') {
+            $this->ask('Press Enter to continue');
+            $this->line('Fetching public key');
+            $this->getPublicKey();
+        }
+
+        $this->addPublicKey();
+
+        $this->line('Completing the connection to your server');
+
+        $response = $this->client->request('PUT', "http://spinupwp.test/api/image-connections/{$this->connectionToken}", [
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ]);
         ray($response->getBody()->getContents());
+
+        $this->info('Server connected. You can now manage your server from your SpinupWP account.');
+    }
+
+    protected function getPublicKey(): void
+    {
+        try {
+            $response = $this->client->request('GET', "http://spinupwp.test/api/image-connections/{$this->connectionToken}", [
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+            ]);
+        } catch (\Exception $e) {
+            $this->warn("Unable to fetch public key. Please ensure you completed the steps described in http://spinupwp.test/connect-image/{$this->connectionToken} and try again.");
+            return;
+        }
+
+        $this->publicKey = json_decode($response->getBody()->getContents(), true)['public_key'];
+    }
+
+    protected function addPublicKey(): void
+    {
+        $this->line('Adding public key to your server');
+
+        if ($this->config->isDevOrTesting()) {
+            return;
+        }
+
+        exec("echo {$this->publicKey} /home/spinupwp/.ssh/authorized_keys", $output, $exitCode);
+
+        if ($exitCode !== 0) {
+            $this->error(implode("\n", $output));
+            throw new \Exception('Cannot add your public key.');
+        }
     }
 
     protected function prepareConnectionData(): array
@@ -100,13 +163,15 @@ class ConnectCommand extends BaseCommand
 
         $this->line('Changing MySQL root password');
 
-        $defaultRootPassword = $this->readDefaultRootPassword();
+        // $defaultRootPassword = $this->readDefaultRootPassword();
 
-        if (empty($defaultRootPassword)) {
-            throw new \Exception('Cannot change MySQL root password.');
-        }
+        // if (empty($defaultRootPassword)) {
+        //     throw new \Exception('Cannot change MySQL root password.');
+        // }
 
-        $changeMySqlPasswordCommand = 'mysql -u root -p' . $defaultRootPassword . ' -e \'ALTER USER "root"@"localhost" IDENTIFIED BY "' . $mysqlPassword . '"\'';
+        // $changeMySqlPasswordCommand = 'mysql -u root -p' . $defaultRootPassword . ' -e \'ALTER USER "root"@"localhost" IDENTIFIED BY "' . $mysqlPassword . '"\'';
+
+        $changeMySqlPasswordCommand = 'mysql -e \'ALTER USER "root"@"localhost" IDENTIFIED BY "' . $mysqlPassword . '"\'';
 
         if (!$this->config->isDevOrTesting()) {
             exec($changeMySqlPasswordCommand, $output, $exitCode);
@@ -125,9 +190,13 @@ class ConnectCommand extends BaseCommand
             ? base_path('tests')
             : self::DEFAULT_MYSQL_PWD_FILE;
 
-        $path .= '/.mysqlpwd';
+        $path .= '/.my.cnf';
 
         $defaultRootPassword = file_get_contents($path);
+
+        return preg_match('/^password=\"(.*)\"/', $defaultRootPassword, $matches)
+            ? $matches[1]
+            : '';
 
         if (empty($defaultRootPassword)) {
             throw new \Exception('Cannot change MySQL root password.');
