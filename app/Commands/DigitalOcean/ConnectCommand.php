@@ -3,7 +3,7 @@
 namespace App\Commands\DigitalOcean;
 
 use App\Commands\BaseCommand;
-use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class ConnectCommand extends BaseCommand
@@ -15,8 +15,6 @@ class ConnectCommand extends BaseCommand
     protected $description = 'Connect a DigitalOcean 1-click SpinupWP app';
 
     protected bool $requiresToken = false;
-
-    protected Client $client;
 
     protected string $connectionToken = '';
 
@@ -30,7 +28,6 @@ class ConnectCommand extends BaseCommand
         }
 
         try {
-            $this->client = app()->make('GuzzleHttp\Client');
             $this->changeMySqlPassword();
             $this->requestConnection();
         } catch (\Exception $e) {
@@ -46,14 +43,9 @@ class ConnectCommand extends BaseCommand
         $this->line('Connecting to spinupwp.app');
         $data = $this->prepareConnectionData();
 
-        $response = $this->client->request('POST', 'http://spinupwp.test/api/image-connections/', [
-            'form_params' => $data,
-            'headers'     => [
-                'Accept' => 'application/json',
-            ],
-        ]);
+        $response = Http::acceptJson()->post('http://spinupwp.test/api/image-connections/', $data);
 
-        $this->connectionToken = json_decode($response->getBody()->getContents(), true)['token'];
+        $this->connectionToken = $response->json()['token'];
 
         if (!$this->connectionToken) {
             throw new \Exception('Something went wrong. Please try again later.');
@@ -71,12 +63,8 @@ class ConnectCommand extends BaseCommand
 
         $this->line('Completing the connection to your server');
 
-        $response = $this->client->request('PUT', "http://spinupwp.test/api/image-connections/{$this->connectionToken}", [
-            'headers' => [
-                'Accept' => 'application/json',
-            ],
-        ]);
-        ray($response->getBody()->getContents());
+        $response = Http::acceptJson()->put("http://spinupwp.test/api/image-connections/{$this->connectionToken}");
+        ray($response->body());
 
         $this->info('Server connected. You can now manage your server from your SpinupWP account.');
     }
@@ -84,17 +72,13 @@ class ConnectCommand extends BaseCommand
     protected function getPublicKey(): void
     {
         try {
-            $response = $this->client->request('GET', "http://spinupwp.test/api/image-connections/{$this->connectionToken}", [
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ]);
+            $response = Http::acceptJson()->get("http://spinupwp.test/api/image-connections/{$this->connectionToken}");
         } catch (\Exception $e) {
             $this->warn("Unable to fetch public key. Please ensure you completed the steps described in http://spinupwp.test/connect-image/{$this->connectionToken} and try again.");
             return;
         }
 
-        $this->publicKey = json_decode($response->getBody()->getContents(), true)['public_key'];
+        $this->publicKey = $response->json()['public_key'];
     }
 
     protected function addPublicKey(): void
