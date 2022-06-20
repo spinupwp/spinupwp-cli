@@ -5,7 +5,10 @@
     "license": "MIT",
     "require": {
         "php": "^7.4|^8.0",
-        "deliciousbrains/spinupwp-php-sdk": "^0.5.1"
+        "deliciousbrains/spinupwp-php-sdk": "^0.5.1",
+        "guzzlehttp/guzzle": "^7.4",
+        "illuminate/http": "^8.0",
+        "spatie/laravel-ray": "^1.29"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.2",
