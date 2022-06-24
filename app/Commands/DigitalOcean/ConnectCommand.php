@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class ConnectCommand extends BaseCommand
 {
-    private const DEFAULT_MYSQL_PWD_FILE = '/root';
+    private const DEFAULT_MYSQL_PWD_FILE_PATH = '/root';
 
     protected $signature = 'digitalocean:connect {--profile=}';
 
@@ -43,7 +43,7 @@ class ConnectCommand extends BaseCommand
         $this->line('Connecting to spinupwp.app');
         $data = $this->prepareConnectionData();
 
-        $response = Http::acceptJson()->post('http://spinupwp.test/api/image-connections/', $data);
+        $response = Http::acceptJson()->post('http://spinupwp.test/api/connect/', $data);
 
         $this->connectionToken = $response->json()['token'];
 
@@ -63,8 +63,7 @@ class ConnectCommand extends BaseCommand
 
         $this->line('Completing the connection to your server');
 
-        $response = Http::acceptJson()->put("http://spinupwp.test/api/image-connections/{$this->connectionToken}");
-        ray($response->body());
+        $response = Http::acceptJson()->put("http://spinupwp.test/api/connect/{$this->connectionToken}");
 
         $this->info('Server connected. You can now manage your server from your SpinupWP account.');
     }
@@ -72,7 +71,7 @@ class ConnectCommand extends BaseCommand
     protected function getPublicKey(): void
     {
         try {
-            $response = Http::acceptJson()->get("http://spinupwp.test/api/image-connections/{$this->connectionToken}");
+            $response = Http::acceptJson()->get("http://spinupwp.test/api/connect/{$this->connectionToken}");
         } catch (\Exception $e) {
             $this->warn("Unable to fetch public key. Please ensure you completed the steps described in http://spinupwp.test/connect-image/{$this->connectionToken} and try again.");
             return;
@@ -172,7 +171,7 @@ class ConnectCommand extends BaseCommand
     {
         $path = $this->config->isDevOrTesting()
             ? base_path('tests')
-            : self::DEFAULT_MYSQL_PWD_FILE;
+            : self::DEFAULT_MYSQL_PWD_FILE_PATH;
 
         $path .= '/.my.cnf';
 
