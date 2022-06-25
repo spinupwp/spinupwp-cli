@@ -43,7 +43,7 @@ class ConnectCommand extends BaseCommand
         $this->line('Connecting to spinupwp.app');
         $data = $this->prepareConnectionData();
 
-        $response = Http::acceptJson()->post('http://spinupwp.test/api/connect/', $data);
+        $response = Http::acceptJson()->post('https://spinupwp-dml.ngrok.io/api/connect/', $data);
 
         $this->connectionToken = $response->json()['token'];
 
@@ -51,7 +51,7 @@ class ConnectCommand extends BaseCommand
             throw new \Exception('Something went wrong. Please try again later.');
         }
 
-        $this->line("Visit http://spinupwp.test/connect-image/{$this->connectionToken} to connect your new server to your SpinupWP account and then return to this and press Enter");
+        $this->line("Visit https://spinupwp-dml.ngrok.io/connect-image/{$this->connectionToken} to connect your new server to your SpinupWP account and then return to this and press Enter");
 
         while ($this->publicKey === '') {
             $this->ask('Press Enter to continue');
@@ -63,7 +63,7 @@ class ConnectCommand extends BaseCommand
 
         $this->line('Completing the connection to your server');
 
-        $response = Http::acceptJson()->put("http://spinupwp.test/api/connect/{$this->connectionToken}");
+        $response = Http::acceptJson()->put("https://spinupwp-dml.ngrok.io/api/connect/{$this->connectionToken}");
 
         $this->info('Server connected. You can now manage your server from your SpinupWP account.');
     }
@@ -71,9 +71,9 @@ class ConnectCommand extends BaseCommand
     protected function getPublicKey(): void
     {
         try {
-            $response = Http::acceptJson()->get("http://spinupwp.test/api/connect/{$this->connectionToken}");
+            $response = Http::acceptJson()->get("https://spinupwp-dml.ngrok.io/api/connect/{$this->connectionToken}");
         } catch (\Exception $e) {
-            $this->warn("Unable to fetch public key. Please ensure you completed the steps described in http://spinupwp.test/connect-image/{$this->connectionToken} and try again.");
+            $this->warn("Unable to fetch public key. Please ensure you completed the steps described in https//spinupwp-dml.ngrok.io/connect-image/{$this->connectionToken} and try again.");
             return;
         }
 

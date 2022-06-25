@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ConfigRepository::class, function () {
             $path = isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'testing'
                 ? base_path('tests')
-                : ($_SERVER['HOME'] ?? $_SERVER['USERPROFILE']);
+                : ($_SERVER['HOME'] ?? $_SERVER['USERPROFILE']) ?? '/root';
 
             $path .= '/.spinupwp/';
 
