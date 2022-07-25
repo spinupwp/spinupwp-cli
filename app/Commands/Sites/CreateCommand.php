@@ -100,9 +100,11 @@ class CreateCommand extends BaseCommand
         return self::SUCCESS;
     }
 
-    public function getDomainSlug(): string
+    public function getDomainSlug($maxLength = 32): string
     {
-        return str_replace('.', '', $this->userInput['domain']);
+        $name = explode('.', $this->userInput['domain'])[0];
+        $name = str_replace(['-', '_'], '', $name);
+        return substr(Str::slug($name), 0, $maxLength);
     }
 
     public function questions(): array
@@ -119,11 +121,11 @@ class CreateCommand extends BaseCommand
         $db = [
             Ask::make('Database Name')
                 ->withFlag('db-name')
-                ->withDefault($this->getDomainSlug()),
+                ->withDefault($this->getDomainSlug(48)),
 
             Ask::make('Database Username')
                 ->withFlag('db-user')
-                ->withDefault($this->getDomainSlug()),
+                ->withDefault($this->getDomainSlug(16)),
 
             Ask::make('Database Password')
                 ->withFlag('db-pass')
