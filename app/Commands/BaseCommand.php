@@ -5,7 +5,7 @@ namespace App\Commands;
 use App\Commands\Concerns\InteractsWithIO;
 use App\Repositories\ConfigRepository;
 use App\Repositories\SpinupWpRepository;
-use DeliciousBrains\SpinupWp\Exceptions\ValidationException;
+use SpinupWp\Exceptions\ValidationException;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;

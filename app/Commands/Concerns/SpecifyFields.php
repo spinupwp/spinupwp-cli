@@ -3,7 +3,7 @@
 namespace App\Commands\Concerns;
 
 use App\Field;
-use DeliciousBrains\SpinupWp\Resources\Resource;
+use SpinupWp\Resources\Resource;
 
 trait SpecifyFields
 {
