@@ -2,14 +2,14 @@
 
 namespace App\Repositories;
 
+use GuzzleHttp\Client;
+use Illuminate\Support\Collection;
 use SpinupWp\Endpoints\Event;
 use SpinupWp\Endpoints\Server;
 use SpinupWp\Endpoints\Site;
 use SpinupWp\Resources\Server as ServerResource;
 use SpinupWp\Resources\Site as SiteResource;
 use SpinupWp\SpinupWp;
-use GuzzleHttp\Client;
-use Illuminate\Support\Collection;
 
 /**
  * @method SpinupWp setApiKey(string $apiKey)
