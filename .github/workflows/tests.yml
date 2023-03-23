@@ -5,7 +5,12 @@ on: ['push']
 jobs:
   pest:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['7.4', '8.0']
     steps:
       - uses: actions/checkout@v2.3.4
-      - uses: php-actions/composer@v5
+      - uses: php-actions/composer@v6
+        with:
+          php_version: ${{ matrix.php-versions }}
       - uses: NWBY/pest-action@v1.2.0
