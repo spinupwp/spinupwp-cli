@@ -2,13 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Helpers\OptionsHelper;
-use DeliciousBrains\SpinupWp\Endpoints\Event;
-use DeliciousBrains\SpinupWp\Endpoints\Server;
-use DeliciousBrains\SpinupWp\Endpoints\Site;
-use DeliciousBrains\SpinupWp\Resources\Server as ServerResource;
-use DeliciousBrains\SpinupWp\Resources\Site as SiteResource;
-use DeliciousBrains\SpinupWp\SpinupWp;
+use SpinupWp\Endpoints\Event;
+use SpinupWp\Endpoints\Server;
+use SpinupWp\Endpoints\Site;
+use SpinupWp\Resources\Server as ServerResource;
+use SpinupWp\Resources\Site as SiteResource;
+use SpinupWp\SpinupWp;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 
