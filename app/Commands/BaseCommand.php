@@ -82,7 +82,7 @@ abstract class BaseCommand extends Command
     {
         $apiToken = $this->config->get('api_token', $this->profile());
 
-        if (!$apiToken) {
+        if (!$apiToken || !is_string($apiToken)) {
             throw new Exception("The API token for the profile {$this->profile()} is not yet configured");
         }
 

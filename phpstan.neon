@@ -11,6 +11,6 @@ parameters:
     universalObjectCratesClasses:
         - SpinupWp\Resources\Resource
         - SpinupWp\Endpoints\Endpoint
-    excludes_analyse:
+    excludePaths:
         - vendor/*
         - tests/*
