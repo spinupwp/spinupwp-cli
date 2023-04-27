@@ -55,7 +55,7 @@ $response = [
     'wp_plugin_updates' => 3,
     'git'               => [
         'enabled'        => true,
-        'repo'           => 'git@github.com:deliciousbrains/spinupwp-composer-site.git',
+        'repo'           => 'git@github.com:spinupwp/spinupwp-composer-site.git',
         'branch'         => 'main',
         'deploy_script'  => 'composer install --optimize-autoload --no-dev',
         'push_enabled'   => true,
@@ -108,7 +108,7 @@ test('site table get command specifying columns and asks to save it in the confi
         ->expectsTable([], [
             ['Domain', 'hellfish.media'],
             ['Git', 'Enabled'],
-            ['Repository', 'git@github.com:deliciousbrains/spinupwp-composer-site.git'],
+            ['Repository', 'git@github.com:spinupwp/spinupwp-composer-site.git'],
             ['Branch', 'main'],
             ['Deploy Script', 'composer install --optimize-autoload --no-dev'],
             ['Push-to-deploy', 'Enabled'],

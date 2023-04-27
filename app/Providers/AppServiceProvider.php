@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Repositories\ConfigRepository;
 use App\Repositories\SpinupWpRepository;
-use DeliciousBrains\SpinupWp\SpinupWp;
 use Illuminate\Support\ServiceProvider;
+use SpinupWp\SpinupWp;
 
 class AppServiceProvider extends ServiceProvider
 {

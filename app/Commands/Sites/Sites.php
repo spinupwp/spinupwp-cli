@@ -26,29 +26,29 @@ abstract class Sites extends BaseCommand
             (new Field('HTTPS', 'https'))
                 ->couldBeEnabledOrDisabled(),
             (new Field('Database Table Prefix', 'database'))
-                ->withIgnoreRule(fn ($value)    => empty($value['table_prefix']))
+                ->withIgnoreRule(fn ($value) => empty($value['table_prefix']))
                 ->withTransformRule(fn ($value) => $value['table_prefix']),
             (new Field('Git', 'git'))
                 ->couldBeEnabledOrDisabled(),
             (new Field('Repository', 'git'))
                 ->withAliases(['git.repo'])
-                ->withIgnoreRule(fn ($value)    => !$value['enabled'])
+                ->withIgnoreRule(fn ($value) => !$value['enabled'])
                 ->withTransformRule(fn ($value) => $value['repo']),
             (new Field('Branch', 'git'))
                 ->withAliases(['git.branch'])
-                ->withIgnoreRule(fn ($value)    => !$value['enabled'])
+                ->withIgnoreRule(fn ($value) => !$value['enabled'])
                 ->withTransformRule(fn ($value) => $value['branch']),
             (new Field('Deploy Script', 'git'))
                 ->withAliases(['git.deploy_script'])
-                ->withIgnoreRule(fn ($value)    => !$value['enabled'])
+                ->withIgnoreRule(fn ($value) => !$value['enabled'])
                 ->withTransformRule(fn ($value) => $value['deploy_script']),
             (new Field('Push-to-deploy', 'git'))
                 ->withAliases(['git.push_enabled'])
-                ->withIgnoreRule(fn ($value)    => !$value['enabled'] || !$value['push_enabled'])
+                ->withIgnoreRule(fn ($value) => !$value['enabled'] || !$value['push_enabled'])
                 ->withTransformRule(fn ($value) => $value['push_enabled'] ? 'Enabled' : 'Disabled'),
             (new Field('Deployment URL', 'git'))
                 ->withAliases(['git.deployment_url'])
-                ->withIgnoreRule(fn ($value)    => !$value['enabled'] || !$value['push_enabled'])
+                ->withIgnoreRule(fn ($value) => !$value['enabled'] || !$value['push_enabled'])
                 ->withTransformRule(fn ($value) => $value['deployment_url']),
             (new Field('WP Core Update', 'wp_core_update'))
                 ->yesOrNo(),
@@ -65,11 +65,11 @@ abstract class Sites extends BaseCommand
                 ->withTransformRule(fn ($value) => $value['database'] ? 'Enabled' : 'Disabled'),
             (new Field('Backup Retention Period', 'backups'))
                 ->withAliases(['backups.retention_period'])
-                ->withIgnoreRule(fn ($value)    => !$value['files'] && $value['database'])
+                ->withIgnoreRule(fn ($value) => !$value['files'] && $value['database'])
                 ->withTransformRule(fn ($value) => $value['retention_period'] . ' days'),
             (new Field('Next Backup Time', 'backups'))
                 ->withAliases(['backups.next_run_time'])
-                ->withIgnoreRule(fn ($value)    => !(bool) $value['next_run_time'])
+                ->withIgnoreRule(fn ($value) => !(bool) $value['next_run_time'])
                 ->withTransformRule(fn ($value) => $value['next_run_time']),
             (new Field('Uploads Directory Protection', 'nginx'))
                 ->withAliases(['nginx.uploads_directory_protected'])
@@ -84,7 +84,7 @@ abstract class Sites extends BaseCommand
                 ->couldBeEnabledOrDisabled(),
             (new Field('Basic Auth Username', 'basic_auth'))
                 ->withAliases(['basic_auth.username'])
-                ->withIgnoreRule(fn ($value)    => !$value['enabled'])
+                ->withIgnoreRule(fn ($value) => !$value['enabled'])
                 ->withTransformRule(fn ($value) => $value['username']),
             (new Field('Created At', 'created_at')),
             (new Field('Status', 'status'))

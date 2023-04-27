@@ -3,7 +3,7 @@
 namespace App;
 
 use Closure;
-use DeliciousBrains\SpinupWp\Resources\Resource;
+use SpinupWp\Resources\Resource;
 
 class Field
 {

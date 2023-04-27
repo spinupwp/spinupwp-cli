@@ -220,7 +220,7 @@ trait InteractsWithIO
                 if ($shouldWait) {
                     sleep(1);
                 }
-                $eventId = call_user_func(fn () => $resource->$endpoint());
+                $eventId  = call_user_func(fn () => $resource->$endpoint());
                 $events[] = ["{$eventId}", $resource->{$resourcesId}];
             } catch (\Exception $e) {
                 if ($resources->count() === 1) {
