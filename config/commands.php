@@ -93,7 +93,7 @@ return [
     */
 
     'remove' => [
-        \LaravelZero\Framework\Commands\TestMakeCommand::class,
+        LaravelZero\Framework\Commands\TestMakeCommand::class,
     ],
 
 ];
