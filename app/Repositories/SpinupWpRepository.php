@@ -64,6 +64,11 @@ class SpinupWpRepository
         return $this->spinupwp->sites->get($siteId);
     }
 
+    public function getSshKey(): string
+    {
+        return $this->spinupwp->sshKeys->get();
+    }
+
     public function listSites(int $serverId = null): Collection
     {
         $params = [
