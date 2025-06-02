@@ -90,7 +90,7 @@ class CreateCustomCommand extends BaseCommand
                 ->withFlag('timezone')
                 ->withDefault('UTC'),
 
-            Ask::make('Post-Provision Script Path')
+            Ask::make('Post-Provision Script')
                 ->withFlag('post-provision-script'),
 
             Ask::make('Database Root Password')
