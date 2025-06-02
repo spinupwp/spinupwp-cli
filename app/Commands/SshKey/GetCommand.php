@@ -2,9 +2,9 @@
 
 namespace App\Commands\SshKey;
 
-use App\Commands\Sites\Sites;
+use App\Commands\BaseCommand;
 
-class GetCommand extends Sites
+class GetCommand extends BaseCommand
 {
     protected $signature = 'ssh-key:get
                             {--format= : The output format (json or table)}

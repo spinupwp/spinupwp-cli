@@ -40,6 +40,9 @@ If no profile is supplied, your default profile will be used (if configured).
     # Delete a server
     spinupwp servers:delete <server_id>
 
+    # Provision a custom server
+    spinupwp servers:create-custom
+
     # Get a server
     spinupwp servers:get <server_id> --fields=id,name,ip_address,ubuntu_version,database.server
 
