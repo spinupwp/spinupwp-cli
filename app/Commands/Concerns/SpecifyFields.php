@@ -31,7 +31,7 @@ trait SpecifyFields
         collect($this->fieldsMap)->each(function (Field $field) use ($resource, &$fields) {
             $label = $field->getDisplayLabel($this->displayFormat() === 'table');
 
-            if (!isset($resource->toArray()[$field->getName()])) {
+            if (!isset($resource->{$field->getName()})) {
                 return;
             }
 
