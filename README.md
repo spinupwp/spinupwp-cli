@@ -81,6 +81,12 @@ Nested properties should use dot notation, for example, `database.server`.
     # Restart PHP on all servers
     spinupwp services:php --all
 
+    # Restart Redis on a server
+    spinupwp services:redis <server_id>
+
+    # Restart Redis on all servers
+    spinupwp services:redis --all
+
 ### Sites
 
     # Create a site

@@ -4,6 +4,7 @@ namespace App\Commands\Concerns;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use SpinupWp\Resources\Resource;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -67,8 +68,12 @@ trait InteractsWithIO
      */
     protected function toJson($resource): void
     {
-        if (!is_array($resource)) {
+        if ($resource instanceof Resource) {
             $resource = $resource->toArray();
+        }
+
+        if ($resource instanceof Collection) {
+            $resource = $resource->map(fn ($item) => $item instanceof Resource ? $item->toArray() : $item);
         }
 
         $this->line((string) json_encode($resource, JSON_PRETTY_PRINT));
