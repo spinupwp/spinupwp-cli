@@ -64,6 +64,11 @@ class SpinupWpRepository
         return $this->spinupwp->sites->get($siteId);
     }
 
+    public function getSshKey(): string
+    {
+        return $this->spinupwp->sshKeys->get();
+    }
+
     public function listSites(int $serverId = null): Collection
     {
         $params = [
@@ -104,5 +109,26 @@ class SpinupWpRepository
         ];
 
         return $this->spinupwp->sites->create($serverId, $inputParams);
+    }
+
+    /**
+     * @param array<string, string|null> $inputParams
+     */
+    public function createCustomServer(array $inputParams): ServerResource
+    {
+        return $this->spinupwp->servers->createCustom([
+            'provider_name'          => $inputParams['provider-name'],
+            'ubuntu_version'         => $inputParams['ubuntu-version'],
+            'ip_address'             => $inputParams['ip-address'],
+            'ssh_port'               => $inputParams['ssh-port'],
+            'username'               => $inputParams['ssh-username'],
+            'auth_method'            => $inputParams['ssh-auth-method'],
+            'password'               => $inputParams['ssh-password'] ?? null,
+            'hostname'               => $inputParams['hostname'],
+            'timezone'               => $inputParams['timezone'],
+            'post_provision_script'  => $inputParams['post-provision-script'],
+            'database_root_password' => $inputParams['database-root-password'],
+            'database_provider_id'   => $inputParams['database-provider-id'],
+        ]);
     }
 }

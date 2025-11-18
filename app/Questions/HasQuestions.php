@@ -14,7 +14,7 @@ trait HasQuestions
     {
         $answers = [];
         foreach ($this->questions() as $question) {
-            if ($question->skip) {
+            if (is_callable($question->skip) && call_user_func($question->skip, $answers)) {
                 continue;
             }
 

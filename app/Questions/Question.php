@@ -2,6 +2,7 @@
 
 namespace App\Questions;
 
+use Closure;
 use Illuminate\Console\Concerns\InteractsWithIO;
 use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
@@ -23,7 +24,7 @@ abstract class Question
 
     protected string $prompt = '';
 
-    public bool $skip = false;
+    public ?Closure $skip = null;
 
     final public function __construct(string $prompt)
     {
@@ -85,7 +86,7 @@ abstract class Question
 
     public function unless(callable $callback): self
     {
-        $this->skip = (bool) $callback();
+        $this->skip = $callback;
 
         return $this;
     }
