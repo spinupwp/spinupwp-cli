@@ -76,10 +76,6 @@ class WpCliCommand extends BaseCommand
             }
 
             if (in_array($event->status, ['deployed', 'failed'])) {
-                if ($event->status === 'failed') {
-                    $this->error('WP-CLI command execution failed.');
-                }
-
                 break;
             }
         }
