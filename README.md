@@ -119,6 +119,12 @@ Nested properties should use dot notation, for example, `database.server`.
     # Start an SSH session as the site user
     spinupwp sites:ssh <site_id>
 
+    # Run a WP-CLI command on a site
+    spinupwp sites:wp-cli <site_id> --command="core version"
+
+    # Run multiple WP-CLI commands on a site
+    spinupwp sites:wp-cli <site_id> --command="core version" --command="plugin list --status=active"
+
 You can pass any properties of the [Site Schema](https://api.spinupwp.com/?shell#tocS_Site) to the `--fields` flag.
 Nested properties should use dot notation, for example, `backups.next_run_time` or `git.branch`.
 
