@@ -67,7 +67,7 @@ class WpCliCommand extends BaseCommand
         while (true) {
             sleep(2);
 
-            $event = $this->spinupwp->events->get($eventId);
+            $event  = $this->spinupwp->events->get($eventId);
             $output = $event->output ?? '';
 
             if (strlen($output) > $displayedLength) {
