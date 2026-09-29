@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "spinupwp/spinupwp-php-sdk": "^1.0.0"
+        "spinupwp/spinupwp-php-sdk": "^1.3.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.2",

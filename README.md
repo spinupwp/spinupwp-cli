@@ -119,6 +119,55 @@ Nested properties should use dot notation, for example, `database.server`.
     # Start an SSH session as the site user
     spinupwp sites:ssh <site_id>
 
+    # Connect a Git repository
+    spinupwp sites:git:connect <site_id> --repo=<repo> --branch=<branch> --push-to-deploy
+
+    # Connect a Git repository using a unique deploy key for the site
+    spinupwp sites:git:connect <site_id> --repo=<repo> --branch=<branch> \
+      --private-key=~/.ssh/deploy_key --public-key=~/.ssh/deploy_key.pub
+
+    # Update Git settings
+    spinupwp sites:git:update <site_id> --branch=production --push-to-deploy=false
+
+    # Disconnect Git
+    spinupwp sites:git:disconnect <site_id>
+
+    # Enable, update, or disable the page cache
+    spinupwp sites:page-cache:enable <site_id>
+    spinupwp sites:page-cache:update <site_id> --duration=1 --duration-unit=h --path-exclusion=/cart/ --path-exclusion=/checkout/
+    spinupwp sites:page-cache:disable <site_id>
+
+    # Update Nginx settings
+    spinupwp sites:nginx <site_id> --uploads-directory-protected=true --xmlrpc-protected=true
+
+    # Enable, update, or disable the server-level WP cron
+    spinupwp sites:cron:enable <site_id> --interval=5
+    spinupwp sites:cron:update <site_id> --interval=15
+    spinupwp sites:cron:disable <site_id>
+
+    # Enable, update, or disable basic auth
+    spinupwp sites:basic-auth:enable <site_id> --username=<username> --password=<password>
+    spinupwp sites:basic-auth:update <site_id> --username=<username>
+    spinupwp sites:basic-auth:disable <site_id>
+
+    # Manage path redirects
+    spinupwp sites:redirects:list <site_id>
+    spinupwp sites:redirects:add <site_id> --from=/old-path --to=/new-path --type=permanent
+    spinupwp sites:redirects:delete <site_id> --from=/old-path --to=/new-path
+
+    # Update backup settings
+    spinupwp sites:backups:settings <site_id> --storage-provider-id=1 --bucket=<bucket> --region=nyc3 --exclude-path=node_modules
+
+    # Update the backup schedule (daily at 2am and 2pm, monthly on the first Monday at 4am)
+    spinupwp sites:backups:schedule <site_id> --daily-times=2,14 --daily-database=true --daily-files=true \
+      --daily-retention=30 --monthly-days=first:1 --monthly-time=4
+
+    # Disable weekly backups
+    spinupwp sites:backups:schedule <site_id> --weekly-days=none
+
+    # Update the site user's SSH authentication
+    spinupwp sites:site-user <site_id> --authentication=publickey --ssh-key-id=1 --ssh-key-id=2
+
 You can pass any properties of the [Site Schema](https://api.spinupwp.com/?shell#tocS_Site) to the `--fields` flag.
 Nested properties should use dot notation, for example, `backups.next_run_time` or `git.branch`.
 
@@ -130,10 +179,25 @@ Nested properties should use dot notation, for example, `backups.next_run_time` 
       --wp-admin-email="<wordpress_admin_user_email>" --wp-admin-user="<wordpress_admin_user_username>" \
       --wp-admin-pass="<wordpress_admin_user_password>" --php-version="<php_version>" --page-cache-enabled
 
+Update commands only change the settings you pass. Boolean flags accept `true` or `false`, and repeatable flags such as `--path-exclusion` can be passed multiple times.
+
 A full reference of the available flags is available anytime.
 
     # Display available Arguments and Options for site:create 
     spinupwp sites:create --help
+
+### SSH Keys
+
+    # Get SpinupWP's SSH key
+    spinupwp ssh-key:get
+
+    # List your team's SSH keys
+    spinupwp ssh-key:list
+
+### Storage Providers
+
+    # List your team's storage providers
+    spinupwp storage-providers:list
 
 ## Upgrade
 

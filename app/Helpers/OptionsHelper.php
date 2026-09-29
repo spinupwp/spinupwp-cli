@@ -11,4 +11,9 @@ class OptionsHelper
     ];
 
     public const PHP_VERSIONS = ['8.0', '7.4'];
+
+    public const REDIRECT_TYPES = [
+        'permanent' => 'Permanent (301)',
+        'redirect'  => 'Temporary (302)',
+    ];
 }

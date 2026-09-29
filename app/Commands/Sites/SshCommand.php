@@ -3,10 +3,12 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\HasSiteIdParameter;
 use App\Commands\Concerns\InteractsWithRemote;
 
 class SshCommand extends BaseCommand
 {
+    use HasSiteIdParameter;
     use InteractsWithRemote;
 
     protected $signature = 'sites:ssh
@@ -19,13 +21,12 @@ class SshCommand extends BaseCommand
 
     protected function action(): int
     {
-        $siteId = $this->argument('site_id');
+        $site = $this->selectSite('Which site would you like to start an SSH session for');
 
-        if (empty($siteId)) {
-            $siteId = $this->askToSelectSite('Which site would you like to start an SSH session for');
+        if (is_null($site)) {
+            return self::SUCCESS;
         }
 
-        $site   = $this->spinupwp->getSite((int) $siteId);
         $server = $this->spinupwp->getServer($site->server_id);
 
         $this->line("Establishing a secure connection to [<comment>{$server->name}</comment>] as [<comment>{$site->site_user}</comment>]...");

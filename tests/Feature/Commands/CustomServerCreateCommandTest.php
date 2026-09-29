@@ -23,7 +23,7 @@ test('"servers:create-custom" fails with invalid data', function () {
 ];
 
     $this->clientMock->shouldReceive('request')->with('POST', 'servers/custom', [
-        'form_params' => $params,
+        'json' => $params,
     ])->andReturn(
         new Response(422, [], json_encode([
             'message' => 'The given data was invalid.',
@@ -55,7 +55,7 @@ test('"servers:create-custom" succeeds with correct data', function () {
     ];
 
     $this->clientMock->shouldReceive('request')->with('POST', 'servers/custom', [
-        'form_params' => $params,
+        'json' => $params,
     ])->andReturn(
         new Response(200, [], json_encode([
             'event_id' => '100',

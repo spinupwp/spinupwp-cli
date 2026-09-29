@@ -86,6 +86,12 @@ abstract class Sites extends BaseCommand
                 ->withAliases(['basic_auth.username'])
                 ->withIgnoreRule(fn ($value) => !$value['enabled'])
                 ->withTransformRule(fn ($value) => $value['username']),
+            (new Field('WP Cron', 'cron'))
+                ->couldBeEnabledOrDisabled(),
+            (new Field('WP Cron Interval', 'cron'))
+                ->withAliases(['cron.interval'])
+                ->withIgnoreRule(fn ($value) => !$value['enabled'])
+                ->withTransformRule(fn ($value) => $value['interval'] . ' minutes'),
             (new Field('Created At', 'created_at')),
             (new Field('Status', 'status'))
                 ->withFirstCharUpperCase(),

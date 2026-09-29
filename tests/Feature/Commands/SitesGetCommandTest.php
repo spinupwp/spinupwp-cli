@@ -140,3 +140,21 @@ test('site table get only columns saved in the config', function () use ($respon
         'domain' => 'hellfish.media',
     ], JSON_PRETTY_PRINT));
 });
+
+test('site table get command with wp cron fields', function () {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => [
+            'id'     => 1,
+            'domain' => 'hellfish.media',
+            'cron'   => ['enabled' => true, 'interval' => 15],
+        ]]))
+    );
+
+    $this->artisan('sites:get 1 --format=table --fields=domain,cron')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'no')
+        ->expectsTable([], [
+            ['Domain', 'hellfish.media'],
+            ['WP Cron', 'Enabled'],
+            ['WP Cron Interval', '15 minutes'],
+        ]);
+});

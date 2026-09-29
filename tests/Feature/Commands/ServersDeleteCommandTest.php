@@ -10,7 +10,7 @@ beforeEach(function () {
     );
 
     $this->clientMock->shouldReceive('request')->with('DELETE', 'servers/1', [
-        'form_params' => ['delete_server_on_provider' => false],
+        'json' => ['delete_server_on_provider' => false],
     ])->andReturn(
         new Response(200, [], json_encode(['event_id' => '100']))
     );
@@ -38,7 +38,7 @@ test('delete a server without force option and cancel deletion', function () {
 
 test('delete a server on provider', function () {
     $this->clientMock->shouldReceive('request')->with('DELETE', 'servers/1', [
-        'form_params' => ['delete_server_on_provider' => true],
+        'json' => ['delete_server_on_provider' => true],
     ])->andReturn(
         new Response(200, [], json_encode(['event_id' => '100']))
     );

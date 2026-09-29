@@ -98,7 +98,7 @@ trait InteractsWithIO
 
             $resource->each(function ($item) use (&$rows) {
                 if (!is_array($item)) {
-                    $item->toArray();
+                    $item = $item->toArray();
                 }
 
                 $row = array_map(function ($value) {

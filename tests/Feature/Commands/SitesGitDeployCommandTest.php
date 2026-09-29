@@ -5,7 +5,7 @@ use GuzzleHttp\Psr7\Response;
 beforeEach(function () {
     setTestConfigFile();
 
-    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites/1', [])->andReturn(
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
         new Response(200, [], json_encode([
             'data' => [
                 'id'     => 1,
@@ -51,5 +51,17 @@ test('site git deploy command', function () {
     $this->artisan('sites:deploy')
         ->expectsQuestion('Which site would you like to deploy', '1')
         ->expectsOutput('==> Site queued for deployment.')
+        ->assertExitCode(0);
+});
+
+test('site git deploy command when no sites have git enabled', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1&limit=100', [])->andReturn(
+        new Response(200, [], listResponseJson([
+            ['id' => 2, 'domain' => 'staging.hellfishmedia.com', 'git' => ['enabled' => false]],
+        ]))
+    );
+
+    $this->artisan('sites:deploy')
+        ->expectsOutput('There are no sites with Git enabled.')
         ->assertExitCode(0);
 });
