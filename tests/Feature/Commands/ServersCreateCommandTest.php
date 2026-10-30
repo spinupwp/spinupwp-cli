@@ -136,3 +136,31 @@ test('provision a server with force option requires the region and size', functi
         ->expectsOutput('The --region and --size options are required when running with --force.')
         ->assertExitCode(1);
 });
+
+test('provision a server with a saved provider account, choosing its region and size interactively', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'providers/hetzner/metadata', [])->andReturn(
+        new Response(200, [], json_encode([
+            'regions' => ['Americas' => [['slug' => 'ash', 'name' => 'Ashburn, VA, US', 'available' => true, 'sizes' => ['cpx11']]]],
+            'sizes'   => [['slug' => 'cpx11', 'memory' => 2048, 'vcpus' => 2, 'disk' => 40, 'transfer' => 1, 'priceMonthly' => 17.99, 'available' => true]],
+        ]))
+    );
+
+    $this->clientMock->shouldReceive('request')->once()->with('POST', 'servers', [
+        'json' => [
+            'server_provider' => ['id' => 1, 'region' => 'ash', 'size' => 'cpx11', 'enable_backups' => false],
+            'hostname'        => 'hellfish-media',
+            'timezone'        => 'UTC',
+        ],
+    ])->andReturn($this->serverResponse);
+
+    $this->artisan('servers:create --provider-id=1')
+        ->expectsChoice('Which provider is saved provider account 1 on? (used to list its regions and sizes)', 'hetzner', ['digitalocean' => 'DigitalOcean', 'hetzner' => 'Hetzner', 'linode' => 'Linode', 'vultr' => 'Vultr'])
+        ->expectsChoice('Which region', 'ash', ['ash' => 'Ashburn, VA, US (Americas)'])
+        ->expectsChoice('Which size', 'cpx11', ['cpx11' => '2 vCPUs, 2 GB memory, 40 GB disk, $17.99/month'])
+        ->expectsQuestion('Hostname', 'hellfish-media')
+        ->expectsQuestion('Timezone', 'UTC')
+        ->expectsConfirmation('Hetzner charges extra for backups. Enable them?', 'no')
+        ->expectsConfirmation('Provision a cpx11 server in ash with saved provider account 1? Hetzner will bill you for it.', 'yes')
+        ->expectsOutput('==> Server queued for provisioning.')
+        ->assertExitCode(0);
+});

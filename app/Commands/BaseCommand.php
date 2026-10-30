@@ -109,7 +109,13 @@ abstract class BaseCommand extends Command
     protected function applyValidationLabel(string $key): string
     {
         if (empty($this->validationLabels) || !array_key_exists($key, $this->validationLabels)) {
-            return Str::title(str_replace(['_', '.'], ' ', $key));
+            $label = Str::title(str_replace(['_', '.'], ' ', $key));
+
+            return (string) preg_replace_callback(
+                '/\b(Db|Https|Id|Ip|Php|Ssh|Url|Wp)\b/',
+                fn ($match) => strtoupper($match[1]),
+                $label,
+            );
         }
 
         return $this->validationLabels[$key];

@@ -47,3 +47,19 @@ test('clear the backup database', function () {
         ->expectsOutput('==> Backup settings updated.')
         ->assertExitCode(0);
 });
+
+test('update backup settings shows the saved paths when the site has no backup schedule', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('PUT', 'sites/1/backup-settings', [
+        'json' => ['paths_to_exclude' => "node_modules\n/files/vendor"],
+    ])->andReturn(new Response(200, [], json_encode(['data' => array_merge($this->site, [
+        'backups' => [
+            'paths_to_exclude' => null,
+            'storage_provider' => ['id' => 1, 'region' => 'nyc3', 'bucket' => 'turnipjuice-media'],
+        ],
+    ])])));
+
+    $this->artisan('sites:backups:settings 1 --exclude-path=node_modules --exclude-path=/files/vendor')
+        ->expectsOutput('==> Backup settings updated.')
+        ->expectsOutputToContain('node_modules, /files/vendor')
+        ->assertExitCode(0);
+});

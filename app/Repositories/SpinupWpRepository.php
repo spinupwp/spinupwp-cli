@@ -211,19 +211,38 @@ class SpinupWpRepository
      */
     public function createCustomServer(array $inputParams): ServerResource
     {
-        return $this->spinupwp->servers->createCustom([
-            'provider_name'          => $inputParams['provider-name'],
-            'ubuntu_version'         => $inputParams['ubuntu-version'],
-            'ip_address'             => $inputParams['ip-address'],
-            'ssh_port'               => $inputParams['ssh-port'],
-            'username'               => $inputParams['ssh-username'],
-            'auth_method'            => $inputParams['ssh-auth-method'],
-            'password'               => $inputParams['ssh-password'] ?? null,
-            'hostname'               => $inputParams['hostname'],
-            'timezone'               => $inputParams['timezone'],
-            'post_provision_script'  => $inputParams['post-provision-script'],
-            'database_root_password' => $inputParams['database-root-password'],
-            'database_provider_id'   => $inputParams['database-provider-id'],
-        ]);
+        $params = [
+            'provider_name'  => $inputParams['provider-name'],
+            'ubuntu_version' => $inputParams['ubuntu-version'],
+            'ip_address'     => $inputParams['ip-address'],
+            'ssh_port'       => $inputParams['ssh-port'],
+            'username'       => $inputParams['ssh-username'],
+            'auth_method'    => $inputParams['ssh-auth-method'],
+            'hostname'       => $inputParams['hostname'],
+            'timezone'       => $inputParams['timezone'],
+        ];
+
+        // The API rejects null for the password and database provider ID.
+        if ($inputParams['ssh-auth-method'] === 'password') {
+            $params['password'] = $inputParams['ssh-password'] ?? null;
+        }
+
+        $optional = [
+            'post_provision_script'  => 'post-provision-script',
+            'database_root_password' => 'database-root-password',
+            'database_provider_id'   => 'database-provider-id',
+        ];
+
+        foreach ($optional as $param => $input) {
+            if (isset($inputParams[$input]) && $inputParams[$input] !== '') {
+                $params[$param] = $inputParams[$input];
+            }
+        }
+
+        if (isset($params['database_provider_id']) && is_numeric($params['database_provider_id'])) {
+            $params['database_provider_id'] = (int) $params['database_provider_id'];
+        }
+
+        return $this->spinupwp->servers->createCustom($params);
     }
 }

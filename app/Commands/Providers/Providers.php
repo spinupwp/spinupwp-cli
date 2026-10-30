@@ -8,10 +8,10 @@ use Exception;
 
 abstract class Providers extends BaseCommand
 {
-    protected function selectProvider(mixed $provider): string
+    protected function selectProvider(mixed $provider, string $question = 'Which server provider'): string
     {
         if (!is_string($provider) || $provider === '') {
-            $choice   = $this->choice('Which server provider', OptionsHelper::SERVER_PROVIDERS);
+            $choice   = $this->choice($question, OptionsHelper::SERVER_PROVIDERS);
             $provider = is_string($choice) ? $choice : '';
         }
 

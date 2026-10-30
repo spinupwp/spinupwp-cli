@@ -113,7 +113,7 @@ class CreateCommand extends BaseCommand
 
         $site = $this->spinupwp->createSite($server->id, $this->userInput);
 
-        $this->displaySuccess(intval($site->eventId()));
+        $this->displaySuccess(intval($site->eventId()), $site->id);
 
         return self::SUCCESS;
     }
@@ -239,15 +239,17 @@ class CreateCommand extends BaseCommand
         }
     }
 
-    protected function displaySuccess(int $eventId): void
+    protected function displaySuccess(int $eventId, int $siteId): void
     {
         $tableHeadings = [
             'Event ID',
+            'Site ID',
             'Site',
         ];
 
         $tableRow = [
             $eventId,
+            $siteId,
             $this->userInput['domain'],
         ];
 

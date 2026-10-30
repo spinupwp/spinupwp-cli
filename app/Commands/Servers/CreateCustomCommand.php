@@ -36,6 +36,12 @@ class CreateCustomCommand extends BaseCommand
 
     protected $description = 'Provision a custom server';
 
+    protected array $validationLabels = [
+        'username'    => 'SSH Username',
+        'password'    => 'SSH Password',
+        'auth_method' => 'SSH Authentication Method',
+    ];
+
     /**
      * @var array<string, string|null>
      */

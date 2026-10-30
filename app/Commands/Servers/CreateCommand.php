@@ -53,12 +53,19 @@ class CreateCommand extends Providers
 
         // A saved provider account already knows its provider, so the provider is only needed
         // to use an API token or to choose a region and size.
+        $providerName = null;
+
         if (is_null($providerId) || is_null($region) || is_null($size)) {
             if (is_null($provider) && $this->nonInteractive()) {
                 throw new Exception('The --provider option is required when running with --force, unless you pass --provider-id.');
             }
 
-            $provider = $this->selectProvider($provider);
+            $question = is_null($providerId)
+                ? 'Which server provider'
+                : "Which provider is saved provider account {$providerId} on? (used to list its regions and sizes)";
+
+            $provider     = $this->selectProvider($provider, $question);
+            $providerName = OptionsHelper::SERVER_PROVIDERS[$provider];
         }
 
         $serverProvider = is_null($providerId) ? $this->apiTokenCredentials((string) $provider) : ['id' => $providerId];
@@ -69,8 +76,7 @@ class CreateCommand extends Providers
             $size ??= $this->askForSize($metadata, $region);
         }
 
-        // With a saved account, name the account rather than a --provider that may not match it.
-        $billedBy = is_null($providerId) ? OptionsHelper::SERVER_PROVIDERS[(string) $provider] : 'your server provider';
+        $billedBy = $providerName ?? 'your server provider';
         $location = is_null($providerId) ? "on {$billedBy}" : "with saved provider account {$providerId}";
 
         $hostname = $this->stringOption('hostname') ?? ($this->nonInteractive() ? null : $this->ask('Hostname'));

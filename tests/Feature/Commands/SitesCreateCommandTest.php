@@ -66,6 +66,9 @@ test('"sites:create blank" succeeds with correct params', function () {
     ])));
 
     $this->artisan('sites:create 1 --installation-method=blank --domain=hellfish.media --page-cache-enabled --php-version="7.4" -f')
+        ->expectsOutput('==> Site queued for creation.')
+        ->expectsOutputToContain('Site ID')
+        ->expectsOutputToContain('hellfish.media')
         ->assertExitCode(0);
 });
 
