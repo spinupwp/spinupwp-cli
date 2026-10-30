@@ -21,9 +21,10 @@ trait SpecifyFields
             $fieldsFilter = $this->getCommandFieldsConfiguration($this->name, $this->profile());
         }
 
-        if ($this->option('fields')) {
-            $fieldsOption = str_replace(' ', '', strval($this->option('fields')));
-            $fieldsFilter = explode(',', $fieldsOption);
+        $fieldsOption = $this->option('fields');
+
+        if (is_string($fieldsOption) && $fieldsOption !== '') {
+            $fieldsFilter = explode(',', str_replace(' ', '', $fieldsOption));
         }
 
         $this->applyFilter($fieldsFilter);
@@ -64,12 +65,13 @@ trait SpecifyFields
             return;
         }
 
-        if (empty($commandOptions) && !$saveConfiguration) {
+        if (!$saveConfiguration) {
             $saveConfiguration = $this->confirm('Do you want to save the specified fields as the default for this command?', true);
         }
 
         if ($saveConfiguration) {
-            $this->config->setCommandConfiguration($this->name, 'fields', strval($this->option('fields')), $this->profile());
+            $fieldsOption = $this->option('fields');
+            $this->config->setCommandConfiguration($this->name, 'fields', is_string($fieldsOption) ? $fieldsOption : '', $this->profile());
             return;
         }
 

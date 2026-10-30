@@ -69,16 +69,13 @@ return [
 
         // NunoMaduro...
         NunoMaduro\LaravelConsoleSummary\SummaryCommand::class,
-        NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand::class,
+        // Referenced by name because Collision marks this class @internal.
+        'NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand',
 
         // Symfony...
         Symfony\Component\Console\Command\HelpCommand::class,
         Symfony\Component\Console\Command\DumpCompletionCommand::class,
 
-        // Pest
-        Pest\Laravel\Commands\PestDatasetCommand::class,
-        Pest\Laravel\Commands\PestInstallCommand::class,
-        Pest\Laravel\Commands\PestTestCommand::class,
     ],
 
     /*

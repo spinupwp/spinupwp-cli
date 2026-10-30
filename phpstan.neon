@@ -5,9 +5,12 @@ parameters:
         - app
         - bootstrap
         - config
-    level: max
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
+    level: 8
+    stubFiles:
+        - stubs/spinupwp-sdk.stub
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
     universalObjectCratesClasses:
         - SpinupWp\Resources\Resource
         - SpinupWp\Endpoints\Endpoint

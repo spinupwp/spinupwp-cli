@@ -4,15 +4,15 @@
     "keywords": ["spinupwp", "cli"],
     "license": "MIT",
     "require": {
-        "php": "^8.0",
+        "php": "^8.2",
         "spinupwp/spinupwp-php-sdk": "^1.3.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.2",
-        "laravel-zero/framework": "<=9.2.0",
-        "mockery/mockery": "^1.4.3",
-        "pestphp/pest": "^1.3",
-        "phpstan/phpstan": "^1.8"
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "laravel-zero/framework": "^12.1",
+        "mockery/mockery": "^1.6.12",
+        "pestphp/pest": "^3.8",
+        "phpstan/phpstan": "^2.1"
     },
     "autoload": {
         "psr-4": {
@@ -28,6 +28,9 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true,
+        "platform": {
+            "php": "8.2.0"
+        },
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }

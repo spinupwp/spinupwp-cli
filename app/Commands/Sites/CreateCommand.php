@@ -102,7 +102,7 @@ class CreateCommand extends BaseCommand
 
     public function getDomainSlug(): string
     {
-        return str_replace('.', '', $this->userInput['domain']);
+        return str_replace('.', '', (string) ($this->userInput['domain'] ?? ''));
     }
 
     public function questions(): array
@@ -186,11 +186,7 @@ class CreateCommand extends BaseCommand
     /** @return mixed */
     protected function getDefaultsFromConfiguration(string $question)
     {
-        $commandConfiguration = $this->config->getCommandConfiguration('sites:create', $this->profile());
-        if (!is_array($commandConfiguration)) {
-            return null;
-        }
-        return data_get($commandConfiguration, $question);
+        return data_get($this->config->getCommandConfiguration('sites:create', $this->profile()), $question);
     }
 
     protected function saveDefaults(array $options): void

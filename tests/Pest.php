@@ -19,9 +19,14 @@ use Tests\CreatesApplication;
 
 uses(TestCase::class, CreatesApplication::class)
     ->beforeEach(function () {
+        failOnAppDeprecations();
+
         $this->clientMock = Mockery::mock(Client::class);
         $this->spinupwp   = resolve(SpinupWpRepository::class)->setClient($this->clientMock)->setApiKey('123');
         config()->set('app.ssh_timeout', -1);
+    })
+    ->afterEach(function () {
+        restore_error_handler();
     })
     ->in('Feature', 'Unit');
 
@@ -50,6 +55,25 @@ expect()->extend('toBeOne', function () {
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
+
+/**
+ * Laravel's error handler logs deprecations instead of reporting them to PHPUnit, so throw
+ * for any deprecation raised from the app's own code. Deprecations from vendor code are
+ * passed on to the previous handler.
+ */
+function failOnAppDeprecations(): void
+{
+    $appPath  = base_path('app') . DIRECTORY_SEPARATOR;
+    $previous = null;
+
+    $previous = set_error_handler(function (int $level, string $message, string $file = '', int $line = 0) use ($appPath, &$previous) {
+        if (in_array($level, [E_DEPRECATED, E_USER_DEPRECATED], true) && str_starts_with($file, $appPath)) {
+            throw new ErrorException($message, 0, $level, $file, $line);
+        }
+
+        return is_callable($previous) ? $previous($level, $message, $file, $line) : false;
+    });
+}
 
 function setTestConfigFile($profileData = [])
 {

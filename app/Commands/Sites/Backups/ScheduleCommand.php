@@ -63,10 +63,11 @@ class ScheduleCommand extends BaseCommand
 
         $this->successfulStep('Backup schedule updated.');
 
-        $backups = $site->backups;
+        // Read the raw data: the SDK returns null, not an array, when a response has no backups field.
+        $schedule = $site->toArray()['backups']['schedule'] ?? null;
 
-        if (is_array($backups) && is_array($backups['schedule'] ?? null)) {
-            $this->stepTable(['Frequency', 'Schedule'], BackupScheduleHelper::rows($backups['schedule']));
+        if (is_array($schedule)) {
+            $this->stepTable(['Frequency', 'Schedule'], BackupScheduleHelper::rows($schedule));
             $this->line('    Times are in the server\'s timezone.');
         }
 

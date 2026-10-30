@@ -1,0 +1,183 @@
+<?php
+
+// PHPStan stubs for the SpinupWP PHP SDK. The SDK's resources expose API fields through
+// __get(), so these describe the fields' types (from the REST API's resource classes)
+// and the resource types that list endpoints return.
+
+namespace SpinupWp\Resources {
+
+    class Resource {}
+
+    /**
+     * @template TResource of \SpinupWp\Resources\Resource
+     * @implements \IteratorAggregate<int, TResource>
+     */
+    class ResourceCollection implements \Countable, \IteratorAggregate
+    {
+        public function count(): int;
+
+        /**
+         * @return \Generator<int, TResource>
+         */
+        public function getIterator(): \Generator;
+    }
+
+    /**
+     * @property-read int $id
+     * @property-read string $name
+     * @property-read string $provider_name
+     * @property-read string $ubuntu_version
+     * @property-read string $ip_address
+     * @property-read int $ssh_port
+     * @property-read string $timezone
+     * @property-read string $region
+     * @property-read string $size
+     * @property-read array{total: int, available: int, used: int, updated_at: string|null} $disk_space
+     * @property-read array{server: string|null, host: string|null, port: int|null} $database
+     * @property-read string|null $ssh_publickey
+     * @property-read string|null $git_publickey
+     * @property-read string $connection_status
+     * @property-read bool $reboot_required
+     * @property-read bool $upgrade_required
+     * @property-read string|null $install_notes
+     * @property-read string $created_at
+     * @property-read string $status
+     */
+    class Server extends Resource {}
+
+    /**
+     * @property-read int $id
+     * @property-read int $server_id
+     * @property-read string $domain
+     * @property-read list<array{id: int, domain: string, redirect: array{enabled: bool, type?: int, destination?: string}, created_at: string}> $additional_domains
+     * @property-read string $site_user
+     * @property-read string $user_auth
+     * @property-read string $php_version
+     * @property-read string $public_folder
+     * @property-read bool $is_wordpress
+     * @property-read array{enabled: bool, duration?: int, duration_unit?: string, path_exclusions?: string|null, cookie_exclusions?: string|null, ignored_query_params?: string|null} $page_cache
+     * @property-read array{enabled: bool, certificate_expires?: string, certificate_renews?: string} $https
+     * @property-read array{uploads_directory_protected: bool, xmlrpc_protected: bool, subdirectory_rewrite_in_place: bool} $nginx
+     * @property-read array{id: int|null, user_id: int|null, table_prefix: string|null} $database
+     * @property-read array{files: bool, database: bool, paths_to_exclude: string|null, retention_period: int|null, next_run_time: string|null, storage_provider?: array{id: int|null, region: string|null, bucket: string|null}, schedule?: array<string, array<string, mixed>>} $backups
+     * @property-read bool $wp_core_update
+     * @property-read int $wp_theme_updates
+     * @property-read int $wp_plugin_updates
+     * @property-read array{enabled: bool, repo?: string, branch?: string, deploy_script?: string|null, push_enabled?: bool, deployment_url?: string} $git
+     * @property-read array{enabled: bool, username?: string} $basic_auth
+     * @property-read array{enabled: bool, interval?: int} $cron
+     * @property-read array{enabled: bool, url?: string} $subdomain
+     * @property-read string $created_at
+     * @property-read string|null $disabled_at
+     * @property-read string $status
+     */
+    class Site extends Resource {}
+
+    /**
+     * @property-read string $from
+     * @property-read string $to
+     * @property-read string $type
+     * @property-read string $created_at
+     */
+    class PathRedirect extends Resource {}
+
+    /**
+     * @property-read int $id
+     * @property-read string $name
+     * @property-read string $fingerprint
+     * @property-read string $publickey
+     * @property-read string $created_at
+     */
+    class SshKey extends Resource {}
+
+    /**
+     * @property-read int $id
+     * @property-read string $service
+     * @property-read string $name
+     * @property-read string $created_at
+     */
+    class StorageProvider extends Resource {}
+
+    /**
+     * @property-read int $id
+     * @property-read string $initiated_by
+     * @property-read int|null $server_id
+     * @property-read string $name
+     * @property-read string $status
+     * @property-read string|null $output
+     * @property-read string|null $created_at
+     * @property-read string|null $started_at
+     * @property-read string|null $finished_at
+     */
+    class Event extends Resource {}
+}
+
+namespace SpinupWp\Endpoints {
+
+    use SpinupWp\Resources\Event as EventResource;
+    use SpinupWp\Resources\PathRedirect as PathRedirectResource;
+    use SpinupWp\Resources\ResourceCollection;
+    use SpinupWp\Resources\Server as ServerResource;
+    use SpinupWp\Resources\Site as SiteResource;
+    use SpinupWp\Resources\SshKey as SshKeyResource;
+    use SpinupWp\Resources\StorageProvider as StorageProviderResource;
+
+    abstract class Endpoint {}
+
+    class Server extends Endpoint
+    {
+        /**
+         * @param array<string, mixed> $parameters
+         * @return ResourceCollection<ServerResource>
+         */
+        public function list(int $page = 1, array $parameters = []): ResourceCollection;
+    }
+
+    class Site extends Endpoint
+    {
+        /**
+         * @param array<string, mixed> $parameters
+         * @return ResourceCollection<SiteResource>
+         */
+        public function list(int $page = 1, array $parameters = []): ResourceCollection;
+
+        /**
+         * @param array<string, mixed> $parameters
+         * @return ResourceCollection<SiteResource>
+         */
+        public function listForServer(int $serverId, int $page = 1, array $parameters = []): ResourceCollection;
+
+        /**
+         * @param array<string, mixed> $parameters
+         * @return ResourceCollection<PathRedirectResource>
+         */
+        public function listPathRedirects(int $id, int $page = 1, array $parameters = []): ResourceCollection;
+    }
+
+    class Event extends Endpoint
+    {
+        /**
+         * @param array<string, mixed> $parameters
+         * @return ResourceCollection<EventResource>
+         */
+        public function list(int $page = 1, array $parameters = []): ResourceCollection;
+    }
+
+    class SshKey extends Endpoint
+    {
+        /**
+         * @param array<string, mixed> $parameters
+         * @return ResourceCollection<SshKeyResource>
+         */
+        public function list(int $page = 1, array $parameters = []): ResourceCollection;
+    }
+
+    class StorageProvider extends Endpoint
+    {
+        /**
+         * @param array<string, mixed> $parameters
+         * @return ResourceCollection<StorageProviderResource>
+         */
+        public function list(int $page = 1, array $parameters = []): ResourceCollection;
+    }
+}

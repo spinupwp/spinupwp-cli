@@ -6,15 +6,36 @@ jobs:
   pest:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        php-versions: ['8.0', '8.1', '8.2']
+        php-versions: ['8.2', '8.3', '8.4', '8.5']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: none
+
       - name: Install Dependencies via Composer
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Check for deprecations
+        # Compile-time deprecations (e.g. implicitly nullable parameters) are raised when a file is
+        # loaded, before PHPUnit can report them, so lint every file with all errors enabled.
+        run: |
+          status=0
+          for file in spinupwp $(find app bootstrap config tests -name '*.php'); do
+            output=$(php -d error_reporting=E_ALL -d display_errors=stderr -l "$file" 2>&1) || status=1
+            if echo "$output" | grep -qi 'deprecated'; then
+              echo "$output"
+              status=1
+            fi
+          done
+          exit $status
 
       - name: Run tests
         run: composer test

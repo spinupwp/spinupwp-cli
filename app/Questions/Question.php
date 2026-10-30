@@ -35,6 +35,7 @@ abstract class Question
     /** @return static */
     public static function make(string $prompt): self
     {
+        // @phpstan-ignore new.staticInAbstractClassStaticMethod (only called on concrete questions, e.g. Ask::make())
         return new static($prompt);
     }
 
@@ -78,13 +79,13 @@ abstract class Question
         $flagInput = !empty($this->flag) ? $this->command->option($this->flag) : null;
 
         if ($flagInput || $this->nonInteractive) {
-            return $flagInput ?? $this->default ?? null;
+            return $flagInput ?? $this->default;
         }
 
         return $this->question();
     }
 
-    public function unless(callable $callback): self
+    public function unless(Closure $callback): self
     {
         $this->skip = $callback;
 

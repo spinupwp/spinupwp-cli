@@ -19,7 +19,8 @@ class PurgeCommand extends BaseCommand
 
     protected function action(): int
     {
-        $cacheToPurge = strval($this->option('cache'));
+        $cacheToPurge = $this->option('cache');
+        $cacheToPurge = is_string($cacheToPurge) ? $cacheToPurge : '';
 
         if (empty($cacheToPurge)) {
             $cacheToPurge = (int) $this->askToSelect('Which cache do you want to purge', [
