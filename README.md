@@ -126,6 +126,9 @@ Nested properties should use dot notation, for example, `database.server`.
     # Start an SSH session as the site user
     spinupwp sites:ssh <site_id>
 
+    # View a site's logs (debug.log, error.log, or access.log), optionally following new lines
+    spinupwp sites:logs <site_id> --log=debug.log --lines=100 --follow
+
     # Connect a Git repository
     spinupwp sites:git:connect <site_id> --repo=<repo> --branch=<branch> --push-to-deploy
 
