@@ -8,6 +8,7 @@ use App\Commands\Concerns\ParsesOptions;
 use App\Questions\Ask;
 use App\Questions\Choice;
 use Exception;
+use SpinupWp\Resources\Site;
 
 abstract class Domains extends BaseCommand
 {
@@ -27,6 +28,37 @@ abstract class Domains extends BaseCommand
         'redirect.type'        => 'Redirect Type',
         'redirect.destination' => 'Redirect Destination',
     ];
+
+    /**
+     * Find the additional domain named by the domain argument (an ID or domain name), or ask which one.
+     *
+     * @return array<mixed>|null
+     */
+    protected function selectDomain(Site $site, string $question): ?array
+    {
+        $domains = collect($site->listDomains());
+
+        if ($domains->isEmpty()) {
+            $this->warn('No additional domains found.');
+            return null;
+        }
+
+        $argument = $this->argument('domain');
+
+        if (is_string($argument) && $argument !== '') {
+            $domain = $domains->first(fn ($domain) => (string) ($domain['id'] ?? '') === $argument || strcasecmp($domain['domain'] ?? '', $argument) === 0);
+
+            if (is_null($domain)) {
+                throw new Exception("No additional domain \"{$argument}\" found on \"{$site->domain}\".");
+            }
+
+            return $domain;
+        }
+
+        $selected = $this->askToSelect($question, $domains->keyBy('id')->map(fn ($domain) => $domain['domain'] ?? '')->all());
+
+        return $domains->first(fn ($domain) => ($domain['id'] ?? null) === $selected);
+    }
 
     /**
      * Build the redirect settings, asking for the type and destination when the redirect is enabled.
