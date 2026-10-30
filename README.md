@@ -229,6 +229,9 @@ A full reference of the available flags is available anytime.
     # List your team's most recent events
     spinupwp events:list --limit=20
 
+    # Get an event, for example to check on an event ID another command printed
+    spinupwp events:get <event_id>
+
 ### SSH Keys
 
     # Get SpinupWP's SSH key
