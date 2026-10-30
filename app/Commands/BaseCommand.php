@@ -60,9 +60,17 @@ abstract class BaseCommand extends Command
 
             return $this->action();
         } catch (ValidationException $e) {
+            $fieldErrors = $e->errors()['errors'] ?? [];
+
+            // Some 422 responses (e.g. an invalid Git deploy key) only have a message.
+            if (empty($fieldErrors) || !is_array($fieldErrors)) {
+                $this->error($e->errors()['message'] ?? $e->getMessage());
+                return self::FAILURE;
+            }
+
             $errorRows = [];
-            foreach ($e->errors()['errors'] as $field => $errors) {
-                $errorRows[] = [$this->applyValidationLabel($field), implode("\n", $errors)];
+            foreach ($fieldErrors as $field => $errors) {
+                $errorRows[] = [$this->applyValidationLabel((string) $field), implode("\n", (array) $errors)];
             }
 
             $this->error('Validation errors occurred.');
@@ -101,7 +109,13 @@ abstract class BaseCommand extends Command
     protected function applyValidationLabel(string $key): string
     {
         if (empty($this->validationLabels) || !array_key_exists($key, $this->validationLabels)) {
-            return Str::title(str_replace(['_', '.'], ' ', $key));
+            $label = Str::title(str_replace(['_', '.'], ' ', $key));
+
+            return (string) preg_replace_callback(
+                '/\b(Db|Https|Id|Ip|Php|Ssh|Url|Wp)\b/',
+                fn ($match) => strtoupper($match[1]),
+                $label,
+            );
         }
 
         return $this->validationLabels[$key];

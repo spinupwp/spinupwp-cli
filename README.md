@@ -40,6 +40,13 @@ If no profile is supplied, your default profile will be used (if configured).
     # Delete a server
     spinupwp servers:delete <server_id>
 
+    # Provision a server on DigitalOcean, Hetzner, Linode or Vultr
+    spinupwp servers:create
+
+    # Provision a server without prompts, using a provider account saved in SpinupWP
+    spinupwp servers:create --provider=digitalocean --provider-id=<provider_id> --region=nyc3 \
+      --size=s-2vcpu-4gb --hostname=<hostname> --force
+
     # Provision a custom server
     spinupwp servers:create-custom
 
@@ -169,16 +176,53 @@ Nested properties should use dot notation, for example, `database.server`.
     # Update the site user's SSH authentication
     spinupwp sites:site-user <site_id> --authentication=publickey --ssh-key-id=1 --ssh-key-id=2
 
+    # Correct the file permissions for a site
+    spinupwp sites:correct-permissions <site_id>
+
+    # Disable a site so it stops serving traffic, or enable it again
+    spinupwp sites:disable <site_id>
+    spinupwp sites:enable <site_id>
+
+    # Enable or disable the SpinupWP subdomain for a site
+    spinupwp sites:subdomain:enable <site_id>
+    spinupwp sites:subdomain:disable <site_id>
+
+    # Change the PHP version for a site
+    spinupwp sites:php <site_id> --php-version=8.4
+
+    # Enable HTTPS with a Let's Encrypt certificate, or with your own certificate
+    spinupwp sites:https:enable <site_id> --type=letsencrypt
+    spinupwp sites:https:enable <site_id> --type=custom --certificate=<certificate_file> --private-key=<private_key_file>
+
+    # Switch a site's HTTPS certificate, or replace its custom certificate
+    spinupwp sites:https:update <site_id> --type=custom --certificate=<certificate_file> --private-key=<private_key_file>
+
+    # Disable HTTPS for a site
+    spinupwp sites:https:disable <site_id>
+
+    # Manage additional domains for a site
+    spinupwp sites:domains:list <site_id>
+    spinupwp sites:domains:add <site_id> --domain=www.<domain> --redirect --redirect-type=301
+    spinupwp sites:domains:update <site_id> <domain> --redirect=false
+    spinupwp sites:domains:delete <site_id> <domain>
+
 You can pass any properties of the [Site Schema](https://api.spinupwp.com/?shell#tocS_Site) to the `--fields` flag.
 Nested properties should use dot notation, for example, `backups.next_run_time` or `git.branch`.
 
 
     # Create a site using field flags instead of interactive prompts
     spinupwp sites:create <server_id> --installation-method="<installation_method>" \
-      --domain="<domain>" --https-enabled --site-user="<site_user>" --db-name="<database_name>" \
+      --domain="<domain>" --site-user="<site_user>" --db-name="<database_name>" \
       --db-user="<database_user>" --db-pass="<database_password>" --wp-title="<wordpress_site_title>" \
       --wp-admin-email="<wordpress_admin_user_email>" --wp-admin-user="<wordpress_admin_user_username>" \
       --wp-admin-pass="<wordpress_admin_user_password>" --php-version="<php_version>" --page-cache-enabled
+
+    # Create a site from a Git repository
+    spinupwp sites:create <server_id> --installation-method=git --domain="<domain>" \
+      --git-repo="git@github.com:<org>/<repo>.git" --git-branch=main --public-folder=/public \
+      --deploy-script="composer install --no-dev" --push-to-deploy
+
+The installation method can be `wp`, `wp_subdirectory` or `wp_subdomain` (WordPress Multisite), `git` or `blank`. HTTPS isn't set up when a site is created. Enable it with `sites:https:enable` once the site has deployed.
 
 Update commands only change the settings you pass. Boolean flags accept `true` or `false`, and repeatable flags such as `--path-exclusion` can be passed multiple times.
 
@@ -186,6 +230,22 @@ A full reference of the available flags is available anytime.
 
     # Display available Arguments and Options for site:create 
     spinupwp sites:create --help
+
+### Events
+
+    # List your team's most recent events
+    spinupwp events:list --limit=20
+
+    # Get an event, for example to check on an event ID another command printed
+    spinupwp events:get <event_id>
+
+### Providers
+
+    # List the regions a server provider offers (digitalocean, hetzner, linode or vultr)
+    spinupwp providers:regions <provider>
+
+    # List the server sizes a provider offers, optionally only those in one region
+    spinupwp providers:sizes <provider> --region=<region>
 
 ### SSH Keys
 

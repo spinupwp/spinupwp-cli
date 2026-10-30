@@ -66,6 +66,11 @@ trait SpecifyFields
         }
 
         if (!$saveConfiguration) {
+            // Stop scripts saving their fields by silently accepting the default.
+            if (!$this->input->isInteractive()) {
+                return;
+            }
+
             $saveConfiguration = $this->confirm('Do you want to save the specified fields as the default for this command?', true);
         }
 
@@ -75,6 +80,7 @@ trait SpecifyFields
             return;
         }
 
+        // An empty value remembers the declined prompt.
         $this->config->setCommandConfiguration($this->name, 'fields', '', $this->profile());
     }
 

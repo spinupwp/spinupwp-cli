@@ -254,3 +254,37 @@ test('site table get command warns when none of the requested fields apply', fun
         ->expectsOutput('None of the requested fields apply to this resource.')
         ->assertExitCode(0);
 });
+
+test('declining to save the fields is remembered so the question is not asked again', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+
+    $this->artisan('sites:get 1 --format=table --fields=id,domain')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'no')
+        ->assertExitCode(0);
+
+    expect(resolve(Configuration::class)->getCommandConfiguration('sites:get'))->toBe(['fields' => '']);
+
+    $this->artisan('sites:get 1 --format=table --fields=id,domain')
+        ->expectsTable([], [
+            ['ID', '1'],
+            ['Domain', 'hellfish.media'],
+        ])
+        ->assertExitCode(0);
+});
+
+test('fields are not saved when the command cannot ask', function () use ($response) {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => $response]))
+    );
+
+    $this->artisan('sites:get 1 --format=table --fields=id,domain --no-interaction')
+        ->expectsTable([], [
+            ['ID', '1'],
+            ['Domain', 'hellfish.media'],
+        ])
+        ->assertExitCode(0);
+
+    expect(resolve(Configuration::class)->getCommandConfiguration('sites:get'))->toBe([]);
+});

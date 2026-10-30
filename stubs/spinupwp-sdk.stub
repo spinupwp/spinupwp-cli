@@ -124,6 +124,8 @@ namespace SpinupWp\Endpoints {
 
     abstract class Endpoint {}
 
+    class Provider extends Endpoint {}
+
     class Server extends Endpoint
     {
         /**
@@ -180,4 +182,19 @@ namespace SpinupWp\Endpoints {
          */
         public function list(int $page = 1, array $parameters = []): ResourceCollection;
     }
+}
+
+namespace SpinupWp {
+
+    /**
+     * The SDK's own docblock leaves out $providers, which __get() also resolves.
+     *
+     * @property Endpoints\Event $events
+     * @property Endpoints\Provider $providers
+     * @property Endpoints\Server $servers
+     * @property Endpoints\Site $sites
+     * @property Endpoints\SshKey $sshKeys
+     * @property Endpoints\StorageProvider $storageProviders
+     */
+    class SpinupWp {}
 }

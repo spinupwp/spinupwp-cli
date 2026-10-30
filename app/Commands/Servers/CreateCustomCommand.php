@@ -3,6 +3,7 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\ReadsDeployKeys;
 use App\Questions\Ask;
 use App\Questions\Choice;
 use App\Questions\HasQuestions;
@@ -11,14 +12,15 @@ use App\Questions\Question;
 class CreateCustomCommand extends BaseCommand
 {
     use HasQuestions;
+    use ReadsDeployKeys;
 
-    public const UBUNTU_VERSIONS = ['24.04', '22.04'];
+    public const UBUNTU_VERSIONS = ['26.04', '24.04'];
 
     public const AUTH_METHODS = ['publickey', 'password'];
 
     protected $signature = 'servers:create-custom
                             {--provider-name= : Server provider name (e.g. OVH)}
-                            {--ubuntu-version= : Ubuntu version (must be one of the two latest LTS versions, e.g. 24.04)}
+                            {--ubuntu-version= : Ubuntu version (26.04 or 24.04)}
                             {--ip-address= : Public IP address of the server}
                             {--ssh-port= : SSH port (default: 22)}
                             {--ssh-username= : SSH username}
@@ -34,6 +36,12 @@ class CreateCustomCommand extends BaseCommand
 
     protected $description = 'Provision a custom server';
 
+    protected array $validationLabels = [
+        'username'    => 'SSH Username',
+        'password'    => 'SSH Password',
+        'auth_method' => 'SSH Authentication Method',
+    ];
+
     /**
      * @var array<string, string|null>
      */
@@ -42,6 +50,13 @@ class CreateCustomCommand extends BaseCommand
     protected function action(): int
     {
         $this->userInput = $this->askQuestions($this->nonInteractive());
+
+        // The option is a path to the script, but the API expects the script itself.
+        $script = $this->userInput['post-provision-script'] ?? null;
+
+        if (is_string($script) && $script !== '') {
+            $this->userInput['post-provision-script'] = $this->readKeyFile($script);
+        }
 
         $server = $this->spinupwp->createCustomServer($this->userInput);
 
@@ -90,7 +105,7 @@ class CreateCustomCommand extends BaseCommand
                 ->withFlag('timezone')
                 ->withDefault('UTC'),
 
-            Ask::make('Post-Provision Script')
+            Ask::make('Path to a post-provision script (optional)')
                 ->withFlag('post-provision-script'),
 
             Ask::make('Database Root Password')
