@@ -187,6 +187,9 @@ Nested properties should use dot notation, for example, `database.server`.
     spinupwp sites:https:enable <site_id> --type=letsencrypt
     spinupwp sites:https:enable <site_id> --type=custom --certificate=<certificate_file> --private-key=<private_key_file>
 
+    # Switch a site's HTTPS certificate, or replace its custom certificate
+    spinupwp sites:https:update <site_id> --type=custom --certificate=<certificate_file> --private-key=<private_key_file>
+
 You can pass any properties of the [Site Schema](https://api.spinupwp.com/?shell#tocS_Site) to the `--fields` flag.
 Nested properties should use dot notation, for example, `backups.next_run_time` or `git.branch`.
 
