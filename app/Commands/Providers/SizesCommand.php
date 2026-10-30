@@ -18,7 +18,7 @@ class SizesCommand extends Providers
 
     protected function action(): int
     {
-        $provider = $this->selectProvider();
+        $provider = $this->selectProvider($this->argument('provider'));
         $sizes    = collect($this->sizes($this->spinupwp->providerMetadata($provider), $this->stringOption('region')));
 
         if ($sizes->isEmpty()) {

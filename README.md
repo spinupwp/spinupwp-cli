@@ -40,6 +40,13 @@ If no profile is supplied, your default profile will be used (if configured).
     # Delete a server
     spinupwp servers:delete <server_id>
 
+    # Provision a server on DigitalOcean, Hetzner, Linode or Vultr
+    spinupwp servers:create
+
+    # Provision a server without prompts, using a provider account saved in SpinupWP
+    spinupwp servers:create --provider=digitalocean --provider-id=<provider_id> --region=nyc3 \
+      --size=s-2vcpu-4gb --hostname=<hostname> --force
+
     # Provision a custom server
     spinupwp servers:create-custom
 

@@ -188,6 +188,14 @@ class SpinupWpRepository
     }
 
     /**
+     * @param array<string, mixed> $payload
+     */
+    public function createServer(array $payload): ServerResource
+    {
+        return $this->spinupwp->servers->create($payload);
+    }
+
+    /**
      * @param array<string, string|null> $inputParams
      */
     public function createCustomServer(array $inputParams): ServerResource

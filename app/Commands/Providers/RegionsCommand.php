@@ -13,7 +13,7 @@ class RegionsCommand extends Providers
 
     protected function action(): int
     {
-        $provider = $this->selectProvider();
+        $provider = $this->selectProvider($this->argument('provider'));
         $regions  = collect($this->regions($this->spinupwp->providerMetadata($provider)));
 
         if ($regions->isEmpty()) {
