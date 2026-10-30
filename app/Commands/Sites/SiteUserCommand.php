@@ -75,6 +75,7 @@ class SiteUserCommand extends BaseCommand
 
             Ask::make('Password')
                 ->withFlag('password')
+                ->hidden()
                 ->unless(fn (array $answers): bool => $answers['authentication'] !== 'password'),
         ];
     }

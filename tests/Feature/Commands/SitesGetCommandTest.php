@@ -158,3 +158,99 @@ test('site table get command with wp cron fields', function () {
             ['WP Cron Interval', '15 minutes'],
         ]);
 });
+
+test('site table get command with newer api fields', function () {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => [
+            'id'         => 1,
+            'domain'     => 'hellfish.media',
+            'user_auth'  => 'publickey',
+            'page_cache' => ['enabled' => true, 'duration' => 1, 'duration_unit' => 'd'],
+            'https'      => ['enabled' => true, 'certificate_expires' => '28 Jan 2027'],
+            'backups'    => [
+                'files'    => true,
+                'database' => false,
+                'schedule' => [
+                    'daily'   => ['backup_database' => false, 'backup_files' => true, 'retention_period' => 7, 'time_of_day' => [3]],
+                    'weekly'  => ['backup_database' => false, 'backup_files' => false, 'retention_period' => null, 'time_of_day' => null, 'day_of_week' => []],
+                    'monthly' => ['backup_database' => false, 'backup_files' => true, 'retention_period' => 1, 'time_of_day' => 4, 'day_of_month' => [['week_of_month' => 'second', 'day_of_week' => 0]]],
+                ],
+            ],
+            'subdomain'   => ['enabled' => true, 'url' => 'https://hellfish-media.spinupwp.site'],
+            'disabled_at' => '2026-10-01T12:00:00.000000Z',
+        ]]))
+    );
+
+    $this->artisan('sites:get 1 --format=table --fields=user_auth,page_cache,page_cache.duration,https,https.certificate_expires,backups.schedule,subdomain,subdomain.url,disabled_at')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'no')
+        ->expectsTable([], [
+            ['SSH Authentication', 'SSH keys'],
+            ['Page Cache', 'Enabled'],
+            ['Page Cache Duration', '1 day'],
+            ['HTTPS', 'Enabled'],
+            ['HTTPS Certificate Expires', '28 Jan 2027'],
+            ['Daily Backups', '03:00, files, kept 7 days'],
+            ['Weekly Backups', 'Disabled'],
+            ['Monthly Backups', 'Second Sunday at 04:00, files, kept 1 day'],
+            ['SpinupWP Subdomain', 'Enabled'],
+            ['SpinupWP Subdomain URL', 'https://hellfish-media.spinupwp.site'],
+            ['Disabled At', '2026-10-01T12:00:00.000000Z'],
+        ]);
+});
+
+test('site table get command hides fields that do not apply', function () {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => [
+            'id'          => 1,
+            'domain'      => 'hellfish.media',
+            'page_cache'  => ['enabled' => false],
+            'https'       => ['enabled' => false],
+            'subdomain'   => ['enabled' => false],
+            'disabled_at' => null,
+        ]]))
+    );
+
+    $this->artisan('sites:get 1 --format=table --fields=domain,page_cache,https,subdomain,disabled_at')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'no')
+        ->expectsTable([], [
+            ['Domain', 'hellfish.media'],
+            ['Page Cache', 'Disabled'],
+            ['HTTPS', 'Disabled'],
+            ['SpinupWP Subdomain', 'Disabled'],
+        ]);
+});
+
+test('site json get command keeps the page cache and https keys when filtering fields', function () {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => [
+            'id'         => 1,
+            'domain'     => 'hellfish.media',
+            'page_cache' => ['enabled' => true, 'duration' => 2, 'duration_unit' => 'h'],
+            'https'      => ['enabled' => true, 'certificate_expires' => '28 Jan 2027'],
+        ]]))
+    );
+
+    $this->artisan('sites:get 1 --format=json --fields=domain,page_cache,https,page_cache.duration')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'no')
+        ->expectsOutput(json_encode([
+            'domain'              => 'hellfish.media',
+            'page_cache'          => 'Enabled',
+            'page_cache.duration' => '2 hours',
+            'https'               => 'Enabled',
+        ], JSON_PRETTY_PRINT));
+});
+
+test('site table get command warns when none of the requested fields apply', function () {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => [
+            'id'     => 1,
+            'domain' => 'hellfish.media',
+            'git'    => ['enabled' => false],
+        ]]))
+    );
+
+    $this->artisan('sites:get 1 --format=table --fields=git.repo')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'no')
+        ->expectsOutput('None of the requested fields apply to this resource.')
+        ->assertExitCode(0);
+});

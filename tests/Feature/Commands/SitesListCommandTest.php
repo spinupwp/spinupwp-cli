@@ -145,3 +145,38 @@ test('empty sites list', function () {
     );
     $this->artisan('sites:list')->expectsOutput('No sites found.');
 });
+
+test('sites table list command keeps columns aligned when sites have different settings', function () {
+    $sites = [
+        [
+            'id'          => 1,
+            'server_id'   => 1,
+            'domain'      => 'hellfishmedia.com',
+            'site_user'   => 'hellfish',
+            'php_version' => '8.4',
+            'page_cache'  => ['enabled' => true, 'duration' => 1, 'duration_unit' => 'd'],
+            'https'       => ['enabled' => true, 'certificate_expires' => '28 Jan 2027'],
+        ],
+        [
+            'id'          => 2,
+            'server_id'   => 1,
+            'domain'      => 'staging.hellfishmedia.com',
+            'site_user'   => 'staging-hellfish',
+            'php_version' => '8.4',
+            'page_cache'  => ['enabled' => false],
+            'https'       => ['enabled' => false],
+        ],
+    ];
+
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites?page=1&limit=100', [])->andReturn(
+        new Response(200, [], listResponseJson($sites))
+    );
+
+    $this->artisan('sites:list --format table')->expectsTable(
+        ['ID', 'Server ID', 'Domain', 'Site User', 'PHP Version', 'Page Cache', 'HTTPS'],
+        [
+            [1, 1, 'hellfishmedia.com', 'hellfish', '8.4', 'Enabled', 'Enabled'],
+            [2, 1, 'staging.hellfishmedia.com', 'staging-hellfish', '8.4', 'Disabled', 'Disabled'],
+        ]
+    );
+});

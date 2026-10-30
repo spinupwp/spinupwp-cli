@@ -9,8 +9,8 @@ class UpdateCommand extends PageCache
                             {--duration= : The cache duration}
                             {--duration-unit= : The cache duration unit (s, m, h, d, w, M, or y)}
                             {--path-exclusion=* : A path to exclude from caching (repeatable)}
-                            {--cookie-exclusion=* : A cookie that bypasses the cache (repeatable)}
-                            {--ignored-query-param=* : A query parameter to ignore when caching (repeatable)}
+                            {--cookie-exclusion=* : A cookie that bypasses the cache (repeatable), or "none" to clear}
+                            {--ignored-query-param=* : A query parameter to ignore when caching (repeatable), or "none" to clear}
                             {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = 'Update the page cache settings for a site';

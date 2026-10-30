@@ -25,10 +25,16 @@ test('update backup settings', function () {
             'paths_to_exclude'        => "node_modules\n/files/vendor",
             'database'                => 2,
         ],
-    ])->andReturn(new Response(200, [], json_encode(['data' => $this->site])));
+    ])->andReturn(new Response(200, [], json_encode(['data' => array_merge($this->site, [
+        'backups' => [
+            'paths_to_exclude' => "node_modules\n/files/vendor",
+            'storage_provider' => ['id' => 1, 'region' => 'nyc3', 'bucket' => 'turnipjuice-media'],
+        ],
+    ])])));
 
     $this->artisan('sites:backups:settings 1 --storage-provider-id=1 --bucket=turnipjuice-media --region=nyc3 --database=2 --exclude-path=node_modules --exclude-path=/files/vendor')
         ->expectsOutput('==> Backup settings updated.')
+        ->expectsOutputToContain('node_modules, /files/vendor')
         ->assertExitCode(0);
 });
 

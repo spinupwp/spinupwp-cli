@@ -5,6 +5,7 @@ namespace App\Commands\Sites\Backups;
 use App\Commands\BaseCommand;
 use App\Commands\Concerns\HasSiteIdParameter;
 use App\Commands\Concerns\ParsesOptions;
+use App\Helpers\BackupScheduleHelper;
 use Exception;
 
 class ScheduleCommand extends BaseCommand
@@ -58,9 +59,16 @@ class ScheduleCommand extends BaseCommand
             return self::SUCCESS;
         }
 
-        $site->updateBackupSchedule($payload);
+        $site = $site->updateBackupSchedule($payload);
 
         $this->successfulStep('Backup schedule updated.');
+
+        $backups = $site->backups;
+
+        if (is_array($backups) && is_array($backups['schedule'] ?? null)) {
+            $this->stepTable(['Frequency', 'Schedule'], BackupScheduleHelper::rows($backups['schedule']));
+            $this->line('    Times are in the server\'s timezone.');
+        }
 
         return self::SUCCESS;
     }

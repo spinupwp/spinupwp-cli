@@ -95,10 +95,30 @@ class ConnectCommand extends BaseCommand
 
     protected function readKeyFile(string $path): string
     {
+        $path = $this->expandHomeDirectory($path);
+
         if (!is_file($path) || !is_readable($path)) {
             throw new Exception("Unable to read the key file \"{$path}\".");
         }
 
         return trim((string) file_get_contents($path));
+    }
+
+    /**
+     * Shells don't expand a tilde that follows "=" (e.g. --private-key=~/.ssh/key), so expand it here.
+     */
+    protected function expandHomeDirectory(string $path): string
+    {
+        if ($path !== '~' && !str_starts_with($path, '~/')) {
+            return $path;
+        }
+
+        $home = $_SERVER['HOME'] ?? getenv('HOME') ?: getenv('USERPROFILE');
+
+        if (!is_string($home) || $home === '') {
+            return $path;
+        }
+
+        return rtrim($home, '/\\') . substr($path, 1);
     }
 }

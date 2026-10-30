@@ -18,6 +18,11 @@ trait InteractsWithIO
      */
     protected function format($resource): void
     {
+        if ($resource === [] && $this->largeOutput) {
+            $this->warn('None of the requested fields apply to this resource.');
+            return;
+        }
+
         if (empty($resource) || ($resource instanceof Collection && $resource->isEmpty())) {
             return;
         }

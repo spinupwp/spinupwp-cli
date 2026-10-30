@@ -53,9 +53,27 @@ class SettingsCommand extends BaseCommand
             return self::SUCCESS;
         }
 
-        $site->updateBackupSettings($payload);
+        $site = $site->updateBackupSettings($payload);
 
         $this->successfulStep('Backup settings updated.');
+
+        $backups = $site->backups;
+
+        if (is_array($backups)) {
+            $storageProvider = is_array($backups['storage_provider'] ?? null) ? $backups['storage_provider'] : [];
+
+            $this->stepTable([
+                'Storage Provider ID',
+                'Bucket',
+                'Region',
+                'Paths to Exclude',
+            ], [[
+                $storageProvider['id'] ?? '',
+                $storageProvider['bucket'] ?? '',
+                $storageProvider['region'] ?? '',
+                is_string($backups['paths_to_exclude'] ?? null) ? str_replace("\n", ', ', $backups['paths_to_exclude']) : '',
+            ]]);
+        }
 
         return self::SUCCESS;
     }

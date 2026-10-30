@@ -37,10 +37,42 @@ test('update backup schedule', function () {
                 'retention_period' => null,
             ],
         ],
-    ])->andReturn(new Response(200, [], json_encode(['data' => $this->site])));
+    ])->andReturn(new Response(200, [], json_encode(['data' => array_merge($this->site, [
+        'backups' => [
+            'schedule' => [
+                'daily' => [
+                    'backup_database'  => true,
+                    'backup_files'     => false,
+                    'retention_period' => 30,
+                    'time_of_day'      => [2, 14],
+                ],
+                'weekly' => [
+                    'backup_database'  => false,
+                    'backup_files'     => false,
+                    'retention_period' => null,
+                    'time_of_day'      => null,
+                    'day_of_week'      => [],
+                ],
+                'monthly' => [
+                    'backup_database'  => true,
+                    'backup_files'     => true,
+                    'retention_period' => null,
+                    'time_of_day'      => 4,
+                    'day_of_month'     => [
+                        ['week_of_month' => 'first', 'day_of_week' => 1],
+                        ['week_of_month' => 'last', 'day_of_week' => 5],
+                    ],
+                ],
+            ],
+        ],
+    ])])));
 
     $this->artisan('sites:backups:schedule 1 --daily-times=2,14 --daily-database=true --daily-files=false --daily-retention=30 --weekly-days=none --monthly-days=first:1,last:5 --monthly-time=4 --monthly-retention=none')
         ->expectsOutput('==> Backup schedule updated.')
+        ->expectsOutputToContain('02:00 and 14:00, database, kept 30 days')
+        ->expectsOutputToContain('Disabled')
+        ->expectsOutputToContain('First Monday and last Friday at 04:00, files and database, no retention limit')
+        ->expectsOutputToContain("Times are in the server's timezone.")
         ->assertExitCode(0);
 });
 

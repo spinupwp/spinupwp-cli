@@ -35,6 +35,12 @@ trait SpecifyFields
                 return;
             }
 
+            // When showing a single resource as a table, leave out rows that don't apply (e.g. the Git repository
+            // when Git is disabled) instead of printing them blank. List tables keep blank cells so columns stay aligned.
+            if ($this->largeOutput && $this->displayFormat() === 'table' && $field->shouldIgnore($resource)) {
+                return;
+            }
+
             $value = $field->getDisplayValue($resource);
 
             if (!is_array($value)) {

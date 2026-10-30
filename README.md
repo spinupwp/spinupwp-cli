@@ -135,6 +135,7 @@ Nested properties should use dot notation, for example, `database.server`.
     # Enable, update, or disable the page cache
     spinupwp sites:page-cache:enable <site_id>
     spinupwp sites:page-cache:update <site_id> --duration=1 --duration-unit=h --path-exclusion=/cart/ --path-exclusion=/checkout/
+    spinupwp sites:page-cache:update <site_id> --cookie-exclusion=none --ignored-query-param=none
     spinupwp sites:page-cache:disable <site_id>
 
     # Update Nginx settings

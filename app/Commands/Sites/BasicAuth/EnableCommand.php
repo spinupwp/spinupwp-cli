@@ -52,7 +52,8 @@ class EnableCommand extends BaseCommand
                 ->withFlag('username'),
 
             Ask::make('Password')
-                ->withFlag('password'),
+                ->withFlag('password')
+                ->hidden(),
         ];
     }
 }

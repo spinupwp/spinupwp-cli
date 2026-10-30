@@ -29,6 +29,25 @@ test('update page cache settings', function () {
         ->assertExitCode(0);
 });
 
+test('clear page cache exclusions with none', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('PUT', 'sites/1/page-cache', [
+        'json' => [
+            'cookie_exclusions'    => '',
+            'ignored_query_params' => '',
+        ],
+    ])->andReturn(new Response(200, [], json_encode(['event_id' => 100])));
+
+    $this->artisan('sites:page-cache:update 1 --cookie-exclusion=none --ignored-query-param=none')
+        ->expectsOutput('==> Page cache settings queued for update.')
+        ->assertExitCode(0);
+});
+
+test('update page cache settings rejects none combined with other values', function () {
+    $this->artisan('sites:page-cache:update 1 --cookie-exclusion=none --cookie-exclusion=wordpress_logged_in')
+        ->expectsOutput('The --cookie-exclusion option can\'t combine "none" with other values.')
+        ->assertExitCode(1);
+});
+
 test('update page cache settings rejects a non-integer duration', function () {
     $this->artisan('sites:page-cache:update 1 --duration=1.5')
         ->expectsOutput('The --duration option must be an integer.')
