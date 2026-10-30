@@ -69,7 +69,8 @@ return [
 
         // NunoMaduro...
         NunoMaduro\LaravelConsoleSummary\SummaryCommand::class,
-        NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand::class,
+        // Referenced by name because Collision marks this class @internal.
+        'NunoMaduro\Collision\Adapters\Laravel\Commands\TestCommand',
 
         // Symfony...
         Symfony\Component\Console\Command\HelpCommand::class,

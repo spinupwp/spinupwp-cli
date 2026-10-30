@@ -5,7 +5,9 @@ parameters:
         - app
         - bootstrap
         - config
-    level: max
+    level: 8
+    stubFiles:
+        - stubs/spinupwp-sdk.stub
     ignoreErrors:
         - identifier: missingType.iterableValue
         - identifier: missingType.generics

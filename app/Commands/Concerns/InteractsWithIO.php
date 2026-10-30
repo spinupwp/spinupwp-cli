@@ -182,7 +182,7 @@ trait InteractsWithIO
 
         $total = ($trueSize || $precision > 0) ? round($bytes, $precision) : floor($bytes);
 
-        return $total . ' ' . $units[$pow];
+        return $total . ' ' . $units[(int) $pow];
     }
 
     public function step(string $text): void
@@ -195,6 +195,10 @@ trait InteractsWithIO
         $this->line("<fg=green>==></> <options=bold>{$text}</>");
     }
 
+    /**
+     * @param array<int, string> $headers
+     * @param array<int, array<int, mixed>> $rows
+     */
     protected function stepTable(array $headers, array $rows): void
     {
         $this->table(

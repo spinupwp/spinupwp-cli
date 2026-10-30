@@ -57,7 +57,8 @@ class SettingsCommand extends BaseCommand
 
         $this->successfulStep('Backup settings updated.');
 
-        $backups = $site->backups;
+        // Read the raw data: the SDK returns null, not an array, when a response has no backups field.
+        $backups = $site->toArray()['backups'] ?? null;
 
         if (is_array($backups)) {
             $storageProvider = is_array($backups['storage_provider'] ?? null) ? $backups['storage_provider'] : [];

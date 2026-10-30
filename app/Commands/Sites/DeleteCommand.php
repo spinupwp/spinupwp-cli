@@ -26,7 +26,8 @@ class DeleteCommand extends BaseCommand
             return self::SUCCESS;
         }
 
-        $force = $this->option('force');
+        $force     = $this->option('force');
+        $confirmed = false;
 
         if (!$force) {
             $this->alert("You're about to delete \"{$site->domain}\"");

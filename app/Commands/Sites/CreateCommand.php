@@ -186,11 +186,7 @@ class CreateCommand extends BaseCommand
     /** @return mixed */
     protected function getDefaultsFromConfiguration(string $question)
     {
-        $commandConfiguration = $this->config->getCommandConfiguration('sites:create', $this->profile());
-        if (!is_array($commandConfiguration)) {
-            return null;
-        }
-        return data_get($commandConfiguration, $question);
+        return data_get($this->config->getCommandConfiguration('sites:create', $this->profile()), $question);
     }
 
     protected function saveDefaults(array $options): void
