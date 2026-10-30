@@ -224,6 +224,11 @@ A full reference of the available flags is available anytime.
     # Display available Arguments and Options for site:create 
     spinupwp sites:create --help
 
+### Events
+
+    # List your team's most recent events
+    spinupwp events:list --limit=20
+
 ### SSH Keys
 
     # Get SpinupWP's SSH key

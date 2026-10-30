@@ -4,11 +4,13 @@ namespace App\Repositories;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use SpinupWp\Endpoints\Event;
 use SpinupWp\Endpoints\Server;
 use SpinupWp\Endpoints\Site;
 use SpinupWp\Endpoints\SshKey;
 use SpinupWp\Endpoints\StorageProvider;
+use SpinupWp\Resources\Event as EventResource;
 use SpinupWp\Resources\Server as ServerResource;
 use SpinupWp\Resources\Site as SiteResource;
 use SpinupWp\SpinupWp;
@@ -61,6 +63,20 @@ class SpinupWpRepository
         return collect($this->spinupwp->servers->list(1, [
             'limit' => self::PAGINATION_LIMIT,
         ]));
+    }
+
+    /**
+     * The most recent events, newest first. Only fetches the pages needed for the limit.
+     *
+     * @return Collection<int, EventResource>
+     */
+    public function listEvents(int $limit): Collection
+    {
+        $events = $this->spinupwp->events->list(1, [
+            'limit' => min($limit, self::PAGINATION_LIMIT),
+        ]);
+
+        return LazyCollection::make(fn () => yield from $events)->take($limit)->values()->collect();
     }
 
     public function getSite(int $siteId): SiteResource
