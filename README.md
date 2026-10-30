@@ -176,6 +176,9 @@ Nested properties should use dot notation, for example, `database.server`.
     spinupwp sites:disable <site_id>
     spinupwp sites:enable <site_id>
 
+    # Enable or disable the SpinupWP subdomain for a site
+    spinupwp sites:subdomain:enable <site_id>
+
 You can pass any properties of the [Site Schema](https://api.spinupwp.com/?shell#tocS_Site) to the `--fields` flag.
 Nested properties should use dot notation, for example, `backups.next_run_time` or `git.branch`.
 
