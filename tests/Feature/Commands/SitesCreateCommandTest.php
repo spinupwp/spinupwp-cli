@@ -41,7 +41,7 @@ test('"sites:create blank" fails with invalid data', function () {
     ]);
 
     $this->clientMock->shouldReceive('request')->with('POST', 'sites', [
-        'form_params' => $params,
+        'json' => $params,
     ])->andReturn(
         new Response(422, [], json_encode([
           'message' => 'The given data was invalid.',
@@ -69,7 +69,7 @@ test('"sites:create blank" succeeds with correct params', function () {
     ]);
 
     $this->clientMock->shouldReceive('request')->with('POST', 'sites', [
-        'form_params' => $params,
+        'json' => $params,
     ])->andReturn(new Response(200, [], json_encode([
         'event_id' => '100',
         'data'     => [
@@ -102,7 +102,7 @@ test('"sites:create wp" fails with invalid data', function () {
     ]);
 
     $this->clientMock->shouldReceive('request')->with('POST', 'sites', [
-        'form_params' => $params,
+        'json' => $params,
     ])->andReturn(
         new Response(422, [], json_encode([
             'message' => 'The given data was invalid.',
@@ -138,7 +138,7 @@ test('"sites:create wp" succeeds with correct data', function () {
     ]);
 
     $this->clientMock->shouldReceive('request')->with('POST', 'sites', [
-        'form_params' => $params,
+        'json' => $params,
     ])->andReturn(
         new Response(200, [], json_encode([
             'event_id' => '100',

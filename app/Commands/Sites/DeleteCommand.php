@@ -3,9 +3,12 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\HasSiteIdParameter;
 
 class DeleteCommand extends BaseCommand
 {
+    use HasSiteIdParameter;
+
     protected $signature = "sites:delete
                             {site_id? : The site to delete}
                             {--d|delete-database : Delete the site's associated database}
@@ -17,13 +20,12 @@ class DeleteCommand extends BaseCommand
 
     public function action(): int
     {
-        $siteId = $this->argument('site_id');
+        $site = $this->selectSite('Which site would you like to delete');
 
-        if (empty($siteId)) {
-            $siteId = $this->askToSelectSite('Which site would you like to delete');
+        if (is_null($site)) {
+            return self::SUCCESS;
         }
 
-        $site  = $this->spinupwp->getSite((int) $siteId);
         $force = $this->option('force');
 
         if (!$force) {
@@ -37,15 +39,7 @@ class DeleteCommand extends BaseCommand
                 (bool) $this->option('delete-backups'),
             );
 
-            $this->successfulStep('Site queued for deletion.');
-
-            $this->stepTable([
-                'Event ID',
-                'Domain',
-            ], [[
-                $eventId,
-                $site->domain,
-            ]]);
+            $this->displaySiteEvent($site, $eventId, 'Site queued for deletion.');
         }
 
         return self::SUCCESS;

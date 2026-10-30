@@ -10,7 +10,7 @@ beforeEach(function () {
     );
 
     $this->clientMock->shouldReceive('request')->with('DELETE', 'sites/1', [
-        'form_params' => [
+        'json' => [
             'delete_database' => false,
             'delete_backups'  => false,
         ],
@@ -42,7 +42,7 @@ test('delete a site without force option and cancel deletion', function () {
 
 test('delete a site with delete-database and delete-backups options', function () {
     $this->clientMock->shouldReceive('request')->with('DELETE', 'sites/1', [
-        'form_params' => [
+        'json' => [
             'delete_database' => true,
             'delete_backups'  => true,
         ],
@@ -52,4 +52,14 @@ test('delete a site with delete-database and delete-backups options', function (
 
     $this->artisan('sites:delete 1 --delete-database --delete-backups --force')
         ->expectsOutput('==> Site queued for deletion.');
+});
+
+test('delete a site when there are no sites', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1&limit=100', [])->andReturn(
+        new Response(200, [], listResponseJson([]))
+    );
+
+    $this->artisan('sites:delete')
+        ->expectsOutput('No sites found.')
+        ->assertExitCode(0);
 });

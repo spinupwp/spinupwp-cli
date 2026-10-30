@@ -68,3 +68,27 @@ test('purge all sites object cache', function () {
     $this->artisan('sites:purge --all --cache=object')
         ->expectsOutput('==> Sites queued for object cache purge.');
 });
+
+test('purge page cache when no sites have it enabled', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1&limit=100', [])->andReturn(
+        new Response(200, [], listResponseJson([
+            ['id' => 1, 'domain' => 'hellfishmedia.com', 'page_cache' => ['enabled' => false], 'is_wordpress' => true],
+        ]))
+    );
+
+    $this->artisan('sites:purge --cache=page')
+        ->expectsOutput('There are no sites with page cache enabled.')
+        ->assertExitCode(0);
+});
+
+test('purge object cache for a selected site', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'sites?page=1&limit=100', [])->andReturn(
+        new Response(200, [], listResponseJson([
+            ['id' => 1, 'domain' => 'hellfishmedia.com', 'page_cache' => ['enabled' => false], 'is_wordpress' => true],
+        ]))
+    );
+    $this->artisan('sites:purge --cache=object')
+        ->expectsQuestion('Which site do you want to purge the object cache for', '1')
+        ->expectsOutput('==> Site queued for object cache purge.')
+        ->assertExitCode(0);
+});

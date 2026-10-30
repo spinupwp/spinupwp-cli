@@ -7,6 +7,8 @@ use Illuminate\Support\Collection;
 use SpinupWp\Endpoints\Event;
 use SpinupWp\Endpoints\Server;
 use SpinupWp\Endpoints\Site;
+use SpinupWp\Endpoints\SshKey;
+use SpinupWp\Endpoints\StorageProvider;
 use SpinupWp\Resources\Server as ServerResource;
 use SpinupWp\Resources\Site as SiteResource;
 use SpinupWp\SpinupWp;
@@ -19,6 +21,8 @@ use SpinupWp\SpinupWp;
  * @property Event $events
  * @property Server $servers
  * @property Site $sites
+ * @property SshKey $sshKeys
+ * @property StorageProvider $storageProviders
  */
 class SpinupWpRepository
 {
@@ -67,6 +71,27 @@ class SpinupWpRepository
     public function getSshKey(): string
     {
         return $this->spinupwp->sshKeys->get();
+    }
+
+    public function listSshKeys(): Collection
+    {
+        return collect($this->spinupwp->sshKeys->list(1, [
+            'limit' => self::PAGINATION_LIMIT,
+        ]));
+    }
+
+    public function listStorageProviders(): Collection
+    {
+        return collect($this->spinupwp->storageProviders->list(1, [
+            'limit' => self::PAGINATION_LIMIT,
+        ]));
+    }
+
+    public function listPathRedirects(int $siteId): Collection
+    {
+        return collect($this->spinupwp->sites->listPathRedirects($siteId, 1, [
+            'limit' => self::PAGINATION_LIMIT,
+        ]));
     }
 
     public function listSites(int $serverId = null): Collection

@@ -9,6 +9,8 @@ class Field
 {
     protected string $name;
 
+    protected ?string $key = null;
+
     protected string $displayName;
 
     protected array $aliases = [];
@@ -45,7 +47,23 @@ class Field
             return $this->displayName;
         }
 
-        return $this->name;
+        return $this->getKey();
+    }
+
+    /**
+     * Identify a field that reads part of a property (e.g. 'page_cache.duration') so it neither
+     * matches the property's own --fields name nor overwrites its key in JSON output.
+     */
+    public function withKey(string $key): self
+    {
+        $this->key = $key;
+
+        return $this;
+    }
+
+    public function getKey(): string
+    {
+        return $this->key ?? $this->name;
     }
 
     public function withTransformRule(Closure $rule): self
@@ -96,7 +114,7 @@ class Field
 
     public function isInFilter(array $fieldsFilter): bool
     {
-        $aliases = array_merge([$this->name], $this->aliases);
+        $aliases = array_merge([$this->getKey()], $this->aliases);
         return count(array_intersect($aliases, $fieldsFilter)) > 0;
     }
 

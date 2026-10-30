@@ -2,10 +2,14 @@
 
 namespace App\Commands\Sites;
 
+use App\Commands\BaseCommand;
+use App\Commands\Concerns\HasSiteIdParameter;
 use Illuminate\Support\Collection;
 
-class PurgeCommand extends \App\Commands\BaseCommand
+class PurgeCommand extends BaseCommand
 {
+    use HasSiteIdParameter;
+
     protected $signature = 'sites:purge {site_id? : The site to purge}
                                         {--cache= : The cache to purge}
                                         {--all : Purge cache on all sites}
@@ -31,23 +35,16 @@ class PurgeCommand extends \App\Commands\BaseCommand
             return self::SUCCESS;
         }
 
-        $siteId = $this->argument('site_id');
+        $site = $this->selectSite("Which site do you want to purge the {$cacheToPurge} cache for", function ($site) use ($cacheToPurge) {
+            if ($cacheToPurge === 'page') {
+                return $site->page_cache['enabled'];
+            }
+            return $site->is_wordpress;
+        }, "There are no sites with {$cacheToPurge} cache enabled.");
 
-        if (empty($siteId)) {
-            $siteId = $this->askToSelectSite('Which site do you want to purge the page cache for', function ($site) use ($cacheToPurge) {
-                if ($cacheToPurge === 'page') {
-                    return $site->page_cache['enabled'];
-                }
-                return $site->is_wordpress;
-            });
-        }
-
-        if ($siteId === 0) {
-            $this->warn("There are no sites with {$cacheToPurge} cache enabled.");
+        if (is_null($site)) {
             return self::SUCCESS;
         }
-
-        $site = $this->spinupwp->sites->get(intval($siteId));
 
         $this->purgeCache(collect([$site]), $cacheToPurge);
 

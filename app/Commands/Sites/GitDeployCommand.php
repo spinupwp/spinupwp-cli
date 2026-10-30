@@ -3,10 +3,13 @@
 namespace App\Commands\Sites;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\HasSiteIdParameter;
 use Exception;
 
 class GitDeployCommand extends BaseCommand
 {
+    use HasSiteIdParameter;
+
     protected $signature = 'sites:deploy
                             {site_id? : The site to deploy}
                             {--profile= : The SpinupWP configuration profile to use}';
@@ -15,13 +18,11 @@ class GitDeployCommand extends BaseCommand
 
     public function action(): int
     {
-        $siteId = $this->argument('site_id');
+        $site = $this->selectSite('Which site would you like to deploy', fn ($site) => $site->git['enabled'], 'There are no sites with Git enabled.');
 
-        if (empty($siteId)) {
-            $siteId = $this->askToSelectSite('Which site would you like to deploy', fn ($site) => $site->git['enabled']);
+        if (is_null($site)) {
+            return self::SUCCESS;
         }
-
-        $site = $this->spinupwp->sites->get((int) $siteId);
 
         if (!$site->git['enabled']) {
             $this->warn('This site is not configured for Git deployments.');
@@ -35,15 +36,7 @@ class GitDeployCommand extends BaseCommand
             return self::SUCCESS;
         }
 
-        $this->successfulStep('Site queued for deployment.');
-
-        $this->stepTable([
-            'Event ID',
-            'Site',
-        ], [[
-            $eventId,
-            $site->domain,
-        ]]);
+        $this->displaySiteEvent($site, $eventId, 'Site queued for deployment.');
 
         return self::SUCCESS;
     }

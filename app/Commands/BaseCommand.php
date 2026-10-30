@@ -101,7 +101,7 @@ abstract class BaseCommand extends Command
     protected function applyValidationLabel(string $key): string
     {
         if (empty($this->validationLabels) || !array_key_exists($key, $this->validationLabels)) {
-            return Str::title(str_replace('_', ' ', $key));
+            return Str::title(str_replace(['_', '.'], ' ', $key));
         }
 
         return $this->validationLabels[$key];

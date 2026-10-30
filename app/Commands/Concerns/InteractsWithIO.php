@@ -18,6 +18,11 @@ trait InteractsWithIO
      */
     protected function format($resource): void
     {
+        if ($resource === [] && $this->largeOutput) {
+            $this->warn('None of the requested fields apply to this resource.');
+            return;
+        }
+
         if (empty($resource) || ($resource instanceof Collection && $resource->isEmpty())) {
             return;
         }
@@ -98,7 +103,7 @@ trait InteractsWithIO
 
             $resource->each(function ($item) use (&$rows) {
                 if (!is_array($item)) {
-                    $item->toArray();
+                    $item = $item->toArray();
                 }
 
                 $row = array_map(function ($value) {
