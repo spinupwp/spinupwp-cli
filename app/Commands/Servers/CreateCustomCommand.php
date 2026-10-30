@@ -12,13 +12,13 @@ class CreateCustomCommand extends BaseCommand
 {
     use HasQuestions;
 
-    public const UBUNTU_VERSIONS = ['24.04', '22.04'];
+    public const UBUNTU_VERSIONS = ['26.04', '24.04'];
 
     public const AUTH_METHODS = ['publickey', 'password'];
 
     protected $signature = 'servers:create-custom
                             {--provider-name= : Server provider name (e.g. OVH)}
-                            {--ubuntu-version= : Ubuntu version (must be one of the two latest LTS versions, e.g. 24.04)}
+                            {--ubuntu-version= : Ubuntu version (26.04 or 24.04)}
                             {--ip-address= : Public IP address of the server}
                             {--ssh-port= : SSH port (default: 22)}
                             {--ssh-username= : SSH username}

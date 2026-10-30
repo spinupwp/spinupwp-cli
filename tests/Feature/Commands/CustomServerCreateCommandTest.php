@@ -9,7 +9,7 @@ beforeEach(function () {
 test('"servers:create-custom" fails with invalid data', function () {
     $params = [
         'provider_name'          => 'test',
-        'ubuntu_version'         => '24.04',
+        'ubuntu_version'         => '26.04',
         'ip_address'             => null,
         'ssh_port'               => '22',
         'username'               => null,

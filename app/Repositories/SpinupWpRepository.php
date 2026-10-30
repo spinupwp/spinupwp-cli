@@ -109,16 +109,13 @@ class SpinupWpRepository
 
     public function createSite(int $serverId, array $inputParams): SiteResource
     {
-        $inputParams = [
+        $params = [
             'installation_method' => $inputParams['installation-method'],
             'domain'              => $inputParams['domain'],
             'php_version'         => $inputParams['php-version'],
             'site_user'           => $inputParams['site-user'],
             'page_cache'          => [
                 'enabled' => $inputParams['page-cache-enabled'],
-            ],
-            'https' => [
-                'enabled' => $inputParams['https-enabled'],
             ],
             'database' => [
                 'name'     => $inputParams['db-name'],
@@ -133,7 +130,33 @@ class SpinupWpRepository
             ],
         ];
 
-        return $this->spinupwp->sites->create($serverId, $inputParams);
+        // Optional settings are only sent when given, so the API applies its own defaults.
+        if (!empty($inputParams['public-folder'])) {
+            $params['public_folder'] = $inputParams['public-folder'];
+        }
+
+        if (!empty($inputParams['deploy-script'])) {
+            $params['deploy_script'] = $inputParams['deploy-script'];
+        }
+
+        if (!empty($inputParams['db-table-prefix'])) {
+            $params['database']['table_prefix'] = $inputParams['db-table-prefix'];
+        }
+
+        if ($inputParams['installation-method'] === 'git') {
+            $deployKey = $inputParams['git-deploy-key'] ?? null;
+
+            $params['git'] = array_filter([
+                'repo'                     => $inputParams['git-repo'] ?? null,
+                'branch'                   => $inputParams['git-branch'] ?? null,
+                'push_to_deploy'           => (bool) ($inputParams['push-to-deploy'] ?? false),
+                'always_run_deploy_script' => (bool) ($inputParams['always-run-deploy-script'] ?? false),
+                'deploy_key_enabled'       => !is_null($deployKey),
+                'deploy_key'               => $deployKey,
+            ], fn ($value) => !is_null($value));
+        }
+
+        return $this->spinupwp->sites->create($serverId, $params);
     }
 
     /**

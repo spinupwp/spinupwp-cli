@@ -5,16 +5,17 @@ namespace App\Commands\Sites\Git;
 use App\Commands\BaseCommand;
 use App\Commands\Concerns\HasSiteIdParameter;
 use App\Commands\Concerns\ParsesOptions;
+use App\Commands\Concerns\ReadsDeployKeys;
 use App\Questions\Ask;
 use App\Questions\HasQuestions;
 use App\Questions\Question;
-use Exception;
 
 class ConnectCommand extends BaseCommand
 {
     use HasQuestions;
     use HasSiteIdParameter;
     use ParsesOptions;
+    use ReadsDeployKeys;
 
     protected $signature = 'sites:git:connect
                             {site_id? : The site to connect a Git repository to}
@@ -49,7 +50,7 @@ class ConnectCommand extends BaseCommand
             'branch'         => $answers['branch'],
             'deploy_script'  => $this->stringOption('deploy-script'),
             'push_to_deploy' => (bool) $this->option('push-to-deploy'),
-            'deploy_key'     => $this->deployKey(),
+            'deploy_key'     => $this->readDeployKey('private-key', 'public-key'),
         ]);
 
         $eventId = $site->connectGit($payload);
@@ -72,53 +73,5 @@ class ConnectCommand extends BaseCommand
                 ->withFlag('branch')
                 ->withDefault('main'),
         ];
-    }
-
-    protected function deployKey(): ?array
-    {
-        $privateKeyPath = $this->stringOption('private-key');
-        $publicKeyPath  = $this->stringOption('public-key');
-
-        if (is_null($privateKeyPath) && is_null($publicKeyPath)) {
-            return null;
-        }
-
-        if (is_null($privateKeyPath) || is_null($publicKeyPath)) {
-            throw new Exception('The --private-key and --public-key options must be provided together.');
-        }
-
-        return [
-            'privatekey' => $this->readKeyFile($privateKeyPath),
-            'publickey'  => $this->readKeyFile($publicKeyPath),
-        ];
-    }
-
-    protected function readKeyFile(string $path): string
-    {
-        $path = $this->expandHomeDirectory($path);
-
-        if (!is_file($path) || !is_readable($path)) {
-            throw new Exception("Unable to read the key file \"{$path}\".");
-        }
-
-        return trim((string) file_get_contents($path));
-    }
-
-    /**
-     * Shells don't expand a tilde that follows "=" (e.g. --private-key=~/.ssh/key), so expand it here.
-     */
-    protected function expandHomeDirectory(string $path): string
-    {
-        if ($path !== '~' && !str_starts_with($path, '~/')) {
-            return $path;
-        }
-
-        $home = $_SERVER['HOME'] ?? getenv('HOME') ?: getenv('USERPROFILE');
-
-        if (!is_string($home) || $home === '') {
-            return $path;
-        }
-
-        return rtrim($home, '/\\') . substr($path, 1);
     }
 }

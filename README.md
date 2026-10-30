@@ -175,10 +175,17 @@ Nested properties should use dot notation, for example, `backups.next_run_time` 
 
     # Create a site using field flags instead of interactive prompts
     spinupwp sites:create <server_id> --installation-method="<installation_method>" \
-      --domain="<domain>" --https-enabled --site-user="<site_user>" --db-name="<database_name>" \
+      --domain="<domain>" --site-user="<site_user>" --db-name="<database_name>" \
       --db-user="<database_user>" --db-pass="<database_password>" --wp-title="<wordpress_site_title>" \
       --wp-admin-email="<wordpress_admin_user_email>" --wp-admin-user="<wordpress_admin_user_username>" \
       --wp-admin-pass="<wordpress_admin_user_password>" --php-version="<php_version>" --page-cache-enabled
+
+    # Create a site from a Git repository
+    spinupwp sites:create <server_id> --installation-method=git --domain="<domain>" \
+      --git-repo="git@github.com:<org>/<repo>.git" --git-branch=main --public-folder=/public \
+      --deploy-script="composer install --no-dev" --push-to-deploy
+
+The installation method can be `wp`, `wp_subdirectory` or `wp_subdomain` (WordPress Multisite), `git` or `blank`. HTTPS isn't set up when a site is created. Enable it from the SpinupWP dashboard once the site has deployed.
 
 Update commands only change the settings you pass. Boolean flags accept `true` or `false`, and repeatable flags such as `--path-exclusion` can be passed multiple times.
 
