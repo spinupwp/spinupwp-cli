@@ -24,7 +24,23 @@ test('provision a server with a saved provider account', function () {
         ],
     ])->andReturn($this->serverResponse);
 
-    $this->artisan('servers:create --provider=digitalocean --provider-id=3 --region=nyc3 --size=s-1vcpu-2gb --hostname=hellfish-media --force')
+    $this->artisan('servers:create --provider-id=3 --region=nyc3 --size=s-1vcpu-2gb --hostname=hellfish-media --force')
+        ->expectsOutput('==> Server queued for provisioning.')
+        ->assertExitCode(0);
+});
+
+test('provision a server with a saved provider account names the account, not --provider', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('POST', 'servers', [
+        'json' => [
+            'server_provider' => ['id' => 3, 'region' => 'nyc3', 'size' => 's-1vcpu-2gb', 'enable_backups' => false],
+            'hostname'        => 'hellfish-media',
+            'timezone'        => 'UTC',
+        ],
+    ])->andReturn($this->serverResponse);
+
+    $this->artisan('servers:create --provider=hetzner --provider-id=3 --region=nyc3 --size=s-1vcpu-2gb --hostname=hellfish-media --timezone=UTC')
+        ->expectsConfirmation('Your server provider charges extra for backups. Enable them?', 'no')
+        ->expectsConfirmation('Provision a s-1vcpu-2gb server in nyc3 with saved provider account 3? Your server provider will bill you for it.', 'yes')
         ->expectsOutput('==> Server queued for provisioning.')
         ->assertExitCode(0);
 });
@@ -84,7 +100,7 @@ test('provision a server interactively', function () {
         ->expectsChoice('Which size', 's-1vcpu-2gb', ['s-1vcpu-2gb' => '1 vCPUs, 2 GB memory, 50 GB disk, $12.00/month'])
         ->expectsQuestion('Hostname', 'hellfish-media')
         ->expectsQuestion('Timezone', 'UTC')
-        ->expectsConfirmation('DigitalOcean backups cost extra. Enable them?', 'no')
+        ->expectsConfirmation('DigitalOcean charges extra for backups. Enable them?', 'no')
         ->expectsConfirmation('Provision a s-1vcpu-2gb server in nyc3 on DigitalOcean? DigitalOcean will bill you for it.', 'yes')
         ->expectsOutput('==> Server queued for provisioning.')
         ->assertExitCode(0);
@@ -92,7 +108,7 @@ test('provision a server interactively', function () {
 
 test('provision a server with force option requires the provider', function () {
     $this->artisan('servers:create --region=nyc3 --size=s-1vcpu-2gb --force')
-        ->expectsOutput('The --provider option is required when running with --force.')
+        ->expectsOutput('The --provider option is required when running with --force, unless you pass --provider-id.')
         ->assertExitCode(1);
 });
 
@@ -110,7 +126,13 @@ test('provision a server shows validation errors', function () {
         ]))
     );
 
-    $this->artisan('servers:create --provider=digitalocean --provider-id=3 --region=mars1 --size=s-1vcpu-2gb --hostname=hellfish-media --force')
+    $this->artisan('servers:create --provider-id=3 --region=mars1 --size=s-1vcpu-2gb --hostname=hellfish-media --force')
         ->expectsOutput('Validation errors occurred.')
+        ->assertExitCode(1);
+});
+
+test('provision a server with force option requires the region and size', function () {
+    $this->artisan('servers:create --provider-id=3 --hostname=hellfish-media --force')
+        ->expectsOutput('The --region and --size options are required when running with --force.')
         ->assertExitCode(1);
 });

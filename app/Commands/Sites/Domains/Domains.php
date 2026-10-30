@@ -16,10 +16,10 @@ abstract class Domains extends BaseCommand
     use ParsesOptions;
 
     protected const REDIRECT_TYPES = [
-        '301' => 'Permanent (301)',
-        '302' => 'Temporary (302)',
-        '307' => 'Temporary, keeping the request method (307)',
-        '308' => 'Permanent, keeping the request method (308)',
+        301 => 'Permanent (301)',
+        302 => 'Temporary (302)',
+        307 => 'Temporary, keeping the request method (307)',
+        308 => 'Permanent, keeping the request method (308)',
     ];
 
     protected array $validationLabels = [
@@ -78,7 +78,12 @@ abstract class Domains extends BaseCommand
             ->nonInteractive($this->nonInteractive())
             ->resolveAnswer($this);
 
-        if (!array_key_exists((string) $type, self::REDIRECT_TYPES)) {
+        // The status codes are integer keys, so the choice prompt answers with the label rather than
+        // the code. Accept either.
+        $code = array_search($type, self::REDIRECT_TYPES, true);
+        $type = $code === false ? $type : $code;
+
+        if (!is_numeric($type) || !array_key_exists((int) $type, self::REDIRECT_TYPES)) {
             throw new Exception('The --redirect-type option must be 301, 302, 307 or 308.');
         }
 

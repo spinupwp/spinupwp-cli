@@ -60,9 +60,17 @@ abstract class BaseCommand extends Command
 
             return $this->action();
         } catch (ValidationException $e) {
+            $fieldErrors = $e->errors()['errors'] ?? [];
+
+            // Some 422 responses (e.g. an invalid Git deploy key) only have a message.
+            if (empty($fieldErrors) || !is_array($fieldErrors)) {
+                $this->error($e->errors()['message'] ?? $e->getMessage());
+                return self::FAILURE;
+            }
+
             $errorRows = [];
-            foreach ($e->errors()['errors'] as $field => $errors) {
-                $errorRows[] = [$this->applyValidationLabel($field), implode("\n", $errors)];
+            foreach ($fieldErrors as $field => $errors) {
+                $errorRows[] = [$this->applyValidationLabel((string) $field), implode("\n", (array) $errors)];
             }
 
             $this->error('Validation errors occurred.');

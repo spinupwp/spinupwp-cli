@@ -20,7 +20,7 @@ class DisableCommand extends BaseCommand
     {
         $site = $this->selectSite('Which site would you like to disable the SpinupWP subdomain for', fn ($site) => !empty($site->subdomain['enabled']), 'There are no sites with the SpinupWP subdomain enabled.');
 
-        if (is_null($site) || !$this->forceOrConfirm("Are you sure you want to disable the SpinupWP subdomain for \"{$site->domain}\"?")) {
+        if (is_null($site) || !$this->forceOrConfirm("Are you sure you want to disable the SpinupWP subdomain for \"{$site->domain}\"?", false)) {
             return self::SUCCESS;
         }
 

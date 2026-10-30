@@ -14,7 +14,7 @@ class CreateCommand extends Providers
     use ReadsDeployKeys;
 
     protected $signature = 'servers:create
-                            {--provider= : The server provider (digitalocean, hetzner, linode or vultr)}
+                            {--provider= : The server provider (digitalocean, hetzner, linode or vultr). Not needed with --provider-id unless choosing a region and size interactively}
                             {--provider-id= : The ID of a server provider account saved in SpinupWP}
                             {--api-token= : An API token for the provider, when not using a saved provider account}
                             {--region= : The region slug (see providers:regions)}
@@ -42,31 +42,40 @@ class CreateCommand extends Providers
 
     protected function action(): int
     {
-        $provider = $this->stringOption('provider');
+        $providerId = $this->intOption('provider-id');
+        $provider   = $this->stringOption('provider');
+        $region     = $this->stringOption('region');
+        $size       = $this->stringOption('size');
 
-        if (is_null($provider) && $this->nonInteractive()) {
-            throw new Exception('The --provider option is required when running with --force.');
+        if ($this->nonInteractive() && (is_null($region) || is_null($size))) {
+            throw new Exception('The --region and --size options are required when running with --force.');
         }
 
-        $provider       = $this->selectProvider($provider);
-        $serverProvider = $this->providerCredentials($provider);
-
-        $region = $this->stringOption('region');
-        $size   = $this->stringOption('size');
-
-        if (is_null($region) || is_null($size)) {
-            if ($this->nonInteractive()) {
-                throw new Exception('The --region and --size options are required when running with --force.');
+        // A saved provider account already knows its provider, so the provider is only needed
+        // to use an API token or to choose a region and size.
+        if (is_null($providerId) || is_null($region) || is_null($size)) {
+            if (is_null($provider) && $this->nonInteractive()) {
+                throw new Exception('The --provider option is required when running with --force, unless you pass --provider-id.');
             }
 
-            $metadata = $this->spinupwp->providerMetadata($provider);
+            $provider = $this->selectProvider($provider);
+        }
+
+        $serverProvider = is_null($providerId) ? $this->apiTokenCredentials((string) $provider) : ['id' => $providerId];
+
+        if (is_null($region) || is_null($size)) {
+            $metadata = $this->spinupwp->providerMetadata((string) $provider);
             $region ??= $this->askForRegion($metadata);
             $size ??= $this->askForSize($metadata, $region);
         }
 
+        // With a saved account, name the account rather than a --provider that may not match it.
+        $billedBy = is_null($providerId) ? OptionsHelper::SERVER_PROVIDERS[(string) $provider] : 'your server provider';
+        $location = is_null($providerId) ? "on {$billedBy}" : "with saved provider account {$providerId}";
+
         $hostname = $this->stringOption('hostname') ?? ($this->nonInteractive() ? null : $this->ask('Hostname'));
         $timezone = $this->stringOption('timezone') ?? ($this->nonInteractive() ? 'UTC' : $this->ask('Timezone', 'UTC'));
-        $backups  = $this->option('enable-backups') || (!$this->nonInteractive() && $this->confirm(OptionsHelper::SERVER_PROVIDERS[$provider] . ' backups cost extra. Enable them?', false));
+        $backups  = $this->option('enable-backups') || (!$this->nonInteractive() && $this->confirm(ucfirst($billedBy) . ' charges extra for backups. Enable them?', false));
 
         $payload = [
             'server_provider' => array_merge($serverProvider, [
@@ -90,9 +99,7 @@ class CreateCommand extends Providers
             $payload['post_provision_script'] = $this->readKeyFile($script);
         }
 
-        $providerName = OptionsHelper::SERVER_PROVIDERS[$provider];
-
-        if (!$this->forceOrConfirm("Provision a {$size} server in {$region} on {$providerName}? {$providerName} will bill you for it.")) {
+        if (!$this->forceOrConfirm("Provision a {$size} server in {$region} {$location}? " . ucfirst($billedBy) . ' will bill you for it.')) {
             return self::SUCCESS;
         }
 
@@ -106,18 +113,12 @@ class CreateCommand extends Providers
     }
 
     /**
-     * A saved provider account by ID, or the provider name with an API token.
+     * The provider name with an API token, for a provider account that isn't saved in SpinupWP.
      *
-     * @return array<string, int|string>
+     * @return array<string, string>
      */
-    protected function providerCredentials(string $provider): array
+    protected function apiTokenCredentials(string $provider): array
     {
-        $providerId = $this->intOption('provider-id');
-
-        if (!is_null($providerId)) {
-            return ['id' => $providerId];
-        }
-
         $apiToken = $this->stringOption('api-token');
 
         if (is_null($apiToken) && !$this->nonInteractive()) {

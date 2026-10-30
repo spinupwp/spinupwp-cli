@@ -35,13 +35,21 @@ test('change the php version interactively without offering the current version'
         ->assertExitCode(0);
 });
 
-test('change the php version with force option uses the default version', function () {
-    $this->clientMock->shouldReceive('request')->once()->with('PUT', 'sites/1/php', [
-        'json' => ['php_version' => '8.4'],
-    ])->andReturn(new Response(200, [], json_encode(['event_id' => 100])));
+test('change the php version with force option requires the version', function () {
+    $this->clientMock->shouldNotReceive('request')->with('PUT', 'sites/1/php', Mockery::any());
 
     $this->artisan('sites:php 1 --force')
-        ->expectsOutput('==> PHP 8.4 queued for "hellfishmedia.com".')
+        ->expectsOutput('The --php-version option is required when running with --force.')
+        ->assertExitCode(1);
+});
+
+test('change the php version with force option and a version', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('PUT', 'sites/1/php', [
+        'json' => ['php_version' => '8.2'],
+    ])->andReturn(new Response(200, [], json_encode(['event_id' => 100])));
+
+    $this->artisan('sites:php 1 --php-version=8.2 --force')
+        ->expectsOutput('==> PHP 8.2 queued for "hellfishmedia.com".')
         ->assertExitCode(0);
 });
 

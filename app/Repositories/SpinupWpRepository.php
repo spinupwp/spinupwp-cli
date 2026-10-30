@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Helpers\OptionsHelper;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
@@ -145,18 +146,32 @@ class SpinupWpRepository
             'page_cache'          => [
                 'enabled' => $inputParams['page-cache-enabled'],
             ],
-            'database' => [
+        ];
+
+        $isWordPress = in_array($inputParams['installation-method'], OptionsHelper::WORDPRESS_INSTALLATION_METHODS, true);
+
+        // The API creates a database whenever database.name is present, even as null, so only send
+        // the database for WordPress sites or when a database name is given.
+        if ($isWordPress || !empty($inputParams['db-name'])) {
+            $params['database'] = [
                 'name'     => $inputParams['db-name'],
                 'username' => $inputParams['db-user'],
                 'password' => $inputParams['db-pass'],
-            ],
-            'wordpress' => [
+            ];
+
+            if (!empty($inputParams['db-table-prefix'])) {
+                $params['database']['table_prefix'] = $inputParams['db-table-prefix'];
+            }
+        }
+
+        if ($isWordPress) {
+            $params['wordpress'] = [
                 'title'          => $inputParams['wp-title'],
                 'admin_user'     => $inputParams['wp-admin-user'],
                 'admin_email'    => $inputParams['wp-admin-email'],
                 'admin_password' => $inputParams['wp-admin-pass'],
-            ],
-        ];
+            ];
+        }
 
         // Optional settings are only sent when given, so the API applies its own defaults.
         if (!empty($inputParams['public-folder'])) {
@@ -165,10 +180,6 @@ class SpinupWpRepository
 
         if (!empty($inputParams['deploy-script'])) {
             $params['deploy_script'] = $inputParams['deploy-script'];
-        }
-
-        if (!empty($inputParams['db-table-prefix'])) {
-            $params['database']['table_prefix'] = $inputParams['db-table-prefix'];
         }
 
         if ($inputParams['installation-method'] === 'git') {

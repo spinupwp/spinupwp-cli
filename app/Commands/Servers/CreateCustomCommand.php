@@ -3,6 +3,7 @@
 namespace App\Commands\Servers;
 
 use App\Commands\BaseCommand;
+use App\Commands\Concerns\ReadsDeployKeys;
 use App\Questions\Ask;
 use App\Questions\Choice;
 use App\Questions\HasQuestions;
@@ -11,6 +12,7 @@ use App\Questions\Question;
 class CreateCustomCommand extends BaseCommand
 {
     use HasQuestions;
+    use ReadsDeployKeys;
 
     public const UBUNTU_VERSIONS = ['26.04', '24.04'];
 
@@ -42,6 +44,13 @@ class CreateCustomCommand extends BaseCommand
     protected function action(): int
     {
         $this->userInput = $this->askQuestions($this->nonInteractive());
+
+        // The option is a path to the script, but the API expects the script itself.
+        $script = $this->userInput['post-provision-script'] ?? null;
+
+        if (is_string($script) && $script !== '') {
+            $this->userInput['post-provision-script'] = $this->readKeyFile($script);
+        }
 
         $server = $this->spinupwp->createCustomServer($this->userInput);
 
@@ -90,7 +99,7 @@ class CreateCustomCommand extends BaseCommand
                 ->withFlag('timezone')
                 ->withDefault('UTC'),
 
-            Ask::make('Post-Provision Script')
+            Ask::make('Path to a post-provision script (optional)')
                 ->withFlag('post-provision-script'),
 
             Ask::make('Database Root Password')

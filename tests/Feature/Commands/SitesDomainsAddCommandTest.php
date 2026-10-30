@@ -62,6 +62,24 @@ test('add a redirecting domain interactively', function () {
         ->assertExitCode(0);
 });
 
+test('add a redirecting domain when the prompt answers with the redirect label', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('POST', 'sites/1/domains', [
+        'json' => [
+            'domain'   => 'www.hellfish.media',
+            'redirect' => ['enabled' => true, 'type' => 308, 'destination' => 'hellfish.media'],
+        ],
+    ])->andReturn(new Response(200, [], json_encode(['event_id' => 100, 'data' => []])));
+
+    // Symfony's choice prompt returns the label for integer-keyed choices, as it does here in real use.
+    $this->artisan('sites:domains:add 1')
+        ->expectsQuestion('Domain', 'www.hellfish.media')
+        ->expectsConfirmation('Redirect this domain to "hellfish.media" or another URL?', 'yes')
+        ->expectsQuestion('Redirect type', 'Permanent, keeping the request method (308)')
+        ->expectsQuestion('Redirect to', 'hellfish.media')
+        ->expectsOutput('==> Domain "www.hellfish.media" queued for adding.')
+        ->assertExitCode(0);
+});
+
 test('add a domain rejects an unknown redirect type', function () {
     $this->artisan('sites:domains:add 1 --domain=www.hellfish.media --redirect --redirect-type=303 --force')
         ->expectsOutput('The --redirect-type option must be 301, 302, 307 or 308.')

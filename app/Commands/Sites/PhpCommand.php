@@ -6,6 +6,7 @@ use App\Commands\BaseCommand;
 use App\Commands\Concerns\HasSiteIdParameter;
 use App\Helpers\OptionsHelper;
 use App\Questions\Choice;
+use Exception;
 
 class PhpCommand extends BaseCommand
 {
@@ -14,7 +15,7 @@ class PhpCommand extends BaseCommand
     protected $signature = 'sites:php
                             {site_id? : The site to change the PHP version for}
                             {--php-version= : The PHP version the site should run under}
-                            {--f|force : Run without prompting}
+                            {--f|force : Run without prompting (requires --php-version)}
                             {--profile= : The SpinupWP configuration profile to use}';
 
     protected $description = "Change a site's PHP version";
@@ -25,6 +26,10 @@ class PhpCommand extends BaseCommand
 
     protected function action(): int
     {
+        if ($this->nonInteractive() && empty($this->option('php-version'))) {
+            throw new Exception('The --php-version option is required when running with --force.');
+        }
+
         $site = $this->selectSite('Which site would you like to change the PHP version for');
 
         if (is_null($site)) {

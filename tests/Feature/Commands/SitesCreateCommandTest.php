@@ -8,21 +8,10 @@ beforeEach(function () {
     $this->inputParamDefaults = [
         'installation_method' => null,
         'domain'              => null,
-        'php_version'         => '8.4',
+        'php_version'         => '8.3',
         'site_user'           => null,
         'page_cache'          => [
             'enabled' => 0,
-        ],
-        'database' => [
-            'name'     => null,
-            'username' => null,
-            'password' => null,
-        ],
-        'wordpress' => [
-            'title'          => null,
-            'admin_user'     => null,
-            'admin_email'    => null,
-            'admin_password' => null,
         ],
     ];
 
@@ -35,6 +24,7 @@ test('"sites:create blank" fails with invalid data', function () {
     $params = array_merge($this->inputParamDefaults, [
         'installation_method' => 'blank',
         'server_id'           => 1,
+        'site_user'           => '',
     ]);
 
     $this->clientMock->shouldReceive('request')->with('POST', 'sites', [
@@ -270,6 +260,58 @@ test('"sites:create git" asks for the git settings interactively', function () {
         ->expectsConfirmation('Enable Page Cache', 'no')
         ->expectsOutput('==> Site queued for creation.')
         ->assertExitCode(0);
+});
+
+test('"sites:create git" sends a database only when a database name is given', function () {
+    $params = array_merge($this->inputParamDefaults, [
+        'installation_method' => 'git',
+        'server_id'           => 1,
+        'domain'              => 'hellfish.media',
+        'site_user'           => 'hellfishmedia',
+        'public_folder'       => '/',
+        'database'            => [
+            'name'     => 'hellfish',
+            'username' => 'hellfish',
+            'password' => 'password',
+        ],
+        'git' => [
+            'repo'                     => 'git@github.com:spinupwp/spinupwp-composer-site.git',
+            'branch'                   => 'main',
+            'push_to_deploy'           => false,
+            'always_run_deploy_script' => false,
+            'deploy_key_enabled'       => false,
+        ],
+    ]);
+
+    $this->clientMock->shouldReceive('request')->once()->with('POST', 'sites', [
+        'json' => $params,
+    ])->andReturn(new Response(200, [], json_encode([
+        'event_id' => '100',
+        'data'     => ['id' => 1, 'domain' => 'hellfish.media', 'status' => 'deploying'],
+    ])));
+
+    $this->artisan('sites:create 1 --installation-method=git --domain=hellfish.media --git-repo=git@github.com:spinupwp/spinupwp-composer-site.git --db-name=hellfish --db-user=hellfish --db-pass=password -f')
+        ->expectsOutput('==> Site queued for creation.')
+        ->assertExitCode(0);
+});
+
+test('"sites:create git" shows a validation message that has no field errors', function () {
+    $dir = sys_get_temp_dir();
+    file_put_contents("{$dir}/spinupwp_create_key", "PRIVATE\n");
+    file_put_contents("{$dir}/spinupwp_create_key.pub", "NOT A PUBLIC KEY\n");
+
+    $this->clientMock->shouldReceive('request')->once()->with('POST', 'sites', Mockery::any())->andReturn(
+        new Response(422, [], json_encode(['message' => 'The git deploy key is not valid.']))
+    );
+
+    try {
+        $this->artisan("sites:create 1 --installation-method=git --domain=hellfish.media --git-repo=git@github.com:org/repo.git --git-private-key={$dir}/spinupwp_create_key --git-public-key={$dir}/spinupwp_create_key.pub -f")
+            ->expectsOutput('The git deploy key is not valid.')
+            ->assertExitCode(1);
+    } finally {
+        unlink("{$dir}/spinupwp_create_key");
+        unlink("{$dir}/spinupwp_create_key.pub");
+    }
 });
 
 test('"sites:create git" requires both deploy key files', function () {
