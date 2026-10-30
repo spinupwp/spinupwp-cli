@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 use SpinupWp\Endpoints\Event;
+use SpinupWp\Endpoints\Provider;
 use SpinupWp\Endpoints\Server;
 use SpinupWp\Endpoints\Site;
 use SpinupWp\Endpoints\SshKey;
@@ -21,6 +22,7 @@ use SpinupWp\SpinupWp;
  * @method SpinupWp setClient(Client $client)
  * @method Client getClient()
  * @property Event $events
+ * @property Provider $providers
  * @property Server $servers
  * @property Site $sites
  * @property SshKey $sshKeys
@@ -77,6 +79,16 @@ class SpinupWpRepository
         ]);
 
         return LazyCollection::make(fn () => yield from $events)->take($limit)->values()->collect();
+    }
+
+    /**
+     * The regions and sizes a server provider offers.
+     *
+     * @return array<mixed>
+     */
+    public function providerMetadata(string $provider): array
+    {
+        return $this->spinupwp->providers->metadata($provider);
     }
 
     public function getSite(int $siteId): SiteResource

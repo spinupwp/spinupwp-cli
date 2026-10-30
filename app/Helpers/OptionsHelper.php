@@ -18,6 +18,13 @@ class OptionsHelper
 
     public const DEFAULT_PHP_VERSION = '8.4';
 
+    public const SERVER_PROVIDERS = [
+        'digitalocean' => 'DigitalOcean',
+        'hetzner'      => 'Hetzner',
+        'linode'       => 'Linode',
+        'vultr'        => 'Vultr',
+    ];
+
     public const REDIRECT_TYPES = [
         'permanent' => 'Permanent (301)',
         'redirect'  => 'Temporary (302)',

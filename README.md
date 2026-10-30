@@ -232,6 +232,11 @@ A full reference of the available flags is available anytime.
     # Get an event, for example to check on an event ID another command printed
     spinupwp events:get <event_id>
 
+### Providers
+
+    # List the regions a server provider offers (digitalocean, hetzner, linode or vultr)
+    spinupwp providers:regions <provider>
+
 ### SSH Keys
 
     # Get SpinupWP's SSH key
