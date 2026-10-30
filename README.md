@@ -183,6 +183,10 @@ Nested properties should use dot notation, for example, `database.server`.
     # Change the PHP version for a site
     spinupwp sites:php <site_id> --php-version=8.4
 
+    # Enable HTTPS with a Let's Encrypt certificate, or with your own certificate
+    spinupwp sites:https:enable <site_id> --type=letsencrypt
+    spinupwp sites:https:enable <site_id> --type=custom --certificate=<certificate_file> --private-key=<private_key_file>
+
 You can pass any properties of the [Site Schema](https://api.spinupwp.com/?shell#tocS_Site) to the `--fields` flag.
 Nested properties should use dot notation, for example, `backups.next_run_time` or `git.branch`.
 
@@ -199,7 +203,7 @@ Nested properties should use dot notation, for example, `backups.next_run_time` 
       --git-repo="git@github.com:<org>/<repo>.git" --git-branch=main --public-folder=/public \
       --deploy-script="composer install --no-dev" --push-to-deploy
 
-The installation method can be `wp`, `wp_subdirectory` or `wp_subdomain` (WordPress Multisite), `git` or `blank`. HTTPS isn't set up when a site is created. Enable it from the SpinupWP dashboard once the site has deployed.
+The installation method can be `wp`, `wp_subdirectory` or `wp_subdomain` (WordPress Multisite), `git` or `blank`. HTTPS isn't set up when a site is created. Enable it with `sites:https:enable` once the site has deployed.
 
 Update commands only change the settings you pass. Boolean flags accept `true` or `false`, and repeatable flags such as `--path-exclusion` can be passed multiple times.
 

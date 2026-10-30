@@ -38,7 +38,7 @@ trait ReadsDeployKeys
         $path = $this->expandHomeDirectory($path);
 
         if (!is_file($path) || !is_readable($path)) {
-            throw new Exception("Unable to read the key file \"{$path}\".");
+            throw new Exception("Unable to read the file \"{$path}\".");
         }
 
         return trim((string) file_get_contents($path));
