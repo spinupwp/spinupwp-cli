@@ -56,4 +56,50 @@ abstract class Providers extends BaseCommand
 
         return $regions;
     }
+
+    /**
+     * The provider's sizes, limited to those offered in a region when one is given.
+     *
+     * @param array<mixed> $metadata
+     * @return array<int, array<string, mixed>>
+     */
+    protected function sizes(array $metadata, ?string $region = null): array
+    {
+        $sizes = array_values(array_filter($metadata['sizes'] ?? [], 'is_array'));
+
+        if (is_null($region)) {
+            return $sizes;
+        }
+
+        $match = collect($this->regions($metadata))->firstWhere('slug', $region);
+
+        if (is_null($match)) {
+            throw new Exception("No region \"{$region}\" found. Run providers:regions to see the available regions.");
+        }
+
+        return array_values(array_filter($sizes, fn ($size) => in_array($size['slug'] ?? null, $match['sizes'], true)));
+    }
+
+    protected function formatMemory(mixed $megabytes): string
+    {
+        $megabytes = (int) $megabytes;
+
+        return $megabytes >= 1024 ? round($megabytes / 1024, 1) . ' GB' : "{$megabytes} MB";
+    }
+
+    /**
+     * Describe a size in one line, e.g. "2 vCPUs, 4 GB memory, 80 GB disk, $24.00/month".
+     *
+     * @param array<mixed> $size
+     */
+    protected function describeSize(array $size): string
+    {
+        return sprintf(
+            '%s vCPUs, %s memory, %s GB disk, $%s/month',
+            $size['vcpus'] ?? '?',
+            $this->formatMemory($size['memory'] ?? 0),
+            $size['disk'] ?? '?',
+            number_format((float) ($size['priceMonthly'] ?? 0), 2),
+        );
+    }
 }

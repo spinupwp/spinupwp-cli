@@ -237,6 +237,9 @@ A full reference of the available flags is available anytime.
     # List the regions a server provider offers (digitalocean, hetzner, linode or vultr)
     spinupwp providers:regions <provider>
 
+    # List the server sizes a provider offers, optionally only those in one region
+    spinupwp providers:sizes <provider> --region=<region>
+
 ### SSH Keys
 
     # Get SpinupWP's SSH key
