@@ -6,9 +6,16 @@ jobs:
   php-cs-fixer:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+
+      # Run on the minimum supported PHP version so fixes never use newer syntax.
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
 
       - name: Install Dependencies via Composer
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
@@ -16,6 +23,6 @@ jobs:
       - name: Run php-cs-fixer
         run: composer php-cs-fixer
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Apply php-cs-fixer changes

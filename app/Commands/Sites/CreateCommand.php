@@ -102,7 +102,7 @@ class CreateCommand extends BaseCommand
 
     public function getDomainSlug(): string
     {
-        return str_replace('.', '', $this->userInput['domain']);
+        return str_replace('.', '', (string) ($this->userInput['domain'] ?? ''));
     }
 
     public function questions(): array

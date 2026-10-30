@@ -94,7 +94,7 @@ class SpinupWpRepository
         ]));
     }
 
-    public function listSites(int $serverId = null): Collection
+    public function listSites(?int $serverId = null): Collection
     {
         $params = [
             'limit' => self::PAGINATION_LIMIT,

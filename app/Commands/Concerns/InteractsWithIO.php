@@ -123,7 +123,7 @@ trait InteractsWithIO
         $this->table($tableHeaders, $rows);
     }
 
-    public function askToSelectSite(string $question, callable $filter = null): int
+    public function askToSelectSite(string $question, ?callable $filter = null): int
     {
         $choices = collect($this->spinupwp->listSites());
 

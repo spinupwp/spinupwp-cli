@@ -6,8 +6,9 @@ parameters:
         - bootstrap
         - config
     level: max
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
     universalObjectCratesClasses:
         - SpinupWp\Resources\Resource
         - SpinupWp\Endpoints\Endpoint

@@ -3,8 +3,16 @@
     "directories": [
         "app",
         "bootstrap",
-        "config",
-        "vendor"
+        "config"
+    ],
+    "finder": [
+        {
+            "in": "vendor",
+            "exclude": [
+                "friendsofphp/php-cs-fixer",
+                "phpstan/phpstan"
+            ]
+        }
     ],
     "files": [
         "composer.json"
