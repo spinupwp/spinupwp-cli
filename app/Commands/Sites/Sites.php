@@ -17,6 +17,8 @@ abstract class Sites extends BaseCommand
             (new Field('ID', 'id')),
             (new Field('Server ID', 'server_id')),
             (new Field('Domain', 'domain')),
+            (new Field('DNS Provider ID', 'dns_provider_id'))
+                ->withIgnoreRule(fn ($value) => empty($value)),
             (new Field('Additional Domains', 'additional_domains'))
                 ->withTransformRule(fn ($value) => implode(PHP_EOL, array_map(fn ($domain) => $domain['domain'], $value))),
             (new Field('Site User', 'site_user')),

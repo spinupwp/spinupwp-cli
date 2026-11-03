@@ -99,8 +99,9 @@ Nested properties should use dot notation, for example, `database.server`.
     # Create a site
     spinupwp sites:create <server_id>
 
-    # Delete a site
+    # Delete a site, optionally removing its DNS records from its DNS provider
     spinupwp sites:delete <site_id>
+    spinupwp sites:delete <site_id> --delete-dns-records
 
     # Run a Git deployment
     spinupwp sites:deploy <site_id>
@@ -190,8 +191,9 @@ Nested properties should use dot notation, for example, `database.server`.
     # Change the PHP version for a site
     spinupwp sites:php <site_id> --php-version=8.4
 
-    # Enable HTTPS with a Let's Encrypt certificate, or with your own certificate
+    # Enable HTTPS with a Let's Encrypt certificate, validated over HTTP or through a DNS provider, or with your own certificate
     spinupwp sites:https:enable <site_id> --type=letsencrypt
+    spinupwp sites:https:enable <site_id> --type=dns --dns-provider-id=<dns_provider_id>
     spinupwp sites:https:enable <site_id> --type=custom --certificate=<certificate_file> --private-key=<private_key_file>
 
     # Switch a site's HTTPS certificate, or replace its custom certificate
@@ -222,7 +224,10 @@ Nested properties should use dot notation, for example, `backups.next_run_time` 
       --git-repo="git@github.com:<org>/<repo>.git" --git-branch=main --public-folder=/public \
       --deploy-script="composer install --no-dev" --push-to-deploy
 
-The installation method can be `wp`, `wp_subdirectory` or `wp_subdomain` (WordPress Multisite), `git` or `blank`. HTTPS isn't set up when a site is created. Enable it with `sites:https:enable` once the site has deployed.
+    # Create a site whose DNS record and HTTPS certificate are managed by a DNS provider
+    spinupwp sites:create <server_id> --domain="<domain>" --dns-provider-id=<dns_provider_id>
+
+The installation method can be `wp`, `wp_subdirectory` or `wp_subdomain` (WordPress Multisite), `git` or `blank`. With a DNS provider, SpinupWP creates an A record for the domain and enables HTTPS with a wildcard certificate once the site has deployed. Without one, HTTPS is enabled automatically if the domain already points at the server; otherwise enable it with `sites:https:enable` once the domain points at the server.
 
 Update commands only change the settings you pass. Boolean flags accept `true` or `false`, and repeatable flags such as `--path-exclusion` can be passed multiple times.
 
@@ -259,6 +264,11 @@ A full reference of the available flags is available anytime.
 
     # List your team's storage providers
     spinupwp storage-providers:list
+
+### DNS Providers
+
+    # List your team's DNS providers
+    spinupwp dns-providers:list
 
 ## Upgrade
 

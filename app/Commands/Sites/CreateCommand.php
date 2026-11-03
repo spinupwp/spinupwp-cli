@@ -5,6 +5,7 @@ namespace App\Commands\Sites;
 use App\Commands\BaseCommand;
 use App\Commands\Concerns\HasServerIdParameter;
 use App\Commands\Concerns\ReadsDeployKeys;
+use App\Commands\Concerns\SelectsDnsProvider;
 use App\Helpers\OptionsHelper;
 use App\Questions\Ask;
 use App\Questions\Choice;
@@ -17,11 +18,13 @@ class CreateCommand extends BaseCommand
     use HasQuestions;
     use HasServerIdParameter;
     use ReadsDeployKeys;
+    use SelectsDnsProvider;
 
     protected $signature = 'sites:create
                             {server_id? : Server ID}
                             {--installation-method= : Type of installation (wp, wp_subdirectory, wp_subdomain, git or blank)}
                             {--domain= : Domain name}
+                            {--dns-provider-id= : ID of a DNS provider saved in SpinupWP, to create the DNS record and enable HTTPS for the site}
                             {--site-user= : Name for unique system user who will have ownership permission of all the site files}
                             {--public-folder= : The folder to serve the site from, relative to the site\'s files directory (defaults to /)}
                             {--db-name= : Name of a database to be created. Must be unique for the server}
@@ -50,6 +53,7 @@ class CreateCommand extends BaseCommand
 
     protected array $validationLabels = [
         'domain'                   => 'Primary Domain',
+        'dns_provider_id'          => 'DNS Provider',
         'page_cache.enabled'       => 'Enable Page Cache',
         'public_folder'            => 'Public Folder',
         'database.name'            => 'Database Name',
@@ -90,6 +94,8 @@ class CreateCommand extends BaseCommand
             ->withFlag('domain')
             ->nonInteractive($this->nonInteractive())
             ->resolveAnswer($this);
+
+        $this->userInput['dns-provider-id'] = $this->selectDnsProvider('Which DNS provider should create the DNS record and enable HTTPS?', false);
 
         $this->userInput += $this->askQuestions($this->nonInteractive());
 

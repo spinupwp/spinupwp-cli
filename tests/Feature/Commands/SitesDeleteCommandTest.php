@@ -11,8 +11,9 @@ beforeEach(function () {
 
     $this->clientMock->shouldReceive('request')->with('DELETE', 'sites/1', [
         'json' => [
-            'delete_database' => false,
-            'delete_backups'  => false,
+            'delete_database'    => false,
+            'delete_backups'     => false,
+            'delete_dns_records' => false,
         ],
     ])->andReturn(
         new Response(200, [], json_encode(['event_id' => '100']))
@@ -43,14 +44,30 @@ test('delete a site without force option and cancel deletion', function () {
 test('delete a site with delete-database and delete-backups options', function () {
     $this->clientMock->shouldReceive('request')->with('DELETE', 'sites/1', [
         'json' => [
-            'delete_database' => true,
-            'delete_backups'  => true,
+            'delete_database'    => true,
+            'delete_backups'     => true,
+            'delete_dns_records' => false,
         ],
     ])->andReturn(
         new Response(200, [], json_encode(['event_id' => '100']))
     );
 
     $this->artisan('sites:delete 1 --delete-database --delete-backups --force')
+        ->expectsOutput('==> Site queued for deletion.');
+});
+
+test('delete a site with its DNS records', function () {
+    $this->clientMock->shouldReceive('request')->once()->with('DELETE', 'sites/1', [
+        'json' => [
+            'delete_database'    => false,
+            'delete_backups'     => false,
+            'delete_dns_records' => true,
+        ],
+    ])->andReturn(
+        new Response(200, [], json_encode(['event_id' => '100']))
+    );
+
+    $this->artisan('sites:delete 1 --delete-dns-records --force')
         ->expectsOutput('==> Site queued for deletion.');
 });
 

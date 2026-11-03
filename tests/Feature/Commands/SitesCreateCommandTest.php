@@ -251,6 +251,10 @@ test('"sites:create git" asks for the git settings interactively', function () {
         'data'     => ['id' => 1, 'domain' => 'hellfish.media', 'status' => 'deploying'],
     ])));
 
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'dns-providers?page=1&limit=100', [])->andReturn(
+        new Response(200, [], listResponseJson([]))
+    );
+
     $this->artisan('sites:create 1 --installation-method=git')
         ->expectsConfirmation('Are you sure you want to deploy to "hellfish-media"?', 'yes')
         ->expectsQuestion('Primary Domain', 'hellfish.media')
@@ -327,3 +331,57 @@ test('"sites:create" no longer accepts the https option', function () {
     expect(fn () => $this->artisan('sites:create 1 --installation-method=blank --domain=hellfish.media --https-enabled -f')->run())
         ->toThrow(Symfony\Component\Console\Exception\RuntimeException::class, 'The "--https-enabled" option does not exist.');
 });
+
+test('"sites:create" sends the DNS provider given as an option', function () {
+    $params = array_merge($this->inputParamDefaults, [
+        'installation_method' => 'blank',
+        'server_id'           => 1,
+        'domain'              => 'hellfish.media',
+        'dns_provider_id'     => 12,
+        'site_user'           => 'hellfishmedia',
+    ]);
+
+    $this->clientMock->shouldReceive('request')->once()->with('POST', 'sites', [
+        'json' => $params,
+    ])->andReturn(new Response(200, [], json_encode([
+        'event_id' => '100',
+        'data'     => ['id' => 1, 'domain' => 'hellfish.media', 'status' => 'deploying'],
+    ])));
+
+    $this->artisan('sites:create 1 --installation-method=blank --domain=hellfish.media --site-user=hellfishmedia --dns-provider-id=12 -f')
+        ->expectsOutput('==> Site queued for creation.')
+        ->assertExitCode(0);
+});
+
+test('"sites:create" asks which DNS provider to use', function (string $answer, array $expectedParams) {
+    $this->clientMock->shouldReceive('request')->once()->with('GET', 'dns-providers?page=1&limit=100', [])->andReturn(
+        new Response(200, [], listResponseJson([
+            ['id' => 12, 'service' => 'cloudflare', 'name' => 'Cloudflare'],
+            ['id' => 15, 'service' => 'route53', 'name' => 'Client AWS'],
+        ]))
+    );
+
+    $this->clientMock->shouldReceive('request')->once()->with('POST', 'sites', [
+        'json' => array_merge($this->inputParamDefaults, [
+            'installation_method' => 'blank',
+            'server_id'           => 1,
+            'domain'              => 'hellfish.media',
+            'site_user'           => 'hellfishmedia',
+        ], $expectedParams),
+    ])->andReturn(new Response(200, [], json_encode([
+        'event_id' => '100',
+        'data'     => ['id' => 1, 'domain' => 'hellfish.media', 'status' => 'deploying'],
+    ])));
+
+    $this->artisan('sites:create 1 --installation-method=blank --domain=hellfish.media')
+        ->expectsConfirmation('Are you sure you want to deploy to "hellfish-media"?', 'yes')
+        ->expectsChoice('Which DNS provider should create the DNS record and enable HTTPS?', $answer, [0, 'None', 12, 'Cloudflare (cloudflare)', 15, 'Client AWS (route53)'])
+        ->expectsQuestion('Site User', 'hellfishmedia')
+        ->expectsChoice('PHP Version', '8.3', ['8.5', '8.4', '8.3', '8.2', '8.1', '8.0', '7.4'])
+        ->expectsConfirmation('Enable Page Cache', 'no')
+        ->expectsOutput('==> Site queued for creation.')
+        ->assertExitCode(0);
+})->with([
+    'a DNS provider' => ['15', ['dns_provider_id' => 15]],
+    'none'           => ['0', []],
+]);
