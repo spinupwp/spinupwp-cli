@@ -58,3 +58,17 @@ test('update https only offers sites with https enabled', function () {
         ->expectsOutput('There are no sites with HTTPS enabled.')
         ->assertExitCode(0);
 });
+
+test("switch to a dns certificate keeps the site's DNS provider", function () {
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => ['id' => 1, 'domain' => 'hellfishmedia.com', 'dns_provider_id' => 12, 'https' => ['enabled' => true]]]))
+    );
+
+    $this->clientMock->shouldReceive('request')->once()->with('PUT', 'sites/1/https', [
+        'json' => ['type' => 'dns', 'dns_provider_id' => 12],
+    ])->andReturn(new Response(200, [], json_encode(['event_id' => 100])));
+
+    $this->artisan('sites:https:update 1 --force')
+        ->expectsOutput('==> HTTPS certificate queued for update.')
+        ->assertExitCode(0);
+});

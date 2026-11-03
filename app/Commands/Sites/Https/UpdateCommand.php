@@ -6,7 +6,8 @@ class UpdateCommand extends Https
 {
     protected $signature = 'sites:https:update
                             {site_id? : The site to update the HTTPS certificate for}
-                            {--type= : The certificate to use (letsencrypt or custom)}
+                            {--type= : The certificate to use (letsencrypt, dns or custom)}
+                            {--dns-provider-id= : For a dns certificate, ID of the DNS provider saved in SpinupWP that validates it}
                             {--certificate= : For a custom certificate, path to the certificate file}
                             {--private-key= : For a custom certificate, path to the private key file}
                             {--f|force : Run without prompting}
@@ -22,7 +23,7 @@ class UpdateCommand extends Https
             return self::SUCCESS;
         }
 
-        $eventId = $site->updateHttps($this->certificatePayload());
+        $eventId = $site->updateHttps($this->certificatePayload($site));
 
         $this->displaySiteEvent($site, $eventId, 'HTTPS certificate queued for update.');
 

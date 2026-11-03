@@ -13,6 +13,7 @@ class DeleteCommand extends BaseCommand
                             {site_id? : The site to delete}
                             {--d|delete-database : Delete the site's associated database}
                             {--b|delete-backups : Delete the site's associated backups}
+                            {--delete-dns-records : Delete the A records pointing to the server for the site's domains from its DNS provider}
                             {--f|force : Delete the site without prompting for confirmation}
                             {--profile= : The SpinupWP configuration profile to use}";
 
@@ -38,6 +39,7 @@ class DeleteCommand extends BaseCommand
             $eventId = $site->delete(
                 (bool) $this->option('delete-database'),
                 (bool) $this->option('delete-backups'),
+                (bool) $this->option('delete-dns-records'),
             );
 
             $this->displaySiteEvent($site, $eventId, 'Site queued for deletion.');

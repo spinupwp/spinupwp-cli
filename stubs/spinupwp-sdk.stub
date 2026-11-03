@@ -49,6 +49,7 @@ namespace SpinupWp\Resources {
      * @property-read int $id
      * @property-read int $server_id
      * @property-read string $domain
+     * @property-read int|null $dns_provider_id
      * @property-read list<array{id: int, domain: string, redirect: array{enabled: bool, type?: int, destination?: string}, created_at: string}> $additional_domains
      * @property-read string $site_user
      * @property-read string $user_auth
@@ -100,6 +101,14 @@ namespace SpinupWp\Resources {
 
     /**
      * @property-read int $id
+     * @property-read string $service
+     * @property-read string $name
+     * @property-read string $created_at
+     */
+    class DnsProvider extends Resource {}
+
+    /**
+     * @property-read int $id
      * @property-read string $initiated_by
      * @property-read int|null $server_id
      * @property-read string $name
@@ -114,6 +123,7 @@ namespace SpinupWp\Resources {
 
 namespace SpinupWp\Endpoints {
 
+    use SpinupWp\Resources\DnsProvider as DnsProviderResource;
     use SpinupWp\Resources\Event as EventResource;
     use SpinupWp\Resources\PathRedirect as PathRedirectResource;
     use SpinupWp\Resources\ResourceCollection;
@@ -123,6 +133,15 @@ namespace SpinupWp\Endpoints {
     use SpinupWp\Resources\StorageProvider as StorageProviderResource;
 
     abstract class Endpoint {}
+
+    class DnsProvider extends Endpoint
+    {
+        /**
+         * @param array<string, mixed> $parameters
+         * @return ResourceCollection<DnsProviderResource>
+         */
+        public function list(int $page = 1, array $parameters = []): ResourceCollection;
+    }
 
     class Provider extends Endpoint {}
 
@@ -189,6 +208,7 @@ namespace SpinupWp {
     /**
      * The SDK's own docblock leaves out $providers, which __get() also resolves.
      *
+     * @property Endpoints\DnsProvider $dnsProviders
      * @property Endpoints\Event $events
      * @property Endpoints\Provider $providers
      * @property Endpoints\Server $servers

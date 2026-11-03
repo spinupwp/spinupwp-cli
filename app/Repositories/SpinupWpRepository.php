@@ -6,6 +6,7 @@ use App\Helpers\OptionsHelper;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
+use SpinupWp\Endpoints\DnsProvider;
 use SpinupWp\Endpoints\Event;
 use SpinupWp\Endpoints\Provider;
 use SpinupWp\Endpoints\Server;
@@ -22,6 +23,7 @@ use SpinupWp\SpinupWp;
  * @method bool hasApiKey()
  * @method SpinupWp setClient(Client $client)
  * @method Client getClient()
+ * @property DnsProvider $dnsProviders
  * @property Event $events
  * @property Provider $providers
  * @property Server $servers
@@ -116,6 +118,13 @@ class SpinupWpRepository
         ]));
     }
 
+    public function listDnsProviders(): Collection
+    {
+        return collect($this->spinupwp->dnsProviders->list(1, [
+            'limit' => self::PAGINATION_LIMIT,
+        ]));
+    }
+
     public function listPathRedirects(int $siteId): Collection
     {
         return collect($this->spinupwp->sites->listPathRedirects($siteId, 1, [
@@ -174,6 +183,10 @@ class SpinupWpRepository
         }
 
         // Optional settings are only sent when given, so the API applies its own defaults.
+        if (!empty($inputParams['dns-provider-id'])) {
+            $params['dns_provider_id'] = (int) $inputParams['dns-provider-id'];
+        }
+
         if (!empty($inputParams['public-folder'])) {
             $params['public_folder'] = $inputParams['public-folder'];
         }
