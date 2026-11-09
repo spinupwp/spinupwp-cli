@@ -174,8 +174,13 @@ Nested properties should use dot notation, for example, `database.server`.
     # Disable weekly backups
     spinupwp sites:backups:schedule <site_id> --weekly-days=none
 
-    # Update the site user's SSH authentication
+    # Update the site user's SSH authentication (--ssh-key-id replaces the site user's keys)
     spinupwp sites:site-user <site_id> --authentication=publickey --ssh-key-id=1 --ssh-key-id=2
+
+    # List, add, or remove one of the site user's SSH keys, keeping the others
+    spinupwp sites:ssh-keys:list <site_id>
+    spinupwp sites:ssh-keys:add <site_id> <ssh_key>
+    spinupwp sites:ssh-keys:remove <site_id> <ssh_key>
 
     # Correct the file permissions for a site
     spinupwp sites:correct-permissions <site_id>

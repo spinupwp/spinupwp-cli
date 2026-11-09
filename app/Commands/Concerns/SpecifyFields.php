@@ -42,6 +42,11 @@ trait SpecifyFields
                 return;
             }
 
+            if ($this->displayFormat() === 'json' && $field->shouldBeRawInJson()) {
+                $fields[$label] = $resource->{$field->getName()};
+                return;
+            }
+
             $value = $field->getDisplayValue($resource);
 
             if (!is_array($value)) {

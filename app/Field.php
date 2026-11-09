@@ -25,6 +25,8 @@ class Field
 
     protected bool $enabledOrDisabled = false;
 
+    protected bool $rawInJson = false;
+
     public function __construct(string $displayName, string $name)
     {
         $this->displayName = $displayName;
@@ -116,6 +118,20 @@ class Field
     {
         $aliases = array_merge([$this->getKey()], $this->aliases);
         return count(array_intersect($aliases, $fieldsFilter)) > 0;
+    }
+
+    /**
+     * Output the API value unchanged in JSON, such as a list of objects that the table output joins into lines.
+     */
+    public function rawInJson(): self
+    {
+        $this->rawInJson = true;
+        return $this;
+    }
+
+    public function shouldBeRawInJson(): bool
+    {
+        return $this->rawInJson;
     }
 
     public function yesOrNo(): self

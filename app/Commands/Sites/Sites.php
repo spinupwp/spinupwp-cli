@@ -24,6 +24,9 @@ abstract class Sites extends BaseCommand
             (new Field('Site User', 'site_user')),
             (new Field('SSH Authentication', 'user_auth'))
                 ->withTransformRule(fn ($value) => $value === 'publickey' ? 'SSH keys' : ucfirst((string) $value)),
+            (new Field('SSH Keys', 'ssh_keys'))
+                ->rawInJson()
+                ->withTransformRule(fn ($value) => implode(PHP_EOL, array_map(fn ($key) => "{$key['name']} (ID {$key['id']})", $value))),
             (new Field('PHP Version', 'php_version')),
             (new Field('Public Folder', 'public_folder')),
             (new Field('Page Cache', 'page_cache'))
