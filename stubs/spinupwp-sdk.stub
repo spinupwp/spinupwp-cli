@@ -53,6 +53,7 @@ namespace SpinupWp\Resources {
      * @property-read list<array{id: int, domain: string, redirect: array{enabled: bool, type?: int, destination?: string}, created_at: string}> $additional_domains
      * @property-read string $site_user
      * @property-read string $user_auth
+     * @property-read list<array{id: int, name: string, fingerprint: string}> $ssh_keys
      * @property-read string $php_version
      * @property-read string $public_folder
      * @property-read bool $is_wordpress

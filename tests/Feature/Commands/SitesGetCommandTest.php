@@ -162,9 +162,13 @@ test('site table get command with wp cron fields', function () {
 test('site table get command with newer api fields', function () {
     $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
         new Response(200, [], json_encode(['data' => [
-            'id'         => 1,
-            'domain'     => 'hellfish.media',
-            'user_auth'  => 'publickey',
+            'id'        => 1,
+            'domain'    => 'hellfish.media',
+            'user_auth' => 'publickey',
+            'ssh_keys'  => [
+                ['id' => 3, 'name' => 'CI deploy', 'fingerprint' => 'aa:bb'],
+                ['id' => 4, 'name' => 'Engineer', 'fingerprint' => 'cc:dd'],
+            ],
             'page_cache' => ['enabled' => true, 'duration' => 1, 'duration_unit' => 'd'],
             'https'      => ['enabled' => true, 'certificate_expires' => '28 Jan 2027'],
             'backups'    => [
@@ -181,10 +185,11 @@ test('site table get command with newer api fields', function () {
         ]]))
     );
 
-    $this->artisan('sites:get 1 --format=table --fields=user_auth,page_cache,page_cache.duration,https,https.certificate_expires,backups.schedule,subdomain,subdomain.url,disabled_at')
+    $this->artisan('sites:get 1 --format=table --fields=user_auth,ssh_keys,page_cache,page_cache.duration,https,https.certificate_expires,backups.schedule,subdomain,subdomain.url,disabled_at')
         ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'no')
         ->expectsTable([], [
             ['SSH Authentication', 'SSH keys'],
+            ['SSH Keys', "CI deploy (ID 3)\nEngineer (ID 4)"],
             ['Page Cache', 'Enabled'],
             ['Page Cache Duration', '1 day'],
             ['HTTPS', 'Enabled'],
@@ -287,4 +292,18 @@ test('fields are not saved when the command cannot ask', function () use ($respo
         ->assertExitCode(0);
 
     expect(resolve(Configuration::class)->getCommandConfiguration('sites:get'))->toBe([]);
+});
+
+test('site json get command outputs the ssh keys as a list', function () {
+    $keys = [
+        ['id' => 3, 'name' => 'CI deploy', 'fingerprint' => 'aa:bb'],
+        ['id' => 4, 'name' => 'Engineer', 'fingerprint' => 'cc:dd'],
+    ];
+    $this->clientMock->shouldReceive('request')->with('GET', 'sites/1', [])->andReturn(
+        new Response(200, [], json_encode(['data' => ['id' => 1, 'domain' => 'hellfish.media', 'ssh_keys' => $keys]]))
+    );
+
+    $this->artisan('sites:get 1 --format=json --fields=domain,ssh_keys')
+        ->expectsConfirmation('Do you want to save the specified fields as the default for this command?', 'no')
+        ->expectsOutput(json_encode(['domain' => 'hellfish.media', 'ssh_keys' => $keys], JSON_PRETTY_PRINT));
 });
